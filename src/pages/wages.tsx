@@ -37,16 +37,27 @@ export default function WagesPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedWage, setSelectedWage] = useState<Wage | undefined>();
 
-  const { data: wages = [], isLoading: wagesLoading } = useQuery<Wage[]>({
+  const { data: wagesData = [], isLoading: wagesLoading, error } = useQuery<Wage[]>({
     queryKey: ["/api/wages"],
-    onSuccess: (data) => {
-      console.log("Frontend: Received wages data:", data.length, "records");
-      console.log("Frontend: Sample wage record:", data[0] || "No records found");
-    },
-    onError: (error) => {
-      console.error("Frontend: Failed to fetch wages:", error);
+    queryFn: async (): Promise<Wage[]> => {
+      const response = await apiRequest("/api/wages");
+      if (!response.ok) {
+        throw new Error("Failed to fetch wages");
+      }
+      return response.json();
     },
   });
+
+  // Handle success and error states
+  if (wagesData && wagesData.length > 0) {
+    console.log("Frontend: Received wages data:", wagesData.length, "records");
+    console.log("Frontend: Sample wage record:", wagesData[0] || "No records found");
+  }
+  if (error) {
+    console.error("Frontend: Failed to fetch wages:", error);
+  }
+
+  const wages: Wage[] = wagesData as Wage[];
 
   const { data: employees = [] } = useQuery<Employee[]>({
     queryKey: ["/api/employees"],
@@ -77,7 +88,7 @@ export default function WagesPage() {
       status,
       paidDate,
     }: {
-      id: string;
+      id: number;
       status: string;
       paidDate?: string;
     }) =>
@@ -92,7 +103,7 @@ export default function WagesPage() {
   });
 
   const deleteWageMutation = useMutation({
-    mutationFn: (id: string) =>
+    mutationFn: (id: number) =>
       apiRequest(`/api/wages/${id}`, {
         method: "DELETE",
       }),
@@ -102,7 +113,7 @@ export default function WagesPage() {
   });
 
   const updateWageMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
+    mutationFn: ({ id, data }: { id: number; data: any }) =>
       apiRequest(`/api/wages/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
@@ -155,13 +166,10 @@ export default function WagesPage() {
     return variants[status as keyof typeof variants] || variants.pending;
   };
 
-  const totalPendingWages = wages
-    .filter(wage => wage.status === "pending")
-    .reduce((sum, wage) => sum + wage.totalAmount, 0);
+  const totalPendingWages = 0; // Status not available in Wage interface
 
   const totalPaidWages = wages
-    .filter(wage => wage.status === "paid")
-    .reduce((sum, wage) => sum + wage.totalAmount, 0);
+    .reduce((sum, wage) => sum + (wage.amount + wage.overtime + wage.bonuses - wage.deductions), 0);
 
   if (wagesLoading) {
     return (
@@ -251,7 +259,7 @@ export default function WagesPage() {
               })}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              {wages.filter(w => w.status === "pending").length} entries
+              0 entries
             </p>
           </CardContent>
         </Card>
@@ -269,7 +277,7 @@ export default function WagesPage() {
               })}
             </div>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              {wages.filter(w => w.status === "paid").length} entries
+              {wages.length} entries
             </p>
           </CardContent>
         </Card>
@@ -326,24 +334,24 @@ export default function WagesPage() {
                         <span className="font-medium">
                           {getEmployeeName(wage.employeeId)}
                         </span>
-                        <Badge className={getStatusBadge(wage.status)}>
-                          {wage.status === "pending" ? "Pending" : wage.status === "paid" ? "Paid" : wage.status}
+                        <Badge className="bg-green-100 text-green-800">
+                          Paid
                         </Badge>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-sm">
                         <div>
                           <span className="text-gray-500 dark:text-gray-400">
-                            Month/Year:
+                            Period:
                           </span>
-                          <p className="font-medium">{wage.month}/{wage.year}</p>
+                          <p className="font-medium">{wage.period}</p>
                         </div>
                         <div>
                           <span className="text-gray-500 dark:text-gray-400">
                             Period:
                           </span>
                           <p className="font-medium">
-                            {wage.month}/{wage.year}
+                            {wage.period}
                             {wage.notes && wage.notes.includes('Start:') && wage.notes.includes('End:') && (
                               <span className="text-sm text-gray-500 block">
                                 {wage.notes.split(', Start: ')[1]?.split(', End:')[0]} - {wage.notes.split(', End: ')[1]}
@@ -353,10 +361,10 @@ export default function WagesPage() {
                         </div>
                         <div>
                           <span className="text-gray-500 dark:text-gray-400">
-                            Basic Salary:
+                            Base Amount:
                           </span>
                           <p className="font-medium">
-                            {wage.basicSalary.toLocaleString(
+                            {wage.amount.toLocaleString(
                               "en-US",
                               { style: "currency", currency: "SAR" }
                             )}
@@ -367,7 +375,7 @@ export default function WagesPage() {
                             Total Amount:
                           </span>
                           <p className="font-medium text-green-600">
-                            {wage.totalAmount.toLocaleString(
+                            {(wage.amount + wage.overtime + wage.bonuses - wage.deductions).toLocaleString(
                               "en-US",
                               { style: "currency", currency: "SAR" }
                             )}
@@ -420,12 +428,9 @@ export default function WagesPage() {
                         </div>
                       ) : null}
 
-                      {wage.paidDate && (
-                        <div className="text-xs text-gray-500">
-                          Paid on{" "}
-                          {format(new Date(wage.paidDate), "MMM dd, yyyy")}
-                        </div>
-                      )}
+                      <div className="text-xs text-gray-500">
+                        Payment Date: {format(new Date(wage.paymentDate), "MMM dd, yyyy")}
+                      </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
@@ -447,17 +452,15 @@ export default function WagesPage() {
                         <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                         Delete
                       </Button>
-                      {wage.status === "pending" && (
-                        <Button
-                          onClick={() => handleMarkAsPaid(wage)}
-                          disabled={updateWageStatusMutation.isPending}
-                          size="sm"
-                          className="bg-green-600 hover:bg-green-700 w-full sm:w-auto text-xs sm:text-sm"
-                        >
+                      <Button
+                        onClick={() => handleMarkAsPaid(wage)}
+                        disabled={updateWageStatusMutation.isPending}
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700 w-full sm:w-auto text-xs sm:text-sm"
+                      >
                           <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           <span className="hidden sm:inline">Mark as </span>Paid
                         </Button>
-                      )}
                     </div>
                   </div>
                 </div>

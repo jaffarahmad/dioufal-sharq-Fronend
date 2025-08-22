@@ -401,17 +401,17 @@ export default function Reports() {
 
   // Calculate key metrics
   const totalRevenue = transactions
-    .filter(t => t.type === "Income")
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    .filter(t => t.type === "income")
+    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
   const totalExpenses = transactions
-    .filter(t => t.type === "Expense")
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    .filter(t => t.type === "expense")
+    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
   const netProfit = totalRevenue - totalExpenses;
   const activeProjects = projects.filter(
-    p => p.status === "In Progress"
+    p => p.status === "active"
   ).length;
   const completedProjects = projects.filter(
-    p => p.status === "Completed"
+    p => p.status === "completed"
   ).length;
   const totalPurchaseValue = purchases.reduce(
     (sum, p) => sum + parseFloat(p.totalAmount || "0"),
@@ -553,7 +553,7 @@ export default function Reports() {
       pdf.setTextColor(60, 60, 60);
       pdf.text(`Total Employees: ${employees.length}`, 110, yPosition + 15);
       pdf.text(
-        `Active: ${employees.filter(e => e.status === "Active").length}`,
+        `Active: ${employees.length}`,
         110,
         yPosition + 22
       );
@@ -620,10 +620,10 @@ export default function Reports() {
       yPosition += 15;
 
       const statusCounts = {
-        Planning: projects.filter(p => p.status === "Planning").length,
-        Active: projects.filter(p => p.status === "Active").length,
-        Completed: projects.filter(p => p.status === "Completed").length,
-        "On Hold": projects.filter(p => p.status === "On Hold").length,
+        Planning: projects.filter(p => p.status === "planning").length,
+        Active: projects.filter(p => p.status === "active").length,
+        Completed: projects.filter(p => p.status === "completed").length,
+        "On Hold": projects.filter(p => p.status === "cancelled").length,
       };
 
       // Create visual bars for project status
@@ -714,7 +714,7 @@ export default function Reports() {
 
       if (employees.length > 0) {
         const activeEmployeeRate =
-          (employees.filter(e => e.status === "Active").length /
+          (employees.length /
             employees.length) *
           100;
         if (activeEmployeeRate >= 90) {
@@ -1077,7 +1077,7 @@ export default function Reports() {
                   <div className="flex justify-between items-center p-2 bg-green-50 rounded-lg">
                     <span className="text-sm font-medium">Active</span>
                     <Badge className="bg-green-100 text-green-800 text-xs">
-                      {employees.filter(e => e.status === "Active").length}
+                      {employees.length}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">

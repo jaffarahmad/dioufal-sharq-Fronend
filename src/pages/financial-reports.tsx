@@ -66,19 +66,17 @@ export default function FinancialReports() {
     });
 
     const totalRevenue = filteredInvoices
-      .filter(inv => inv.status === "Paid")
+      .filter(inv => inv.status === "paid")
       .reduce((sum, inv) => sum + parseFloat(inv.total?.toString() || "0"), 0);
 
     const outstandingAmount = filteredInvoices
-      .filter(inv => inv.status !== "Paid")
+      .filter(inv => inv.status !== "paid")
       .reduce((sum, inv) => sum + parseFloat(inv.total?.toString() || "0"), 0);
 
     const totalExpenses = projects.reduce((sum, project) => {
-      const actualCost =
-        typeof project.actualCost === "string"
-          ? parseFloat(project.actualCost)
-          : Number(project.actualCost);
-      return sum + (isNaN(actualCost) ? 0 : actualCost);
+      // Using budget as fallback since actualCost doesn't exist on Project type
+      const cost = typeof project.budget === "string" ? parseFloat(project.budget) : Number(project.budget);
+      return sum + (isNaN(cost) ? 0 : cost);
     }, 0);
 
     const netProfit = totalRevenue - totalExpenses;

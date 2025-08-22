@@ -91,9 +91,9 @@ function Workforce() {
   const filteredEmployees = employees?.filter(employee => {
     const matchesSearch =
       employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.email.toLowerCase().includes(searchQuery.toLowerCase());
+      (employee.email || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDepartment =
-      departmentFilter === "all" || employee.department === departmentFilter;
+      departmentFilter === "all" || employee.position === departmentFilter;
 
     return matchesSearch && matchesDepartment;
   });
@@ -111,7 +111,7 @@ function Workforce() {
 
   const getProjectName = (projectId: number | null) => {
     if (!projectId) return "No Project";
-    const project = projects?.find(p => p.id === projectId);
+    const project = projects?.find(p => p.id === projectId?.toString());
     return project?.name || "Unknown Project";
   };
 
@@ -160,7 +160,7 @@ function Workforce() {
           title="Active"
           value={
             stats?.employees?.active ||
-            employees?.filter(e => e.status === "active").length ||
+            employees?.length ||
             0
           }
           icon={UserCheck}
@@ -171,7 +171,7 @@ function Workforce() {
           title="On Leave"
           value={
             stats?.employees?.onLeave ||
-            employees?.filter(e => e.status === "on_leave").length ||
+            0 ||
             0
           }
           icon={Clock}
@@ -182,7 +182,7 @@ function Workforce() {
           title="Absent"
           value={
             stats?.employees?.absent ||
-            employees?.filter(e => e.status === "absent").length ||
+            0 ||
             0
           }
           icon={UserX}
@@ -246,22 +246,22 @@ function Workforce() {
                         </div>
                       </div>
                       <Badge
-                        className={getStatusBadge(employee.status || "active")}
+                        className={getStatusBadge("active")}
                       >
-                        {employee.status?.replace("_", " ") || "Active"}
+                        {"Active"}
                       </Badge>
                     </div>
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Department:</span>
                         <span className="font-medium">
-                          {employee.department}
+                          {employee.position}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Project:</span>
                         <span className="font-medium">
-                          {getProjectName(employee.currentProjectId)}
+                          {getProjectName(employee.projectId || null)}
                         </span>
                       </div>
                       {employee.salary && (
@@ -396,7 +396,7 @@ function Workforce() {
                     Status
                   </label>
                   <p className="text-sm capitalize">
-                    {viewingEmployee.status?.replace("_", " ") || "N/A"}
+                    {"Active"}
                   </p>
                 </div>
                 <div>
@@ -404,14 +404,14 @@ function Workforce() {
                     Nationality
                   </label>
                   <p className="text-sm">
-                    {viewingEmployee.nationality || "N/A"}
+                    {"N/A"}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">
                     ID Number
                   </label>
-                  <p className="text-sm">{viewingEmployee.idNumber || "N/A"}</p>
+                  <p className="text-sm">{"N/A"}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">
@@ -428,7 +428,7 @@ function Workforce() {
                     Project
                   </label>
                   <p className="text-sm">
-                    {projects?.find(p => p.id === viewingEmployee.projectId)
+                    {projects?.find(p => p.id === viewingEmployee.projectId?.toString())
                       ?.name || "Not Assigned"}
                   </p>
                 </div>

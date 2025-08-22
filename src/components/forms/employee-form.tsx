@@ -353,24 +353,7 @@ export default function EmployeeForm({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="iqamaNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Iqama Number</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter Iqama number"
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="phone"
@@ -390,13 +373,14 @@ export default function EmployeeForm({
               />
               <FormField
                 control={form.control}
-                name="mobileNumber"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Mobile Number</FormLabel>
+                    <FormLabel>Email Address</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter mobile number"
+                        type="email"
+                        placeholder="Enter email address"
                         {...field}
                         value={field.value || ""}
                       />
@@ -406,6 +390,8 @@ export default function EmployeeForm({
                 )}
               />
             </div>
+
+
 
             <FormField
               control={form.control}

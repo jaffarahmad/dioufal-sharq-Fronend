@@ -322,7 +322,6 @@ export default function Dashboard() {
           title="Total Employees"
           value={employees.length}
           icon={Users}
-          trend={{ value: "8% from last month", isPositive: true }}
           iconColor="text-green-600"
           iconBgColor="bg-green-50"
         />
@@ -330,7 +329,6 @@ export default function Dashboard() {
           title="Total Revenue"
           value={formatCurrency(totalRevenue)}
           icon={DollarSign}
-          trend={{ value: "15% from last month", isPositive: true }}
           iconColor="text-emerald-600"
           iconBgColor="bg-emerald-50"
         />
@@ -338,7 +336,6 @@ export default function Dashboard() {
           title="Purchase Orders"
           value={purchases.length}
           icon={ShoppingCart}
-          trend={{ value: "5% from last month", isPositive: true }}
           iconColor="text-purple-600"
           iconBgColor="bg-purple-50"
         />
@@ -395,7 +392,7 @@ export default function Dashboard() {
                 </p>
                 <p className="text-2xl font-bold text-emerald-600">
                   {
-                    (projects || []).filter(p => p.status === "Completed")
+                    (projects || []).filter(p => p.status === "completed")
                       .length
                   }
                 </p>
@@ -627,7 +624,7 @@ export default function Dashboard() {
               <div className="text-2xl font-bold text-green-600">
                 {(projects || []).length > 0
                   ? Math.round(
-                      ((projects || []).filter(p => p.status === "Completed")
+                      ((projects || []).filter(p => p.status === "completed")
                         .length /
                         (projects || []).length) *
                         100
