@@ -1,0 +1,536 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Responsive utilities for CMS */
+@layer utilities {
+  /* Mobile-first responsive grid */
+  .responsive-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6;
+  }
+
+  .responsive-card-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6;
+  }
+
+  /* Responsive table utilities */
+  .responsive-table {
+    @apply overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700;
+  }
+
+  .mobile-table-item {
+    @apply block sm:hidden p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0;
+  }
+
+  .desktop-table {
+    @apply hidden sm:table w-full;
+  }
+
+  /* Responsive padding and margins */
+  .responsive-container {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+
+  .responsive-spacing {
+    @apply space-y-4 sm:space-y-6 lg:space-y-8;
+  }
+
+  /* Mobile-optimized buttons */
+  .mobile-button {
+    @apply w-full sm:w-auto min-h-[44px] touch-manipulation;
+  }
+
+  /* Responsive text sizes */
+  .responsive-heading {
+    @apply text-xl sm:text-2xl lg:text-3xl font-bold;
+  }
+
+  .responsive-subheading {
+    @apply text-lg sm:text-xl lg:text-2xl font-semibold;
+  }
+
+  /* Touch-friendly interactive elements */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+}
+
+/* Professional Typography with Arabic Support */
+@layer base {
+  * {
+    font-family:
+      "Inter",
+      "Poppins",
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  body {
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Arabic Text Support */
+  [dir="rtl"] {
+    font-family:
+      "Cairo", "Amiri", "Noto Naskh Arabic", "Inter", Arial, sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: bidi-override !important;
+    font-variant-ligatures: common-ligatures !important;
+    font-feature-settings:
+      "liga" 1,
+      "calt" 1,
+      "kern" 1 !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
+
+  /* Arabic text styling classes */
+  .arabic-text {
+    font-family:
+      "Cairo", "Amiri", "Noto Naskh Arabic", Arial, sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: bidi-override !important;
+    font-variant-ligatures: common-ligatures !important;
+    font-feature-settings:
+      "liga" 1,
+      "calt" 1,
+      "kern" 1 !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+  }
+
+  /* Invoice specific typography */
+  .invoice-title {
+    font-family: "Poppins", "Inter", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+
+  .invoice-company {
+    font-family: "Poppins", "Inter", sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .invoice-heading {
+    font-family: "Inter", sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  .invoice-body {
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .invoice-table {
+    font-family: "Inter", sans-serif;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .invoice-amount {
+    font-family: "Inter", monospace;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Print styles for invoices with Arabic support */
+@media print {
+  body {
+    font-size: 12px;
+    color: black !important;
+    background: white !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Arabic text support in print */
+  [dir="rtl"] {
+    font-family:
+      "Cairo", "Amiri", "Noto Naskh Arabic", Arial, sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: bidi-override !important;
+    font-variant-ligatures: common-ligatures !important;
+    font-feature-settings:
+      "liga" 1,
+      "calt" 1,
+      "kern" 1 !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .arabic-text {
+    font-family:
+      "Cairo", "Amiri", "Noto Naskh Arabic", Arial, sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
+    unicode-bidi: bidi-override !important;
+    font-variant-ligatures: common-ligatures !important;
+    font-feature-settings:
+      "liga" 1,
+      "calt" 1,
+      "kern" 1 !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  .print\\:block {
+    display: block !important;
+  }
+
+  /* Remove shadows and borders for print */
+  .shadow-sm,
+  .shadow,
+  .shadow-md,
+  .shadow-lg {
+    box-shadow: none !important;
+  }
+
+  /* Ensure proper page breaks */
+  .print\\:break-before {
+    page-break-before: always;
+  }
+
+  .print\\:break-after {
+    page-break-after: always;
+  }
+
+  /* Optimize spacing for print */
+  .container {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide unnecessary elements */
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-gray-900 {
+    background: white !important;
+  }
+
+  /* Invoice specific print styles - unified for all templates */
+  #tax-invoice-content,
+  #view-invoice-content,
+  [id^="invoice-template-"] {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 5mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+    page-break-after: auto !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+
+  /* Optimized spacing for consistent PDF layout */
+  .print\:preserve-layout,
+  #tax-invoice-content *,
+  #view-invoice-content *,
+  [id^="invoice-template-"] * {
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Preserve original spacing for better layout matching */
+  .p-2,
+  .p-3,
+  .p-4,
+  .py-2,
+  .py-3,
+  .py-4 {
+    padding: inherit !important;
+  }
+
+  .mb-2,
+  .mb-3,
+  .mb-4,
+  .mb-6 {
+    margin-bottom: inherit !important;
+  }
+
+  /* Compact table print optimization */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    font-size: 10px !important;
+  }
+
+  td,
+  th {
+    border: 1px solid #666 !important;
+    padding: 3px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Compact text sizes for print */
+  .text-xs {
+    font-size: 9px !important;
+  }
+
+  .text-sm {
+    font-size: 10px !important;
+  }
+
+  .text-base {
+    font-size: 11px !important;
+  }
+
+  .text-lg {
+    font-size: 12px !important;
+  }
+
+  .text-xl {
+    font-size: 14px !important;
+  }
+
+  .text-2xl {
+    font-size: 16px !important;
+  }
+
+  /* Force A4 page size */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Ensure content fits A4 exactly - unified for all templates */
+  #tax-invoice-content,
+  #view-invoice-content,
+  [id^="invoice-template-"] {
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    display: block !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+
+  /* Prevent layout shifts during PDF generation */
+  .pdf-generating {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* Print optimization for gradients */
+  .bg-gradient-to-r,
+  .bg-gradient-to-br,
+  .bg-gradient-to-l {
+    background: var(--primary) !important;
+    color: white !important;
+  }
+
+  /* Ensure colored borders print properly */
+  .border-blue-600,
+  .border-blue-200,
+  .border-green-200,
+  .border-purple-200,
+  .border-amber-200 {
+    border-color: #2563eb !important;
+  }
+
+  /* Print color optimization */
+  .text-blue-600,
+  .text-orange-600,
+  .text-green-600,
+  .text-purple-600 {
+    color: #1d4ed8 !important;
+  }
+}
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* Construction theme colors */
+  --construction-orange: hsl(22, 96%, 53%);
+  --construction-orange-light: hsl(21, 96%, 83%);
+  --construction-orange-dark: hsl(20, 84%, 43%);
+  --construction-blue: hsl(207, 90%, 54%);
+  --construction-gray: hsl(210, 11%, 96%);
+
+  /* Sidebar variables */
+  --sidebar-background: hsl(0, 0%, 98%);
+  --sidebar-foreground: hsl(240, 5.3%, 26.1%);
+  --sidebar-primary: hsl(240, 5.9%, 10%);
+  --sidebar-primary-foreground: hsl(0, 0%, 98%);
+  --sidebar-accent: hsl(240, 4.8%, 95.9%);
+  --sidebar-accent-foreground: hsl(240, 5.9%, 10%);
+  --sidebar-border: hsl(220, 13%, 91%);
+  --sidebar-ring: hsl(217.2, 32.6%, 17.5%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+
+  /* Construction theme colors for dark mode */
+  --construction-orange: hsl(22, 96%, 53%);
+  --construction-orange-light: hsl(21, 30%, 25%);
+  --construction-orange-dark: hsl(20, 84%, 43%);
+  --construction-blue: hsl(207, 90%, 54%);
+  --construction-gray: hsl(240, 3.7%, 15.9%);
+
+  /* Sidebar variables for dark mode */
+  --sidebar-background: hsl(240, 5.9%, 10%);
+  --sidebar-foreground: hsl(240, 4.8%, 95.9%);
+  --sidebar-primary: hsl(0, 0%, 98%);
+  --sidebar-primary-foreground: hsl(240, 5.9%, 10%);
+  --sidebar-accent: hsl(240, 3.7%, 15.9%);
+  --sidebar-accent-foreground: hsl(0, 0%, 98%);
+  --sidebar-border: hsl(240, 3.7%, 15.9%);
+  --sidebar-ring: hsl(240, 4.9%, 83.9%);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+
+@layer utilities {
+  .construction-orange {
+    color: var(--construction-orange);
+  }
+
+  .bg-construction-orange {
+    background-color: var(--construction-orange);
+  }
+
+  .border-construction-orange {
+    border-color: var(--construction-orange);
+  }
+
+  .construction-orange-light {
+    color: var(--construction-orange-light);
+  }
+
+  .bg-construction-orange-light {
+    background-color: var(--construction-orange-light);
+  }
+
+  .construction-gray {
+    background-color: var(--construction-gray);
+  }
+}
+
+/* Print styles for A4 page format */
+@media print {
+  @page {
+    size: A4;
+    margin: 0.5in;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  #invoice-content {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0;
+    padding: 20px;
+    box-shadow: none;
+    border: none;
+    background: white;
+  }
+
+  #invoice-content * {
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Ensure proper page breaks */
+  #invoice-content {
+    page-break-inside: avoid;
+  }
+
+  /* Hide elements that shouldn't print */
+  button,
+  .sidebar,
+  .navigation,
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,0 +1,454 @@
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Building2,
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Star,
+  Phone,
+  Mail,
+  MapPin,
+  Users,
+  TrendingUp,
+} from "lucide-react";
+import StatsCard from "@/components/ui/stats-card";
+import SupplierForm from "@/components/forms/supplier-form";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { Supplier } from "@/lib/schema";
+
+export default function Suppliers() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
+
+  const { data: suppliers = [], isLoading: suppliersLoading } = useQuery<
+    Supplier[]
+  >({
+    queryKey: ["/api/suppliers"],
+  });
+
+  const createSupplierMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("/api/suppliers", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/suppliers"] });
+      setIsCreateDialogOpen(false);
+    },
+  });
+
+  const updateSupplierMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const response = await apiRequest(`/api/suppliers/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/suppliers"] });
+      setEditingSupplier(null);
+    },
+  });
+
+  const deleteSupplierMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest(`/api/suppliers/${id}`, {
+        method: "DELETE",
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/suppliers"] });
+    },
+  });
+
+  const handleCreateSupplier = (data: any) => {
+    createSupplierMutation.mutate(data);
+  };
+
+  const handleUpdateSupplier = (data: any) => {
+    if (editingSupplier) {
+      updateSupplierMutation.mutate({ id: editingSupplier.id, data });
+    }
+  };
+
+  const handleDeleteSupplier = (id: number) => {
+    if (confirm("Are you sure you want to delete this supplier?")) {
+      deleteSupplierMutation.mutate(id);
+    }
+  };
+
+  const filteredSuppliers = suppliers.filter(supplier => {
+    const matchesSearch =
+      supplier.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (supplier.contactPerson || "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      (supplier.email || "").toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      categoryFilter === "all" || supplier.category === categoryFilter;
+    const matchesStatus =
+      statusFilter === "all" || supplier.status === statusFilter;
+
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  const getStatusBadge = (status: string) => {
+    const statusMap = {
+      Active: "bg-green-100 text-green-800",
+      Inactive: "bg-red-100 text-red-800",
+    };
+    return (
+      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
+    );
+  };
+
+  const getCategoryBadge = (category: string | null) => {
+    if (!category) return "bg-gray-100 text-gray-800";
+
+    const categoryMap = {
+      Materials: "bg-blue-100 text-blue-800",
+      Equipment: "bg-purple-100 text-purple-800",
+      Services: "bg-green-100 text-green-800",
+      Tools: "bg-orange-100 text-orange-800",
+      Safety: "bg-red-100 text-red-800",
+      Other: "bg-gray-100 text-gray-800",
+    };
+    return (
+      categoryMap[category as keyof typeof categoryMap] ||
+      "bg-gray-100 text-gray-800"
+    );
+  };
+
+  const renderStars = (rating: number | null) => {
+    const ratingValue = rating || 0;
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`h-3 w-3 ${
+          i < ratingValue ? "text-yellow-400 fill-current" : "text-gray-300"
+        }`}
+      />
+    ));
+  };
+
+  // Calculate stats
+  const totalSuppliers = suppliers.length;
+  const activeSuppliers = suppliers.filter(s => s.status === "Active").length;
+  const averageRating =
+    suppliers.length > 0
+      ? suppliers.reduce((sum, s) => sum + (s.rating || 0), 0) /
+        suppliers.length
+      : 0;
+  const topRatedSuppliers = suppliers.filter(s => (s.rating || 0) >= 4).length;
+
+  if (suppliersLoading) {
+    return (
+      <div className="p-4 sm:p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            Suppliers
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
+            Manage vendor relationships and supplier information
+          </p>
+        </div>
+
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Supplier
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl mx-4 sm:mx-0 max-h-[95vh] overflow-y-auto p-4 sm:p-6">
+            <DialogHeader>
+              <DialogTitle>Add New Supplier</DialogTitle>
+              <DialogDescription>
+                Create a new supplier record with contact information and rating
+              </DialogDescription>
+            </DialogHeader>
+            <SupplierForm
+              onSubmit={handleCreateSupplier}
+              onCancel={() => setIsCreateDialogOpen(false)}
+              isLoading={createSupplierMutation.isPending}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <StatsCard
+          title="Total Suppliers"
+          value={totalSuppliers}
+          icon={Building2}
+          iconColor="text-blue-600"
+          iconBgColor="bg-blue-50"
+        />
+        <StatsCard
+          title="Active Suppliers"
+          value={activeSuppliers}
+          icon={Users}
+          iconColor="text-green-600"
+          iconBgColor="bg-green-50"
+        />
+        <StatsCard
+          title="Average Rating"
+          value={averageRating.toFixed(1)}
+          icon={Star}
+          iconColor="text-yellow-600"
+          iconBgColor="bg-yellow-50"
+        />
+        <StatsCard
+          title="Top Rated (4+ Stars)"
+          value={topRatedSuppliers}
+          icon={TrendingUp}
+          iconColor="text-purple-600"
+          iconBgColor="bg-purple-50"
+        />
+      </div>
+
+      {/* Suppliers List */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <CardTitle>Supplier Directory</CardTitle>
+              <div className="text-sm text-gray-500 mt-1">
+                Total: {filteredSuppliers.length} suppliers
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search suppliers..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="pl-10 w-full sm:w-64"
+                />
+              </div>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full sm:w-40">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="Materials">Materials</SelectItem>
+                  <SelectItem value="Equipment">Equipment</SelectItem>
+                  <SelectItem value="Services">Services</SelectItem>
+                  <SelectItem value="Tools">Tools</SelectItem>
+                  <SelectItem value="Safety">Safety</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-32">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Supplier Details</TableHead>
+                  <TableHead>Contact Information</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Rating</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredSuppliers.map(supplier => (
+                  <TableRow key={supplier.id}>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="font-medium text-gray-900">
+                          {supplier.name}
+                        </div>
+                        {supplier.contactPerson && (
+                          <div className="text-sm text-gray-500">
+                            Contact: {supplier.contactPerson}
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        {supplier.phone && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Phone className="h-3 w-3 mr-1" />
+                            {supplier.phone}
+                          </div>
+                        )}
+                        {supplier.email && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Mail className="h-3 w-3 mr-1" />
+                            {supplier.email}
+                          </div>
+                        )}
+                        {supplier.address && (
+                          <div className="flex items-start text-sm text-gray-600">
+                            <MapPin className="h-3 w-3 mr-1 mt-0.5 flex-shrink-0" />
+                            <span className="line-clamp-2">
+                              {supplier.address}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getCategoryBadge(supplier.category)}>
+                        {supplier.category || "Unspecified"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          {renderStars(supplier.rating)}
+                        </div>
+                        <span className="text-sm text-gray-600">
+                          ({supplier.rating || 0}/5)
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={getStatusBadge(supplier.status)}>
+                        {supplier.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setEditingSupplier(supplier)}
+                          title="Edit Supplier"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteSupplier(supplier.id)}
+                          className="text-red-600 hover:text-red-700"
+                          title="Delete Supplier"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {filteredSuppliers.length === 0 && (
+            <div className="text-center py-8">
+              <Building2 className="mx-auto h-12 w-12 text-gray-400" />
+              <div className="text-gray-500 mb-4">No suppliers found</div>
+              <Button onClick={() => setIsCreateDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add First Supplier
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Edit Supplier Dialog */}
+      <Dialog
+        open={!!editingSupplier}
+        onOpenChange={() => setEditingSupplier(null)}
+      >
+        <DialogContent className="max-w-3xl mx-4 sm:mx-0 max-h-[95vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader>
+            <DialogTitle>Edit Supplier</DialogTitle>
+            <DialogDescription>
+              Update supplier information, contact details, and rating
+            </DialogDescription>
+          </DialogHeader>
+          {editingSupplier && (
+            <SupplierForm
+              onSubmit={handleUpdateSupplier}
+              onCancel={() => setEditingSupplier(null)}
+              initialData={{
+                name: editingSupplier.name,
+                contactPerson: editingSupplier.contactPerson || "",
+                email: editingSupplier.email || "",
+                phone: editingSupplier.phone || "",
+                address: editingSupplier.address || "",
+                category: editingSupplier.category || "",
+                status: editingSupplier.status,
+                rating: editingSupplier.rating || 5,
+                notes: editingSupplier.notes || "",
+              }}
+              isLoading={updateSupplierMutation.isPending}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

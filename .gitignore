@@ -1,0 +1,214 @@
+############################
+# Node.js / Monorepo Ignore
+############################
+
+# Dependencies
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.turbo/
+.vite/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+############################
+# Runtime / Logs / Coverage
+############################
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Logs
+logs/
+*.log
+
+############################
+# Tools / Package Managers
+############################
+
+# Grunt intermediate storage
+.grunt
+
+# Bower dependency directory
+bower_components
+
+# node-waf
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# JSPM
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# NPM cache
+.npm
+
+# ESLint / Stylelint cache
+.eslintcache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_*/
+
+# REPL history
+.node_repl_history
+
+# npm pack output
+*.tgz
+
+# Yarn
+.yarn-integrity
+
+############################
+# Frameworks / Tools
+############################
+
+# Next.js
+.next
+
+# Nuxt.js
+.nuxt
+
+# Gatsby
+.cache/
+public
+
+# Storybook
+.out
+.storybook-out
+
+# Vercel / Netlify Deploy
+.vercel
+.netlify
+
+############################
+# Databases / Uploads
+############################
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads (don’t track user uploads)
+uploads/
+attached_assets/
+
+# Prisma
+prisma/migrations/
+
+############################
+# Editors / OS
+############################
+
+# Editors
+.vscode/
+.idea/
+
+# Temp / swap files
+*.swp
+*.swo
+*~
+tmp/
+temp/
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+############################
+# Backups / Archives
+############################
+
+# Git merge leftovers
+*.orig
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.copy
+
+# Archives
+*.zip
+*.rar
+*.tar.gz
+*.7z
+
+############################
+# Screenshots / Images
+############################
+
+# Ignore screenshots and temporary images
+screenshots/
+temp-images/
+
+# Keep all assets in client folder
+# (Remove blanket image ignoring to preserve project assets)
+
+############################
+# Additional Ignores
+############################
+
+# Package manager lock files (keep only one)
+# yarn.lock
+# pnpm-lock.yaml
+
+# Runtime configuration
+.npmrc
+
+# IDE and editor files
+*.sublime-project
+*.sublime-workspace
+
+# Mac specific
+.AppleDouble
+.LSOverride
+
+# Windows specific
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux specific
+*~
+
+# Temporary files
+*.tmp
+*.temp
