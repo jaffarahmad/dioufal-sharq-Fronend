@@ -89,13 +89,13 @@ export default function Manpower() {
   const manpower = manpowerData || [];
 
   // Helper functions to get names
-  const getEmployeeName = (employeeId: string | null) => {
-    const employee = employees?.find(emp => emp.id === employeeId);
+  const getEmployeeName = (employeeId: string | number | null) => {
+    const employee = employees?.find(emp => emp.id.toString() === employeeId?.toString());
     return employee ? employee.name : "Unknown Employee";
   };
 
-  const getProjectName = (projectId: string | null) => {
-    const project = projects?.find(proj => proj.id === projectId);
+  const getProjectName = (projectId: string | number | null) => {
+    const project = projects?.find(proj => proj.id.toString() === projectId?.toString());
     return project ? project.name : "Unknown Project";
   };
 
@@ -115,9 +115,9 @@ export default function Manpower() {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      Active: "bg-green-100 text-green-800",
-      Completed: "bg-blue-100 text-blue-800",
-      Transferred: "bg-yellow-100 text-yellow-800",
+      active: "bg-green-100 text-green-800",
+      completed: "bg-blue-100 text-blue-800",
+      terminated: "bg-yellow-100 text-yellow-800",
     };
     return (
       statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
@@ -127,13 +127,13 @@ export default function Manpower() {
   // Calculate stats
   const totalAssignments = manpower.length;
   const activeAssignments = manpower.filter(
-    item => item.status === "Active"
+    item => item.status === "active"
   ).length;
   const completedAssignments = manpower.filter(
-    item => item.status === "Completed"
+    item => item.status === "completed"
   ).length;
-  const transferredAssignments = manpower.filter(
-    item => item.status === "Transferred"
+  const terminatedAssignments = manpower.filter(
+    item => item.status === "terminated"
   ).length;
 
   if (isLoading) {
@@ -179,8 +179,8 @@ export default function Manpower() {
           iconBgColor="bg-blue-50"
         />
         <StatsCard
-          title="Transferred"
-          value={transferredAssignments}
+          title="Terminated"
+          value={terminatedAssignments}
           icon={UserCheck}
           iconColor="text-yellow-600"
           iconBgColor="bg-yellow-50"
@@ -208,9 +208,9 @@ export default function Manpower() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Transferred">Transferred</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="terminated">Terminated</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -246,8 +246,8 @@ export default function Manpower() {
                     </TableCell>
                     <TableCell className="text-gray-500">{item.role}</TableCell>
                     <TableCell className="text-gray-500">
-                      {item.assignedDate
-                        ? new Date(item.assignedDate).toLocaleDateString()
+                      {item.startDate
+                        ? new Date(item.startDate).toLocaleDateString()
                         : "N/A"}
                     </TableCell>
                     <TableCell className="text-gray-500">
@@ -275,7 +275,7 @@ export default function Manpower() {
                           variant="outline"
                           size="sm"
                           className="text-red-600 hover:text-red-700"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => handleDelete(item.id.toString())}
                         >
                           <Trash2 className="mr-1 h-3 w-3" />
                           Remove
@@ -315,8 +315,8 @@ export default function Manpower() {
                     <div>
                       <span className="text-gray-500">Assigned:</span>
                       <div className="font-medium">
-                        {item.assignedDate
-                          ? new Date(item.assignedDate).toLocaleDateString()
+                        {item.startDate
+                          ? new Date(item.startDate).toLocaleDateString()
                           : "N/A"}
                       </div>
                     </div>
@@ -344,7 +344,7 @@ export default function Manpower() {
                       variant="outline"
                       size="sm"
                       className="text-red-600 hover:text-red-700 flex-1"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDelete(item.id.toString())}
                     >
                       <Trash2 className="mr-1 h-3 w-3" />
                       Remove

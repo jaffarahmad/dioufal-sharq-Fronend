@@ -140,9 +140,9 @@ export default function QuotationPreview() {
               img.onload = resolve;
               img.onerror = () => {
                 console.warn("Image failed to load:", img.src);
-                resolve(); // Continue even if image fails
+                resolve(void 0); // Continue even if image fails
               };
-              setTimeout(() => resolve(), 5000); // Timeout after 5 seconds
+              setTimeout(() => resolve(void 0), 5000); // Timeout after 5 seconds
             });
           })
         );
