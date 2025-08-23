@@ -72,8 +72,8 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["api", "categories"] });
+        queryClient.invalidateQueries({ queryKey: ["api", "dashboard", "stats"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Category created successfully",
@@ -102,8 +102,8 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["api", "categories"] });
+        queryClient.invalidateQueries({ queryKey: ["api", "dashboard", "stats"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Category updated successfully",

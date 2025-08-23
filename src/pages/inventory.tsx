@@ -47,15 +47,15 @@ export default function Inventory() {
     isLoading,
     error,
   } = useQuery<Inventory[]>({
-    queryKey: ["/api/inventory"],
+    queryKey: ["api", "inventory"],
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) =>
       apiRequest(`/api/inventory/${id}`, { method: "DELETE" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["api", "inventory"] });
+      queryClient.invalidateQueries({ queryKey: ["api", "dashboard", "stats"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Inventory item deleted successfully",
