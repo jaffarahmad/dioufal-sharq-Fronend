@@ -1,13 +1,7 @@
 import { jsPDF } from "jspdf";
 import type { Quotation } from "@/lib/schema";
 
-interface QuotationPDFData extends Omit<Quotation, "id" | "createdAt"> {
-  items?: Array<{
-    description: string;
-    quantity: number;
-    unitPrice: number;
-    total: number;
-  }>;
+interface QuotationPDFData extends Omit<Quotation, "id" | "createdAt" | "subtotal" | "tax" | "total"> {
   subtotal?: number;
   discountAmount?: number;
   taxRate?: number;
@@ -19,6 +13,8 @@ interface QuotationPDFData extends Omit<Quotation, "id" | "createdAt"> {
   description?: string;
   totalAmount?: number;
   notes?: string;
+  tax?: number;
+  total?: number;
 }
 
 export const generateQuotationPDF = (quotation: QuotationPDFData) => {

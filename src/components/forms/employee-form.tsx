@@ -51,21 +51,16 @@ export default function EmployeeForm({
 
   const form = useForm<InsertEmployee>({
     resolver: zodResolver(insertEmployeeSchema),
-    defaultValues: employee || {
-      name: "",
-      email: "",
-      position: "",
-      salary: 0,
-      department: "Construction",
-      status: "active",
-      currentProjectId: undefined,
-      avatarUrl: "",
-      iqamaNumber: "",
-      companyNumber: "",
-      mobileNumber: "",
-      phone: "",
-      nationality: "",
-      hireDate: new Date(),
+    defaultValues: {
+      name: employee?.name || "",
+      email: employee?.email || "",
+      position: employee?.position || "",
+      salary: employee?.salary || 0,
+      phone: employee?.phone || "",
+      address: employee?.address || "",
+      avatarUrl: employee?.avatarUrl || "",
+      hireDate: employee?.hireDate || new Date().toISOString().split('T')[0],
+      projectId: employee?.projectId,
     },
   });
 
@@ -215,30 +210,17 @@ export default function EmployeeForm({
               />
               <FormField
                 control={form.control}
-                name="department"
+                name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Department</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select department" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Construction">
-                          Construction
-                        </SelectItem>
-                        <SelectItem value="Engineering">Engineering</SelectItem>
-                        <SelectItem value="Safety">Safety</SelectItem>
-                        <SelectItem value="Administration">
-                          Administration
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter address"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -248,36 +230,10 @@ export default function EmployeeForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="status"
+                name="projectId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="on_leave">On Leave</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
-                        <SelectItem value="terminated">Terminated</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="currentProjectId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Project</FormLabel>
+                    <FormLabel>Project</FormLabel>
                     <Select
                       onValueChange={value =>
                         field.onChange(
@@ -309,42 +265,17 @@ export default function EmployeeForm({
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="nationality"
+                name="avatarUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nationality</FormLabel>
+                    <FormLabel>Avatar URL</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter nationality"
+                        placeholder="Enter avatar URL"
                         {...field}
                         value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="hireDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Hire Date</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        {...field}
-                        value={
-                          field.value
-                            ? new Date(field.value).toISOString().split("T")[0]
-                            : ""
-                        }
-                        onChange={e => field.onChange(new Date(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -359,7 +290,7 @@ export default function EmployeeForm({
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel>Phone</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter phone number"
@@ -373,14 +304,13 @@ export default function EmployeeForm({
               />
               <FormField
                 control={form.control}
-                name="email"
+                name="hireDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email Address</FormLabel>
+                    <FormLabel>Hire Date *</FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
-                        placeholder="Enter email address"
+                        type="date"
                         {...field}
                         value={field.value || ""}
                       />
@@ -391,17 +321,16 @@ export default function EmployeeForm({
               />
             </div>
 
-
-
             <FormField
               control={form.control}
-              name="avatarUrl"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Avatar URL (Optional)</FormLabel>
+                  <FormLabel>Email Address</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter avatar URL"
+                      type="email"
+                      placeholder="Enter email address"
                       {...field}
                       value={field.value || ""}
                     />

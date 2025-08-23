@@ -41,16 +41,13 @@ import { z } from "zod";
 
 // Extended schema for form validation - matching actual manpower schema
 const manpowerFormSchema = z.object({
-  employeeId: z
-    .string({ required_error: "Employee is required" })
-    .min(1, "Employee is required"),
-  projectId: z
-    .string({ required_error: "Project is required" })
-    .min(1, "Project is required"),
+  employeeId: z.coerce.number({ required_error: "Employee is required" }),
+  projectId: z.coerce.number({ required_error: "Project is required" }),
   role: z.string().min(1, "Role is required"),
-  assignedDate: z.string().min(1, "Assignment date is required"),
+  startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().optional(),
-  status: z.string().min(1, "Status is required"),
+  dailyRate: z.coerce.number().min(0, "Daily rate must be positive"),
+  status: z.enum(["active", "completed", "terminated"]).default("active"),
 });
 
 type ManpowerFormData = z.infer<typeof manpowerFormSchema>;
@@ -77,16 +74,17 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
   const form = useForm<ManpowerFormData>({
     resolver: zodResolver(manpowerFormSchema),
     defaultValues: {
-      employeeId: manpower?.employeeId || undefined,
-      projectId: manpower?.projectId || undefined,
+      employeeId: manpower?.employeeId || 0,
+      projectId: manpower?.projectId || 0,
       role: manpower?.role || "",
-      assignedDate: manpower?.assignedDate
-        ? new Date(manpower.assignedDate).toISOString().split("T")[0]
+      startDate: manpower?.startDate
+        ? new Date(manpower.startDate).toISOString().split("T")[0]
         : "",
       endDate: manpower?.endDate
         ? new Date(manpower.endDate).toISOString().split("T")[0]
         : "",
-      status: manpower?.status || "Active",
+      dailyRate: manpower?.dailyRate || 0,
+      status: manpower?.status || "active",
     },
   });
 
@@ -98,12 +96,13 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
         employeeId: manpower.employeeId,
         projectId: manpower.projectId,
         role: manpower.role,
-        assignedDate: manpower.assignedDate
-          ? new Date(manpower.assignedDate).toISOString().split("T")[0]
+        startDate: manpower.startDate
+          ? new Date(manpower.startDate).toISOString().split("T")[0]
           : "",
         endDate: manpower.endDate
           ? new Date(manpower.endDate).toISOString().split("T")[0]
           : "",
+        dailyRate: manpower.dailyRate,
         status: manpower.status,
       });
     }
@@ -175,8 +174,8 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
 
     const manpowerData: InsertManpower = {
       ...data,
-      assignedDate: new Date(data.assignedDate),
-      endDate: data.endDate ? new Date(data.endDate) : null,
+      startDate: data.startDate,
+      endDate: data.endDate || undefined,
     };
 
     console.log("Sending manpower data:", manpowerData);
@@ -197,9 +196,10 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
         employeeId: undefined,
         projectId: undefined,
         role: "",
-        assignedDate: "",
+        startDate: "",
         endDate: "",
-        status: "Active",
+        dailyRate: 0,
+        status: "active",
       });
     }
     setOpen(newOpen);
@@ -247,9 +247,9 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                   <FormItem>
                     <FormLabel>Employee *</FormLabel>
                     <Select
-                      onValueChange={value => field.onChange(value)}
-                      value={field.value}
-                      defaultValue={field.value}
+                      onValueChange={value => field.onChange(parseInt(value))}
+                      value={field.value?.toString()}
+                      defaultValue={field.value?.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -287,9 +287,9 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                   <FormItem>
                     <FormLabel>Project *</FormLabel>
                     <Select
-                      onValueChange={value => field.onChange(value)}
-                      value={field.value}
-                      defaultValue={field.value}
+                      onValueChange={value => field.onChange(parseInt(value))}
+                      value={field.value?.toString()}
+                      defaultValue={field.value?.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -361,10 +361,10 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="assignedDate"
+                name="startDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Assignment Date *</FormLabel>
+                    <FormLabel>Start Date *</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} className="w-full" />
                     </FormControl>
@@ -373,6 +373,29 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="dailyRate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Daily Rate (SAR) *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        {...field}
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="status"
@@ -386,30 +409,32 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Completed">Completed</SelectItem>
-                        <SelectItem value="Transferred">Transferred</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="terminated">Terminated</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Date (Optional)</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} value={field.value || ""} className="w-full" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            <FormField
-              control={form.control}
-              name="endDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>End Date (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
 
             <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
               <Button

@@ -38,16 +38,17 @@ import {
 import { Plus, Package } from "lucide-react";
 import { z } from "zod";
 
-// Complete inventory form schema with essential fields only
+// Complete inventory form schema aligned with InsertInventory
 const inventoryFormSchema = z.object({
   name: z.string().min(1, "Item name is required"),
   description: z.string().optional(),
   quantity: z.coerce.number().int().min(0, "Quantity must be 0 or greater"),
   unit: z.string().min(1, "Unit is required"),
   unitPrice: z.coerce.number().min(0, "Unit price must be 0 or greater"),
-  supplier: z.string().optional(),
-  location: z.string().optional(),
-  status: z.string().default("available"),
+  categoryId: z.coerce.number(),
+  supplierId: z.coerce.number().optional(),
+  minStock: z.coerce.number().min(0).default(0),
+  status: z.enum(["available", "sold", "damaged", "reserved"]).default("available"),
 });
 
 type InventoryFormData = z.infer<typeof inventoryFormSchema>;
@@ -73,8 +74,9 @@ export default function InventoryForm({
       quantity: inventory?.quantity || 1,
       unit: inventory?.unit || "pieces",
       unitPrice: inventory?.unitPrice || 0,
-      supplier: inventory?.supplier || "",
-      location: inventory?.location || "",
+      categoryId: inventory?.categoryId || 1,
+      supplierId: inventory?.supplierId || undefined,
+      minStock: inventory?.minStock || 0,
       status: inventory?.status || "available",
     },
   });
@@ -142,7 +144,7 @@ export default function InventoryForm({
     // Create inventory data with all fields
     const inventoryData: InsertInventory = {
       ...data,
-      totalValue,
+      totalValue: totalValue.toString(),
     };
 
     console.log("Sending inventory data:", inventoryData);
@@ -165,14 +167,10 @@ export default function InventoryForm({
         quantity: 1,
         unit: "pieces",
         unitPrice: 0,
-        supplier: "",
-        location: "",
+        categoryId: 1,
+        supplierId: undefined,
+        minStock: 0,
         status: "available",
-        iqmasNo: "",
-        companyName: "",
-        contact: "",
-        agreement: "",
-        aliAlYamny: "",
       });
     }
     setOpen(newOpen);
@@ -305,16 +303,21 @@ export default function InventoryForm({
               />
             </div>
 
-            {/* Location and Status */}
+            {/* Category, Supplier and Stock Management */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
-                name="supplier"
+                name="categoryId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Supplier</FormLabel>
+                    <FormLabel>Category ID *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter supplier name" {...field} />
+                      <Input
+                        type="number"
+                        min="1"
+                        placeholder="Enter category ID"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -323,18 +326,46 @@ export default function InventoryForm({
 
               <FormField
                 control={form.control}
-                name="location"
+                name="supplierId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location</FormLabel>
+                    <FormLabel>Supplier ID</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter storage location" {...field} />
+                      <Input
+                        type="number"
+                        min="1"
+                        placeholder="Enter supplier ID (optional)"
+                        {...field}
+                        value={field.value || ""}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="minStock"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Minimum Stock Level</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        placeholder="0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Status */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="status"
@@ -349,14 +380,9 @@ export default function InventoryForm({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="available">Available</SelectItem>
-                        <SelectItem value="low_stock">Low Stock</SelectItem>
-                        <SelectItem value="out_of_stock">
-                          Out of Stock
-                        </SelectItem>
                         <SelectItem value="sold">Sold</SelectItem>
-                        <SelectItem value="discontinued">
-                          Discontinued
-                        </SelectItem>
+                        <SelectItem value="damaged">Damaged</SelectItem>
+                        <SelectItem value="reserved">Reserved</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

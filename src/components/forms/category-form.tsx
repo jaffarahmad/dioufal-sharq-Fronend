@@ -38,12 +38,8 @@ import {
 import { Plus, Tag } from "lucide-react";
 import { z } from "zod";
 
-// Extended schema for form validation
-const categoryFormSchema = z.object({
-  name: z.string().min(1, "Category name is required"),
-  description: z.string().optional(),
-  type: z.string().min(1, "Category type is required"),
-});
+// Use the same schema as InsertCategory to ensure type compatibility
+const categoryFormSchema = insertCategorySchema;
 
 type CategoryFormData = z.infer<typeof categoryFormSchema>;
 
@@ -62,7 +58,7 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
     defaultValues: {
       name: category?.name || "",
       description: category?.description || "",
-      type: category?.type || "General",
+      type: category?.type || "inventory",
     },
   });
 
@@ -149,7 +145,7 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
       form.reset({
         name: "",
         description: "",
-        type: "General",
+        type: "inventory",
       });
     }
     setOpen(newOpen);
@@ -218,10 +214,9 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Inventory">Inventory</SelectItem>
-                      <SelectItem value="Project">Project</SelectItem>
-                      <SelectItem value="Financial">Financial</SelectItem>
-                      <SelectItem value="General">General</SelectItem>
+                      <SelectItem value="inventory">Inventory</SelectItem>
+                      <SelectItem value="expense">Expense</SelectItem>
+                      <SelectItem value="asset">Asset</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
