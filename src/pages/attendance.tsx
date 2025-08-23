@@ -79,11 +79,11 @@ export default function AttendancePage() {
     },
   });
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string | number) => {
     if (
       window.confirm("Are you sure you want to delete this attendance record?")
     ) {
-      deleteMutation.mutate(id);
+      deleteMutation.mutate(id.toString());
     }
   };
 
@@ -91,7 +91,7 @@ export default function AttendancePage() {
 
   // Helper functions to get names
   const getEmployeeName = (employeeId: number | null) => {
-    const employee = employees?.find(emp => emp.id === employeeId?.toString());
+    const employee = employees?.find(emp => emp.id === employeeId);
     return employee ? employee.name : "Unknown Employee";
   };
 
@@ -149,7 +149,7 @@ export default function AttendancePage() {
     );
   };
 
-  const formatTime = (timestamp: Date | string | null) => {
+  const formatTime = (timestamp: Date | string | null | undefined) => {
     if (!timestamp) return "-";
     return new Date(timestamp).toLocaleTimeString([], {
       hour: "2-digit",
@@ -306,7 +306,7 @@ export default function AttendancePage() {
                       {record.hoursWorked ? `${record.hoursWorked}h` : "-"}
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusBadge(record.status)}>
+                      <Badge className={getStatusBadge(record.status || "")}>
                         {record.status}
                       </Badge>
                     </TableCell>
@@ -352,7 +352,7 @@ export default function AttendancePage() {
                         {getProjectName(record.projectId)}
                       </div>
                     </div>
-                    <Badge className={getStatusBadge(record.status)}>
+                    <Badge className={getStatusBadge(record.status || "")}>
                       {record.status}
                     </Badge>
                   </div>

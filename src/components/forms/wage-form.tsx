@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -71,11 +71,11 @@ export default function WageForm({
   const form = useForm<WageFormValues>({
     resolver: zodResolver(wageFormSchema),
     defaultValues: initialData ? {
-      employeeId: initialData.employeeId,
-      period: `${initialData.month}/${initialData.year}`,
-      startDate: new Date(initialData.year, initialData.month - 1, 1),
-      endDate: new Date(initialData.year, initialData.month, 0),
-      basicSalary: initialData.basicSalary.toString(),
+      employeeId: initialData.employeeId.toString(),
+      period: initialData.period,
+      startDate: new Date(initialData.paymentDate),
+      endDate: new Date(initialData.paymentDate),
+      basicSalary: (initialData.amount - initialData.overtime - initialData.bonuses + initialData.deductions).toString(),
       overtimePay: initialData.overtime.toString(),
       bonuses: initialData.bonuses.toString(),
       deductions: initialData.deductions.toString(),
@@ -88,7 +88,7 @@ export default function WageForm({
     },
   });
 
-  const handleSubmit = (data: WageFormValues) => {
+  const handleSubmit: SubmitHandler<WageFormValues> = (data: WageFormValues) => {
     console.log("Wage form submitted with data:", data);
 
     const basicSalary = parseFloat(data.basicSalary);
@@ -97,21 +97,16 @@ export default function WageForm({
     const deductions = parseFloat(data.deductions || "0");
     const totalAmount = basicSalary + overtimePay + bonuses - deductions;
 
-    // Extract month and year from startDate
-    const month = data.startDate.getMonth() + 1; // getMonth() returns 0-11, we need 1-12
-    const year = data.startDate.getFullYear();
-
     const formattedData = {
-      employeeId: data.employeeId,
-      month: month,
-      year: year,
-      basicSalary: basicSalary,
+      employeeId: parseInt(data.employeeId),
+      amount: totalAmount,
+      paymentDate: data.endDate.toISOString().split('T')[0],
+      period: data.period,
+      hoursWorked: 0, // Default value, can be updated if needed
       overtime: overtimePay,
-      bonuses: bonuses,
       deductions: deductions,
-      totalAmount: totalAmount,
-      status: "pending",
-      notes: `Period: ${data.period}, Start: ${data.startDate.toISOString().split('T')[0]}, End: ${data.endDate.toISOString().split('T')[0]}`,
+      bonuses: bonuses,
+      notes: `Basic Salary: ${basicSalary}, Start: ${data.startDate.toISOString().split('T')[0]}, End: ${data.endDate.toISOString().split('T')[0]}`,
     };
 
     console.log("Sending wage data:", formattedData);
