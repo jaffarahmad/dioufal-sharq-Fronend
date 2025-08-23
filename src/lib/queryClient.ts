@@ -12,6 +12,7 @@ export async function apiRequest(
   options?: RequestInit
 ): Promise<Response> {
   const token = localStorage.getItem("auth_token");
+  const apiBaseUrl = getApiBaseUrl();
 
   const headers = {
     "Content-Type": "application/json",
@@ -19,7 +20,12 @@ export async function apiRequest(
     ...(options?.headers || {}),
   };
 
-  const res = await fetch(url, {
+  // Construct full URL with base URL
+  const fullUrl = url.startsWith('/') 
+    ? `${apiBaseUrl}${url}`
+    : `${apiBaseUrl}/${url}`;
+
+  const res = await fetch(fullUrl, {
     credentials: "include",
     ...options,
     headers,
@@ -29,12 +35,18 @@ export async function apiRequest(
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
+// Get API base URL from environment variables
+const getApiBaseUrl = () => {
+  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+};
+
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const token = localStorage.getItem("auth_token");
+    const apiBaseUrl = getApiBaseUrl();
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -44,10 +56,15 @@ export const getQueryFn: <T>(options: {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const res = await fetch(queryKey.join("/") as string, {
-      credentials: "include",
-      headers,
-    });
+    // Construct full URL with base URL
+    const url = queryKey[0].startsWith('/') 
+      ? `${apiBaseUrl}${queryKey.join('/')}`
+      : `${apiBaseUrl}/${queryKey.join('/')}`;
+
+    const res = await fetch(url, {
+       credentials: "include",
+       headers,
+     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
