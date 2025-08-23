@@ -1,13 +1,25 @@
 import { jsPDF } from "jspdf";
-import type { Quotation, QuotationItem } from "@/lib/schema";
+import type { Quotation } from "@/lib/schema";
 
-interface EnhancedQuotationPDFData extends Omit<Quotation, "id" | "createdAt"> {
+interface EnhancedQuotationPDFData extends Omit<Quotation, "id" | "createdAt" | "subtotal" | "tax" | "total"> {
   items: Array<{
     description: string;
     quantity: number;
     unitPrice: number;
     total: number;
   }>;
+  clientEmail?: string;
+  clientPhone?: string;
+  projectTitle?: string;
+  description?: string;
+  discountAmount?: string;
+  taxAmount?: string;
+  totalAmount?: string;
+  subtotal?: string;
+  tax?: number;
+  total?: number;
+  taxRate?: string;
+  termsAndConditions?: string;
 }
 
 export const generateEnhancedQuotationPDF = (

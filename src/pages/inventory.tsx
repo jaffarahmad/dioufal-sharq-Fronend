@@ -261,7 +261,7 @@ export default function Inventory() {
                         <TableCell>{item.unit}</TableCell>
                         <TableCell>{formatCurrency(item.unitPrice)}</TableCell>
                         <TableCell className="font-medium">
-                          {formatCurrency(item.totalValue)}
+                          {formatCurrency(typeof item.totalValue === 'number' ? item.totalValue : parseFloat(item.totalValue?.toString() || '0'))}
                         </TableCell>
                         <TableCell>
                           <Badge className={stockInfo.color}>

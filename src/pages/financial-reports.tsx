@@ -198,7 +198,7 @@ export default function FinancialReports() {
                   <span className="font-semibold text-orange-600">
                     {formatCurrency(
                       invoices
-                        .filter(inv => inv.status !== "Paid")
+                        .filter(inv => inv.status !== "paid")
                         .reduce(
                           (sum, inv) =>
                             sum + parseFloat(inv.total?.toString() || "0"),
@@ -241,7 +241,7 @@ export default function FinancialReports() {
                     </p>
                     <Badge
                       variant={
-                        invoice.status === "Paid" ? "default" : "secondary"
+                        invoice.status === "paid" ? "default" : "secondary"
                       }
                       className="text-xs"
                     >
@@ -294,7 +294,7 @@ export default function FinancialReports() {
                     <TableCell>
                       <Badge
                         variant={
-                          invoice.status === "Paid" ? "default" : "secondary"
+                          invoice.status === "paid" ? "default" : "secondary"
                         }
                       >
                         {invoice.status}

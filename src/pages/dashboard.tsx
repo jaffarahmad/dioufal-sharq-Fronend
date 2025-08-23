@@ -151,10 +151,10 @@ export default function Dashboard() {
     datasets: [
       {
         data: [
-          (projects || []).filter(p => p.status === "Planning").length,
-          (projects || []).filter(p => p.status === "Active").length,
-          (projects || []).filter(p => p.status === "Completed").length,
-          (projects || []).filter(p => p.status === "On Hold").length,
+          (projects || []).filter(p => p.status === "planning").length,
+          (projects || []).filter(p => p.status === "active").length,
+          (projects || []).filter(p => p.status === "completed").length,
+          (projects || []).filter(p => p.status === "cancelled").length,
         ],
         backgroundColor: [
           "#3B82F6", // Blue
@@ -178,7 +178,7 @@ export default function Dashboard() {
     return transactions
       .filter(
         t =>
-          t.type === "Income" &&
+          t.type === "income" &&
           new Date(t.date).toLocaleDateString("en-US", { month: "short" }) ===
             month
       )
@@ -189,7 +189,7 @@ export default function Dashboard() {
     return transactions
       .filter(
         t =>
-          t.type === "Expense" &&
+          t.type === "expense" &&
           new Date(t.date).toLocaleDateString("en-US", { month: "short" }) ===
             month
       )

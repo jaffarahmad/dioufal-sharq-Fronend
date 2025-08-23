@@ -75,7 +75,7 @@ export default function Financials() {
 
   const getProjectName = (projectId: number | null) => {
     if (!projectId) return "General";
-    const project = projects?.find(p => p.id === projectId);
+    const project = projects?.find(p => p.id === String(projectId));
     return project?.name || "Unknown Project";
   };
 
@@ -142,7 +142,7 @@ export default function Financials() {
           title="Total Revenue"
           value={formatCurrency(stats?.financial.totalRevenue || 0)}
           icon={DollarSign}
-          trend={{ value: "15% from last month", isPositive: true }}
+
           iconColor="text-green-600"
           iconBgColor="bg-green-50"
         />
@@ -150,7 +150,7 @@ export default function Financials() {
           title="Total Expenses"
           value={formatCurrency(stats?.financial.totalExpenses || 0)}
           icon={CreditCard}
-          trend={{ value: "8% from last month", isPositive: false }}
+
           iconColor="text-red-600"
           iconBgColor="bg-red-50"
         />
@@ -158,7 +158,6 @@ export default function Financials() {
           title="Net Profit"
           value={formatCurrency(stats?.financial.netProfit || 0)}
           icon={TrendingUp}
-          trend={{ value: "25% from last month", isPositive: true }}
           iconColor="text-blue-600"
           iconBgColor="bg-blue-50"
         />
@@ -166,7 +165,6 @@ export default function Financials() {
           title="Pending Invoices"
           value={stats?.financial.pendingInvoices || 0}
           icon={Clock}
-          trend={{ value: "2 from last week", isPositive: false }}
           iconColor="text-yellow-600"
           iconBgColor="bg-yellow-50"
         />
@@ -242,24 +240,24 @@ export default function Financials() {
                     </TableCell>
                     <TableCell>{transaction.description}</TableCell>
                     <TableCell className="text-gray-500">
-                      {getProjectName(transaction.projectId)}
+                      {getProjectName(transaction.projectId || null)}
                     </TableCell>
                     <TableCell className="text-gray-500">
                       {transaction.category}
                     </TableCell>
                     <TableCell
                       className={getAmountColor(
-                        transaction.amount,
+                        String(transaction.amount),
                         transaction.type
                       )}
                     >
                       {formatAmountDisplay(
-                        transaction.amount,
+                        String(transaction.amount),
                         transaction.type
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusBadge(transaction.status)}>
+                      <Badge className={getStatusBadge(transaction.status || "")}>
                         {transaction.status}
                       </Badge>
                     </TableCell>

@@ -44,13 +44,14 @@ import { z } from "zod";
 const attendanceFormSchema = z.object({
   employeeId: z
     .string({ required_error: "Employee is required" })
-    .min(1, "Employee is required"),
-  projectId: z.string().optional(),
+    .min(1, "Employee is required")
+    .transform(val => parseInt(val, 10)),
+  projectId: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
   date: z.string().min(1, "Date is required"),
   checkIn: z.string().optional(),
   checkOut: z.string().optional(),
-  hoursWorked: z.string().optional(),
-  overtime: z.string().optional(),
+  hoursWorked: z.string().optional().transform(val => val ? parseFloat(val) : 0),
+  overtime: z.string().optional().transform(val => val ? parseFloat(val) : 0),
   status: z.string().min(1, "Status is required"),
   notes: z.string().optional(),
 });

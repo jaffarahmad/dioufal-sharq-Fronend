@@ -75,13 +75,13 @@ export default function Categories() {
   // Calculate stats
   const totalCategories = categories.length;
   const inventoryCategories = categories.filter(
-    cat => cat.type === "Inventory"
+    cat => cat.type === "inventory"
   ).length;
   const projectCategories = categories.filter(
-    cat => cat.type === "Project"
+    cat => cat.type === "asset"
   ).length;
   const otherCategories = categories.filter(
-    cat => !["Inventory", "Project"].includes(cat.type)
+    cat => !["inventory", "asset"].includes(cat.type)
   ).length;
 
   const getTypeColor = (type: string) => {

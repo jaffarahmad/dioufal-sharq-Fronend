@@ -10,6 +10,7 @@ export const insertEmployeeSchema = z.object({
   phone: z.string().optional(),
   email: z.string().email().optional(),
   address: z.string().optional(),
+  avatarUrl: z.string().optional(),
 });
 
 export type InsertEmployee = z.infer<typeof insertEmployeeSchema>;
@@ -30,6 +31,7 @@ export const insertProjectSchema = z.object({
   status: z.enum(["planning", "active", "completed", "cancelled"]).default("planning"),
   clientName: z.string().optional(),
   clientContact: z.string().optional(),
+  clientEmail: z.string().optional(),
   progress: z.number().min(0).max(100).default(0),
   type: z.string().optional(),
   imageUrl: z.string().optional(),
@@ -97,6 +99,8 @@ export interface Inventory extends InsertInventory {
   id: number;
   createdAt: string;
   updatedAt: string;
+  supplier?: string;
+  location?: string;
 }
 
 // Purchase schemas
@@ -141,6 +145,9 @@ export interface Attendance extends InsertAttendance {
   id: number;
   createdAt: string;
   updatedAt: string;
+  checkIn?: string;
+  checkOut?: string;
+  status?: string;
 }
 
 // Wage schemas
@@ -183,6 +190,8 @@ export interface FixedAsset extends InsertFixedAsset {
   id: number;
   createdAt: string;
   updatedAt: string;
+  status?: string;
+  assetCode?: string;
 }
 
 // Transaction schemas
@@ -202,6 +211,8 @@ export interface Transaction extends InsertTransaction {
   id: number;
   createdAt: string;
   updatedAt: string;
+  status?: string;
+  category?: string;
 }
 
 // Invoice schemas
@@ -231,6 +242,14 @@ export interface Invoice extends InsertInvoice {
   id: number;
   createdAt: string;
   updatedAt: string;
+  paidDate?: string;
+  poNumber?: string;
+  clientEmail?: string;
+  clientPhone?: string;
+  description?: string;
+  quotationId?: number;
+  totalAmount?: number;
+  taxAmount?: string;
 }
 
 // Quotation schemas
@@ -304,4 +323,10 @@ export interface AliAlYamny extends InsertAliAlYamny {
   id: number;
   createdAt: string;
   updatedAt: string;
+  iqmasNo?: string;
+  companyName?: string;
+  contact?: string;
+  agreement?: string;
+  aliAlYamny?: string;
+  expireDate?: string;
 }

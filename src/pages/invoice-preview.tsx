@@ -348,7 +348,7 @@ export default function InvoicePreviewPage({
             <div className="flex justify-center mb-8">
               <div className="text-center">
                 <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${invoice.totalAmount.toLocaleString()} SAR\nDate: ${new Date(invoice.createdAt || new Date()).toLocaleDateString()}\nDue: ${invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : "N/A"}\nEmail: jaffarahmad895@gmail.com\nPhone: 03469416004\nAddress: Shangla`)}`}
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${(invoice.totalAmount || 0).toLocaleString()} SAR\nDate: ${new Date(invoice.createdAt || new Date()).toLocaleDateString()}\nDue: ${invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : "N/A"}\nEmail: jaffarahmad895@gmail.com\nPhone: 03469416004\nAddress: Shangla`)}`}
                   alt="Invoice QR Code"
                   className="w-20 h-20"
                 />
@@ -549,7 +549,7 @@ export default function InvoicePreviewPage({
                         </TableCell>
                         <TableCell className="text-center">1</TableCell>
                         <TableCell className="text-right font-mono">
-                          {parseFloat(invoice.subtotal).toLocaleString(
+                          {parseFloat(invoice.subtotal?.toString() || "0").toLocaleString(
                             "en-US",
                             {
                               minimumFractionDigits: 2,
@@ -558,7 +558,7 @@ export default function InvoicePreviewPage({
                           )}
                         </TableCell>
                         <TableCell className="text-right font-mono">
-                          {parseFloat(invoice.subtotal).toLocaleString(
+                          {parseFloat(invoice.subtotal?.toString() || "0").toLocaleString(
                             "en-US",
                             {
                               minimumFractionDigits: 2,
@@ -576,7 +576,7 @@ export default function InvoicePreviewPage({
                           )}
                         </TableCell>
                         <TableCell className="text-right font-mono font-medium">
-                          {parseFloat(invoice.totalAmount).toLocaleString(
+                          {parseFloat(invoice.totalAmount?.toString() || "0").toLocaleString(
                             "en-US",
                             {
                               minimumFractionDigits: 2,
@@ -602,7 +602,7 @@ export default function InvoicePreviewPage({
                           Subtotal:
                         </span>
                         <span className="invoice-amount font-bold text-lg text-gray-900 dark:text-gray-100">
-                          {parseFloat(invoice.subtotal).toLocaleString(
+                          {parseFloat(invoice.subtotal?.toString() || "0").toLocaleString(
                             "en-US",
                             {
                               minimumFractionDigits: 2,
@@ -633,7 +633,7 @@ export default function InvoicePreviewPage({
                           Total Amount:
                         </span>
                         <span className="invoice-amount font-bold text-2xl text-blue-600 dark:text-blue-400">
-                          {parseFloat(invoice.totalAmount).toLocaleString(
+                          {parseFloat(invoice.totalAmount?.toString() || "0").toLocaleString(
                             "en-US",
                             {
                               minimumFractionDigits: 2,
@@ -657,7 +657,7 @@ export default function InvoicePreviewPage({
                     Amount in Words:{" "}
                   </span>
                   <span className="font-medium text-sm">
-                    {numberToWords(Math.round(parseFloat(invoice.totalAmount)))}{" "}
+                    {numberToWords(Math.round(parseFloat(invoice.totalAmount?.toString() || "0")))}{" "}
                     Saudi Riyals Only
                   </span>
                 </p>
@@ -665,7 +665,7 @@ export default function InvoicePreviewPage({
             </div>
 
             {/* Payment Information */}
-            {invoice.status === "Paid" && invoice.paidDate && (
+            {invoice.status === "paid" && invoice.paidDate && (
               <div className="mb-8 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                 <h3 className="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">
                   Payment Information

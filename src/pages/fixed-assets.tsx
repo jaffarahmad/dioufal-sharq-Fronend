@@ -113,7 +113,7 @@ export default function FixedAssets() {
 
   const handleUpdateAsset = (data: any) => {
     if (editingAsset) {
-      updateAssetMutation.mutate({ id: editingAsset.id, data });
+      updateAssetMutation.mutate({ id: String(editingAsset.id), data });
     }
   };
 
@@ -126,7 +126,7 @@ export default function FixedAssets() {
   const filteredAssets = assets.filter(asset => {
     const matchesSearch =
       asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      asset.assetCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (asset.assetCode && asset.assetCode.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (asset.location &&
         asset.location.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesStatus =
@@ -166,9 +166,9 @@ export default function FixedAssets() {
   const activeAssets = assets.filter(a => a.status === "Active").length;
   const totalValue = assets
     .filter(a => a.status === "Active")
-    .reduce((sum, a) => sum + parseFloat(a.currentValue || "0"), 0);
+    .reduce((sum, a) => sum + parseFloat(String(a.currentValue || "0")), 0);
   const totalPurchaseValue = assets.reduce(
-    (sum, a) => sum + parseFloat(a.purchasePrice || "0"),
+    (sum, a) => sum + parseFloat(String(a.purchasePrice || "0")),
     0
   );
   const totalDepreciation = totalPurchaseValue - totalValue;
@@ -338,13 +338,13 @@ export default function FixedAssets() {
                     </TableCell>
                     <TableCell>{asset.location || "Not specified"}</TableCell>
                     <TableCell className="font-medium">
-                      {parseFloat(asset.purchasePrice || "0").toLocaleString(
+                      {parseFloat(String(asset.purchasePrice || "0")).toLocaleString(
                         "en-US",
                         { style: "currency", currency: "SAR" }
                       )}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {parseFloat(asset.currentValue || "0").toLocaleString(
+                      {parseFloat(String(asset.currentValue || "0")).toLocaleString(
                         "en-US",
                         { style: "currency", currency: "SAR" }
                       )}
@@ -355,7 +355,7 @@ export default function FixedAssets() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={getStatusBadge(asset.status)}>
+                      <Badge className={getStatusBadge(asset.status || "")}>
                         {asset.status}
                       </Badge>
                     </TableCell>
@@ -372,7 +372,7 @@ export default function FixedAssets() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDeleteAsset(asset.id)}
+                          onClick={() => handleDeleteAsset(String(asset.id))}
                           className="text-red-600 hover:text-red-700"
                           title="Delete Asset"
                         >
@@ -421,10 +421,10 @@ export default function FixedAssets() {
                 purchaseDate: editingAsset.purchaseDate
                   ? new Date(editingAsset.purchaseDate)
                   : undefined,
-                purchasePrice: parseFloat(editingAsset.purchasePrice || "0"),
-                currentValue: parseFloat(editingAsset.currentValue || "0"),
+                purchasePrice: parseFloat(String(editingAsset.purchasePrice || "0")),
+                currentValue: parseFloat(String(editingAsset.currentValue || "0")),
                 depreciationRate: parseFloat(
-                  editingAsset.depreciationRate || "0"
+                  String(editingAsset.depreciationRate || "0")
                 ),
                 location: editingAsset.location || "",
                 condition: editingAsset.condition,
