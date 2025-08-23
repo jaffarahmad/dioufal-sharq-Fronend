@@ -65,17 +65,22 @@ interface Report {
   generatedAt: string;
 }
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+// Register Chart.js components with error handling
+try {
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+  );
+} catch (error) {
+  console.warn('Failed to register Chart.js components:', error);
+}
 
 // Helper function for professional currency formatting
 const formatCurrency = (amount: number): string => {

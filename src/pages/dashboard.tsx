@@ -41,17 +41,22 @@ import type {
   Supplier,
 } from "@/lib/schema";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+// Register Chart.js components with error handling
+try {
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+  );
+} catch (error) {
+  console.warn('Failed to register Chart.js components:', error);
+}
 
 interface DashboardStats {
   projects: { active: number; total: number; completed: number };
