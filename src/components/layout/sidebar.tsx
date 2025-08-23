@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import logoImage from "@assets/image_17540348329.png";
 
 const navigation = [
@@ -271,6 +271,9 @@ export default function Sidebar({
           side="left"
           className="w-72 sm:w-80 p-0 bg-white dark:bg-gray-900"
         >
+          <SheetHeader className="sr-only">
+            <SheetTitle>Navigation Menu</SheetTitle>
+          </SheetHeader>
           <SidebarContent onItemClick={onClose} />
         </SheetContent>
       </Sheet>
