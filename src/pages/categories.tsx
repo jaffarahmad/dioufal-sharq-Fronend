@@ -29,15 +29,15 @@ export default function Categories() {
     isLoading,
     error,
   } = useQuery<Category[]>({
-    queryKey: ["api", "categories"],
+    queryKey: ["/api/categories"],
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) =>
       apiRequest(`/api/categories/${id}`, { method: "DELETE" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["api", "categories"] });
-      queryClient.invalidateQueries({ queryKey: ["api", "dashboard", "stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Category deleted successfully",
