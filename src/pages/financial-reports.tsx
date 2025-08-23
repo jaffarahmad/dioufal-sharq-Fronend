@@ -88,9 +88,9 @@ export default function FinancialReports() {
       totalExpenses,
       netProfit,
       profitMargin,
-      outstandingInvoices: filteredInvoices.filter(inv => inv.status !== "Paid")
+      outstandingInvoices: filteredInvoices.filter(inv => inv.status !== "paid")
         .length,
-      paidInvoices: filteredInvoices.filter(inv => inv.status === "Paid")
+      paidInvoices: filteredInvoices.filter(inv => inv.status === "paid")
         .length,
     };
   };
@@ -140,29 +140,21 @@ export default function FinancialReports() {
           title="Total Revenue"
           value={formatCurrency(financialSummary.totalRevenue)}
           icon={DollarSign}
-          trend={financialSummary.totalRevenue > 0 ? "up" : "down"}
-          trendValue="+12.5%"
         />
         <StatsCard
           title="Total Expenses"
           value={formatCurrency(financialSummary.totalExpenses)}
           icon={TrendingDown}
-          trend="down"
-          trendValue="-3.2%"
         />
         <StatsCard
           title="Net Profit"
           value={formatCurrency(financialSummary.netProfit)}
           icon={TrendingUp}
-          trend={financialSummary.netProfit > 0 ? "up" : "down"}
-          trendValue={`${financialSummary.profitMargin.toFixed(1)}%`}
         />
         <StatsCard
           title="Outstanding Invoices"
           value={financialSummary.outstandingInvoices}
           icon={FileText}
-          trend="neutral"
-          trendValue={`${financialSummary.paidInvoices} paid`}
         />
       </div>
 

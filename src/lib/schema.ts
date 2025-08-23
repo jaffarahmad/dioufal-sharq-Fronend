@@ -19,6 +19,7 @@ export interface Employee extends InsertEmployee {
   id: number;
   createdAt: string;
   updatedAt: string;
+  department?: string;
 }
 
 // Project schemas
@@ -76,6 +77,7 @@ export interface Supplier extends InsertSupplier {
   id: number;
   createdAt: string;
   updatedAt: string;
+  status?: string;
 }
 
 // Inventory schemas

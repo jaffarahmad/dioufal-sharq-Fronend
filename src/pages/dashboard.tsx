@@ -182,7 +182,7 @@ export default function Dashboard() {
           new Date(t.date).toLocaleDateString("en-US", { month: "short" }) ===
             month
       )
-      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+      .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
   });
 
   const monthlyExpenses = last4Months.map(month => {
@@ -193,7 +193,7 @@ export default function Dashboard() {
           new Date(t.date).toLocaleDateString("en-US", { month: "short" }) ===
             month
       )
-      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+      .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
   });
 
   const financialTrendData = {
@@ -273,11 +273,11 @@ export default function Dashboard() {
 
   // Calculate totals for display
   const totalRevenue = transactions
-    .filter(t => t.type === "Income")
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    .filter(t => t.type === "income")
+    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
   const totalExpenses = transactions
-    .filter(t => t.type === "Expense")
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    .filter(t => t.type === "expense")
+    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
   const totalPurchases = purchases.reduce(
     (sum, p) => sum + parseFloat(p.totalAmount || "0"),
     0
@@ -312,9 +312,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatsCard
           title="Active Projects"
-          value={(projects || []).filter(p => p.status === "Active").length}
+          value={(projects || []).filter(p => p.status === "active").length}
           icon={FolderOpen}
-          trend={{ value: "12% from last month", isPositive: true }}
           iconColor="text-blue-600"
           iconBgColor="bg-blue-50"
         />

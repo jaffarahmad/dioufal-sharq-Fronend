@@ -13,7 +13,11 @@ interface QuotationPDFData extends Omit<Quotation, "id" | "createdAt"> {
   taxRate?: number;
   taxAmount?: number;
   clientAddress?: string;
+  clientEmail?: string;
+  clientPhone?: string;
   projectTitle?: string;
+  description?: string;
+  totalAmount?: number;
   notes?: string;
 }
 
@@ -189,7 +193,7 @@ export const generateQuotationPDF = (quotation: QuotationPDFData) => {
     doc.setFont("helvetica", "bold");
     doc.text("Total Amount:", 120, yPosition);
     doc.text(
-      `SAR ${parseFloat(quotation.totalAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      `SAR ${parseFloat(quotation.totalAmount?.toString() || "0").toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
       170,
       yPosition
     );

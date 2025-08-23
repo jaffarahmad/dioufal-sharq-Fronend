@@ -90,14 +90,14 @@ export default function AttendancePage() {
   const attendance = attendanceData || [];
 
   // Helper functions to get names
-  const getEmployeeName = (employeeId: string | null) => {
-    const employee = employees?.find(emp => emp.id === employeeId);
+  const getEmployeeName = (employeeId: number | null) => {
+    const employee = employees?.find(emp => emp.id === employeeId?.toString());
     return employee ? employee.name : "Unknown Employee";
   };
 
-  const getProjectName = (projectId: string | null) => {
+  const getProjectName = (projectId: number | null) => {
     if (!projectId) return "No Project";
-    const project = projects?.find(proj => proj.id === projectId);
+    const project = projects?.find(proj => proj.id === projectId?.toString());
     return project ? project.name : "Unknown Project";
   };
 
@@ -111,7 +111,7 @@ export default function AttendancePage() {
     const matchesSearch =
       employeeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       projectName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      record.status.toLowerCase().includes(searchQuery.toLowerCase());
+      (record.status || "").toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesStatus =
       statusFilter === "all" || record.status === statusFilter;
