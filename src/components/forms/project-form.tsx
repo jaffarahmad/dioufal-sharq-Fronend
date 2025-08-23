@@ -48,15 +48,16 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
     defaultValues: project || {
       name: "",
       description: "",
-      status: "Planning",
-      budget: 0,
-      actualCost: 0,
-      startDate: new Date(),
+      status: "planning",
+      budget: "0",
+      startDate: new Date().toISOString().split('T')[0],
       endDate: undefined,
-      location: "",
       clientName: "",
-      clientPhone: "",
+      clientContact: "",
       clientEmail: "",
+      progress: 0,
+      type: "",
+      imageUrl: "",
     },
   });
 
@@ -66,15 +67,16 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
       form.reset({
         name: project.name || "",
         description: project.description || "",
-        status: project.status || "Planning",
-        budget: project.budget || 0,
-        actualCost: project.actualCost || 0,
-        startDate: project.startDate ? new Date(project.startDate) : new Date(),
-        endDate: project.endDate ? new Date(project.endDate) : undefined,
-        location: project.location || "",
+        status: project.status || "planning",
+        budget: project.budget || "0",
+        startDate: project.startDate || new Date().toISOString().split('T')[0],
+        endDate: project.endDate || undefined,
         clientName: project.clientName || "",
-        clientPhone: project.clientPhone || "",
+        clientContact: project.clientContact || "",
         clientEmail: project.clientEmail || "",
+        progress: project.progress || 0,
+        type: project.type || "",
+        imageUrl: project.imageUrl || "",
       });
     }
   }, [project, form]);
@@ -125,20 +127,10 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
   });
 
   const onSubmit = (data: InsertProject) => {
-    // Ensure data types match schema requirements
-    const transformedData = {
-      ...data,
-      budget:
-        typeof data.budget === "string" ? parseFloat(data.budget) : data.budget,
-      actualCost: data.actualCost || 0,
-      startDate: data.startDate,
-      endDate: data.endDate || undefined,
-    };
-
     if (project?.id) {
-      updateMutation.mutate(transformedData);
+      updateMutation.mutate(data);
     } else {
-      createMutation.mutate(transformedData);
+      createMutation.mutate(data);
     }
   };
 
@@ -206,15 +198,15 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                 />
                 <FormField
                   control={form.control}
-                  name="location"
+                  name="type"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        Location
+                        Project Type
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter project location"
+                          placeholder="Enter project type"
                           {...field}
                           value={field.value || ""}
                           className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -415,15 +407,15 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                 />
                 <FormField
                   control={form.control}
-                  name="clientPhone"
+                  name="clientContact"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-gray-700">
-                        Client Phone
+                        Client Contact
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Enter client phone"
+                          placeholder="Enter client contact"
                           {...field}
                           value={field.value || ""}
                           className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -445,6 +437,54 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                         <Input
                           type="email"
                           placeholder="Enter client email"
+                          {...field}
+                          value={field.value || ""}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              {/* Additional Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="progress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        Progress (%)
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          placeholder="Enter progress percentage"
+                          {...field}
+                          value={field.value || 0}
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">
+                        Image URL
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter image URL"
                           {...field}
                           value={field.value || ""}
                           className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
