@@ -44,19 +44,17 @@ import { z } from "zod";
 const attendanceFormSchema = z.object({
   employeeId: z
     .string({ required_error: "Employee is required" })
-    .min(1, "Employee is required")
-    .transform(val => parseInt(val, 10)),
-  projectId: z.string().optional().transform(val => val ? parseInt(val, 10) : undefined),
+    .min(1, "Employee is required"),
+  projectId: z.string().optional(),
   date: z.string().min(1, "Date is required"),
   checkIn: z.string().optional(),
   checkOut: z.string().optional(),
-  hoursWorked: z.string().optional().transform(val => val ? parseFloat(val) : 0),
-  overtime: z.string().optional().transform(val => val ? parseFloat(val) : 0),
+  hoursWorked: z.string().optional(),
+  overtime: z.string().optional(),
   status: z.string().min(1, "Status is required"),
   notes: z.string().optional(),
 });
 
-// Form data type that matches the form fields
 type AttendanceFormData = z.infer<typeof attendanceFormSchema>;
 
   interface AttendanceFormProps {
@@ -84,8 +82,8 @@ export default function AttendanceForm({
   const form = useForm<AttendanceFormData>({
     resolver: zodResolver(attendanceFormSchema),
     defaultValues: {
-      employeeId: attendance?.employeeId || undefined,
-      projectId: attendance?.projectId || undefined,
+      employeeId: attendance?.employeeId ? attendance.employeeId.toString() : "",
+      projectId: attendance?.projectId ? attendance.projectId.toString() : "",
       date: attendance?.date
         ? new Date(attendance.date).toISOString().split("T")[0]
         : new Date().toISOString().split("T")[0],
@@ -193,21 +191,21 @@ export default function AttendanceForm({
     // Calculate hours worked if both check-in and check-out are provided
     let calculatedHours = data.hoursWorked;
     if (data.checkIn && data.checkOut && !data.hoursWorked) {
-      const checkInTime = new Date(`${data.date}T${data.checkIn}`);
-      const checkOutTime = new Date(`${data.date}T${data.checkOut}`);
+      const checkInTime = new Date(`${data.date}T${data.checkIn}:00`);
+      const checkOutTime = new Date(`${data.date}T${data.checkOut}:00`);
       const diffMs = checkOutTime.getTime() - checkInTime.getTime();
       const diffHours = diffMs / (1000 * 60 * 60);
       calculatedHours = Math.max(0, diffHours).toFixed(2);
     }
 
     const attendanceData: InsertAttendance = {
-      employeeId: data.employeeId,
-      projectId: data.projectId || undefined,
+      employeeId: parseInt(data.employeeId, 10),
+      projectId: data.projectId && data.projectId !== "" ? parseInt(data.projectId, 10) : undefined,
       date: new Date(data.date),
       checkIn: data.checkIn ? new Date(`${data.date}T${data.checkIn}:00`) : undefined,
       checkOut: data.checkOut ? new Date(`${data.date}T${data.checkOut}:00`) : undefined,
       hoursWorked: calculatedHours ? parseFloat(calculatedHours) : (data.hoursWorked ? parseFloat(data.hoursWorked) : 0),
-      overtime: data.overtime && data.overtime.trim() !== '' ? parseFloat(data.overtime) : 0,
+      overtime: data.overtime ? parseFloat(data.overtime) : 0,
       status: data.status,
       notes: data.notes || undefined,
     };
@@ -228,8 +226,8 @@ export default function AttendanceForm({
     if (newOpen && !attendance) {
       const today = new Date().toISOString().split("T")[0];
       form.reset({
-        employeeId: undefined,
-        projectId: undefined,
+        employeeId: "",
+        projectId: "",
         date: today,
         checkIn: "",
         checkOut: "",
@@ -285,7 +283,7 @@ export default function AttendanceForm({
                     <FormLabel>Employee *</FormLabel>
                     <Select
                       onValueChange={value => field.onChange(value)}
-                      value={field.value}
+                      value={field.value || ""}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -316,7 +314,7 @@ export default function AttendanceForm({
                     <FormLabel>Project (Optional)</FormLabel>
                     <Select
                       onValueChange={value =>
-                        field.onChange(value === "none" ? undefined : value)
+                        field.onChange(value === "none" ? "" : value)
                       }
                       value={field.value || "none"}
                     >
