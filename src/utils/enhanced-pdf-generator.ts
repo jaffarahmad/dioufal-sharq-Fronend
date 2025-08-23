@@ -159,31 +159,38 @@ export class EnhancedPDFGenerator {
       }
     });
 
-    // Add PDF-specific styles
-    const pdfStyleSheet = document.createElement("style");
-    pdfStyleSheet.id = "pdf-optimization-styles";
-    pdfStyleSheet.textContent = `
-      #${element.id} {
-        -webkit-print-color-adjust: exact !important;
-        color-adjust: exact !important;
-        print-color-adjust: exact !important;
+    // Add PDF-specific styles with error handling
+    let pdfStyleSheet: HTMLStyleElement | null = null;
+    try {
+      if (document && document.head) {
+        pdfStyleSheet = document.createElement("style");
+        pdfStyleSheet.id = "pdf-optimization-styles";
+        pdfStyleSheet.textContent = `
+          #${element.id} {
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          #${element.id} * {
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+          }
+          #${element.id} .bg-gradient-to-r,
+          #${element.id} .bg-gradient-to-l,
+          #${element.id} .bg-gradient-to-t,
+          #${element.id} .bg-gradient-to-b {
+            background-image: none !important;
+            background-color: var(--fallback-bg, #f8f9fa) !important;
+          }
+        `;
+        document.head.appendChild(pdfStyleSheet);
       }
-      #${element.id} * {
-        -webkit-print-color-adjust: exact !important;
-        color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        -webkit-font-smoothing: antialiased !important;
-        -moz-osx-font-smoothing: grayscale !important;
-      }
-      #${element.id} .bg-gradient-to-r,
-      #${element.id} .bg-gradient-to-l,
-      #${element.id} .bg-gradient-to-t,
-      #${element.id} .bg-gradient-to-b {
-        background-image: none !important;
-        background-color: var(--fallback-bg, #f8f9fa) !important;
-      }
-    `;
-    document.head.appendChild(pdfStyleSheet);
+    } catch (error) {
+      console.warn('Failed to inject PDF styles:', error);
+    }
 
     const cleanup = () => {
       // Restore original styles
@@ -195,9 +202,13 @@ export class EnhancedPDFGenerator {
       });
 
       // Remove PDF styles
-      const styleSheet = document.getElementById("pdf-optimization-styles");
-      if (styleSheet) {
-        styleSheet.remove();
+      try {
+        const styleSheet = document.getElementById("pdf-optimization-styles");
+        if (styleSheet && styleSheet.parentNode) {
+          styleSheet.parentNode.removeChild(styleSheet);
+        }
+      } catch (error) {
+        console.warn('Failed to remove PDF styles:', error);
       }
     };
 
@@ -266,18 +277,26 @@ export class EnhancedPDFGenerator {
             imageTimeout: 5000,
             removeContainer: true,
             onclone: clonedDoc => {
-              // Ensure cloned document has the same optimizations
-              const clonedElement = clonedDoc.getElementById(elementId);
-              if (clonedElement) {
-                (clonedElement.style as any).webkitPrintColorAdjust = "exact";
-                (clonedElement.style as any).colorAdjust = "exact";
+              try {
+                // Ensure cloned document has the same optimizations
+                const clonedElement = clonedDoc.getElementById(elementId);
+                if (clonedElement) {
+                  (clonedElement.style as any).webkitPrintColorAdjust = "exact";
+                  (clonedElement.style as any).colorAdjust = "exact";
 
-                // Apply PDF optimization styles to cloned document
-                const clonedStyle = clonedDoc.createElement("style");
-                clonedStyle.textContent =
-                  document.getElementById("pdf-optimization-styles")
-                    ?.textContent || "";
-                clonedDoc.head.appendChild(clonedStyle);
+                  // Apply PDF optimization styles to cloned document
+                  if (clonedDoc && clonedDoc.head) {
+                    const clonedStyle = clonedDoc.createElement("style");
+                    clonedStyle.textContent =
+                      document.getElementById("pdf-optimization-styles")
+                        ?.textContent || "";
+                    if (clonedStyle.textContent) {
+                      clonedDoc.head.appendChild(clonedStyle);
+                    }
+                  }
+                }
+              } catch (error) {
+                console.warn('Failed to apply styles to cloned document:', error);
               }
             },
           });
