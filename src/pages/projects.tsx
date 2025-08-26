@@ -36,7 +36,7 @@ export default function Projects() {
   const queryClient = useQueryClient();
 
   const { data: projects, isLoading } = useQuery<Project[]>({
-    queryKey: ["api", "projects"],
+    queryKey: ["/api/projects"],
   });
 
   const deleteMutation = useMutation({
@@ -46,8 +46,8 @@ export default function Projects() {
     },
     onSuccess: () => {
       console.log('✅ Frontend: Delete request successful');
-      queryClient.invalidateQueries({ queryKey: ["api", "projects"] });
-      queryClient.invalidateQueries({ queryKey: ["api", "dashboard", "stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       notifications.success("Project Deleted", "Project deleted successfully");
     },
     onError: (error) => {

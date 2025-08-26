@@ -79,27 +79,27 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
 
   const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
-    queryKey: ["api", "dashboard", "stats"],
+    queryKey: ["/api/dashboard/stats"],
   });
 
   const { data: projects, isLoading: projectsLoading } = useQuery<Project[]>({
-    queryKey: ["api", "projects"],
+    queryKey: ["/api/projects"],
   });
 
   const { data: transactions = [] } = useQuery<Transaction[]>({
-    queryKey: ["api", "transactions"],
+    queryKey: ["/api/transactions"],
   });
 
   const { data: employees = [] } = useQuery<Employee[]>({
-    queryKey: ["api", "employees"],
+    queryKey: ["/api/employees"],
   });
 
   const { data: purchases = [] } = useQuery<Purchase[]>({
-    queryKey: ["api", "purchases"],
+    queryKey: ["/api/purchases"],
   });
 
   const { data: suppliers = [] } = useQuery<Supplier[]>({
-    queryKey: ["api", "suppliers"],
+    queryKey: ["/api/suppliers"],
   });
 
   const formatCurrency = (amount: number) => {
