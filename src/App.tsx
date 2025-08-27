@@ -17,10 +17,11 @@ import AttendancePage from "@/pages/attendance";
 import WagesPage from "@/pages/wages";
 import Workforce from "@/pages/workforce";
 import Quotations from "@/pages/quotations";
-import ModernQuotation from "@/pages/modern-quotation";
+
 import ExactQuotation from "@/pages/exact-quotation";
 import CreateQuotation from "@/pages/create-quotation";
 import ProfessionalQuotation from "@/pages/professional-quotation";
+
 import ProfessionalTemplateQuotation from "@/pages/professional-template-quotation";
 import QuotationPreview from "@/pages/quotation-preview";
 import Invoices from "@/pages/invoices";
@@ -94,19 +95,20 @@ function AuthenticatedApp() {
 
                 {/* Financial Routes */}
                 <Route path="/quotations" component={Quotations} />
-                <Route path="/quotations/modern" component={ModernQuotation} />
+
                 <Route path="/quotations/exact" component={ExactQuotation} />
                 <Route
                   path="/quotations/professional"
                   component={ProfessionalTemplateQuotation}
                 />
-                <Route path="/modern-quotation" component={ModernQuotation} />
+
                 <Route path="/exact-quotation" component={ExactQuotation} />
                 <Route path="/create-quotation" component={CreateQuotation} />
                 <Route
                   path="/professional-quotation"
                   component={ProfessionalQuotation}
                 />
+
                 <Route path="/quotation-preview" component={QuotationPreview} />
                 <Route path="/invoices" component={Invoices} />
                 <Route path="/invoices/:id" component={InvoicePreview} />

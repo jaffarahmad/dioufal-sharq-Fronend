@@ -44,7 +44,7 @@ export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
+  async ({ queryKey }: { queryKey: readonly unknown[] }) => {
     const token = localStorage.getItem("auth_token");
     const apiBaseUrl = getApiBaseUrl();
 
@@ -57,9 +57,10 @@ export const getQueryFn: <T>(options: {
     }
 
     // Construct full URL with base URL
-    const url = queryKey[0].startsWith('/') 
-      ? `${apiBaseUrl}${queryKey.join('/')}`
-      : `${apiBaseUrl}/${queryKey.join('/')}`;
+    const firstKey = queryKey[0] as string;
+    const url = firstKey.startsWith('/') 
+      ? `${apiBaseUrl}${queryKey.map(String).join('/')}`
+      : `${apiBaseUrl}/${queryKey.map(String).join('/')}`; 
 
     const res = await fetch(url, {
        credentials: "include",

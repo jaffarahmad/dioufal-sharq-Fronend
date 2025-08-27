@@ -31,29 +31,24 @@ export default function ProfessionalQuotation() {
   const quotationRef = useRef<HTMLDivElement>(null);
 
   const [quotationData, setQuotationData] = useState({
-    reference: "QTN-CR6G-408-25",
-    date: "5 August 2025",
-    clientName: "M/S. China Railway Engineering Group",
-    project: "Riyadh/Al Qassim",
-    subject: "Quotation of asphalt Work to QASSIM-2 1980MW CCGT",
+    reference: "",
+    date: new Date().toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }),
+    clientName: "",
+    project: "",
+    subject: "",
   });
 
   const [items, setItems] = useState<QuotationItem[]>([
     {
       id: "1",
       srNo: 1,
-      description:
-        "Supply, lay, spread, and compact a hot-mix asphalt concrete binder course to a compacted thickness of 10 cm. The work shall be performed with the project drawings and specifications",
-      unit: "SQM",
-      rate: "92",
-    },
-    {
-      id: "2",
-      srNo: 2,
-      description:
-        "Supply, lay, spread, and compact a hot-mix asphalt concrete wearing course to a compacted thickness of 5 cm. The work shall be performed with the project drawings and specifications",
-      unit: "SQM",
-      rate: "92",
+      description: "",
+      unit: "",
+      rate: "",
     },
   ]);
 
@@ -62,7 +57,7 @@ export default function ProfessionalQuotation() {
       id: Date.now().toString(),
       srNo: items.length + 1,
       description: "",
-      unit: "SQM",
+      unit: "",
       rate: "",
     };
     setItems([...items, newItem]);
@@ -126,106 +121,80 @@ export default function ProfessionalQuotation() {
 
     const element = quotationRef.current;
     const originalStyles = {
-      minHeight: element.style.minHeight,
+      transform: element.style.transform,
+      width: element.style.width,
       height: element.style.height,
-      fontSize: element.style.fontSize,
-      lineHeight: element.style.lineHeight,
+      position: element.style.position,
+      left: element.style.left,
+      top: element.style.top,
     };
 
     try {
-      // Step 1: Measure content with current styling
-      element.style.minHeight = "auto";
-      element.style.height = "auto";
+      // Prepare element for PDF capture
+      element.style.transform = 'scale(1)';
+      element.style.width = '210mm';
+      element.style.height = 'auto';
+      element.style.position = 'absolute';
+      element.style.left = '-9999px';
+      element.style.top = '0';
+      
+      // Add PDF-specific styling
+      element.classList.add('pdf-export');
+      
+      // Wait for layout to settle
+      await new Promise(resolve => setTimeout(resolve, 200));
 
-      let canvas = await html2canvas(element, {
+      const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: "#ffffff",
+        backgroundColor: '#ffffff',
+        width: 794, // A4 width in pixels at 96 DPI
         height: element.scrollHeight,
-        width: element.scrollWidth,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 794,
+        windowHeight: element.scrollHeight,
       });
 
-      const pdf = new jsPDF("p", "mm", "a4");
-      const imgWidth = 210;
-      const pageHeight = 280; // Leave margin for footer
-      let imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210; // A4 width in mm
+      const pageHeight = 297; // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      const imgData = canvas.toDataURL('image/png', 1.0);
 
-      // Step 2: If content exceeds single page, try to compress
-      if (imgHeight > pageHeight) {
-        // Apply compression styles
-        element.classList.add("pdf-compress");
-        const termsSection = element.querySelector(".terms-section") as HTMLElement;
-        const contentSection = element.querySelector(".quotation-content") as HTMLElement;
-
-        if (termsSection) {
-          termsSection.style.fontSize = "9px";
-          termsSection.style.lineHeight = "1.1";
-        }
-        if (contentSection) {
-          contentSection.style.lineHeight = "1.2";
-        }
-
-        // Re-capture with compressed styling
-        await new Promise(resolve => setTimeout(resolve, 100)); // Allow reflow
-        canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#ffffff",
-          height: element.scrollHeight,
-          width: element.scrollWidth,
-        });
-
-        imgHeight = (canvas.height * imgWidth) / canvas.width;
-      }
-
-      const imgData = canvas.toDataURL("image/png");
-
-      // Step 3: Generate PDF based on final content size
       if (imgHeight <= pageHeight) {
-        // Single page - add with proper margins
-        const yOffset = 10; // Top margin
-        pdf.addImage(imgData, "PNG", 0, yOffset, imgWidth, imgHeight);
+        // Single page
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       } else {
-        // Multiple pages - ensure footer only on last page
-        const fullPageHeight = 297;
+        // Multiple pages
         let heightLeft = imgHeight;
         let position = 0;
-        let pageCount = 0;
 
         // First page
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= fullPageHeight;
-        pageCount++;
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
 
         // Additional pages
         while (heightLeft >= 0) {
           position = heightLeft - imgHeight;
           pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-          heightLeft -= fullPageHeight;
-          pageCount++;
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
         }
       }
 
-      pdf.save(`${quotationData.reference}.pdf`);
+      pdf.save(`${quotationData.reference || 'quotation'}.pdf`);
     } finally {
       // Restore original styles
-      element.style.minHeight = originalStyles.minHeight;
+      element.style.transform = originalStyles.transform;
+      element.style.width = originalStyles.width;
       element.style.height = originalStyles.height;
-      element.classList.remove("pdf-compress");
-
-      // Reset any modified sections
-      const termsSection = element.querySelector(".terms-section") as HTMLElement;
-      const contentSection = element.querySelector(".quotation-content") as HTMLElement;
-      if (termsSection) {
-        termsSection.style.fontSize = "";
-        termsSection.style.lineHeight = "";
-      }
-      if (contentSection) {
-        contentSection.style.lineHeight = "";
-      }
+      element.style.position = originalStyles.position;
+      element.style.left = originalStyles.left;
+      element.style.top = originalStyles.top;
+      element.classList.remove('pdf-export');
     }
   };
 
@@ -263,6 +232,7 @@ export default function ProfessionalQuotation() {
                 <Label htmlFor="reference">Reference Number</Label>
                 <Input
                   id="reference"
+                  placeholder="Enter reference number (e.g., QTN-2025-001)"
                   value={quotationData.reference}
                   onChange={e =>
                     setQuotationData({
@@ -276,6 +246,7 @@ export default function ProfessionalQuotation() {
                 <Label htmlFor="date">Date</Label>
                 <Input
                   id="date"
+                  placeholder="Enter date (e.g., 5 August 2025)"
                   value={quotationData.date}
                   onChange={e =>
                     setQuotationData({ ...quotationData, date: e.target.value })
@@ -286,6 +257,7 @@ export default function ProfessionalQuotation() {
                 <Label htmlFor="clientName">Client Name</Label>
                 <Input
                   id="clientName"
+                  placeholder="Enter client company name"
                   value={quotationData.clientName}
                   onChange={e =>
                     setQuotationData({
@@ -299,6 +271,7 @@ export default function ProfessionalQuotation() {
                 <Label htmlFor="project">Project</Label>
                 <Input
                   id="project"
+                  placeholder="Enter project name or location"
                   value={quotationData.project}
                   onChange={e =>
                     setQuotationData({
@@ -312,6 +285,7 @@ export default function ProfessionalQuotation() {
                 <Label htmlFor="subject">Subject</Label>
                 <Input
                   id="subject"
+                  placeholder="Enter quotation subject or description"
                   value={quotationData.subject}
                   onChange={e =>
                     setQuotationData({
@@ -345,6 +319,7 @@ export default function ProfessionalQuotation() {
                   <div className="col-span-7">
                     <Label>Description</Label>
                     <Textarea
+                      placeholder="Enter detailed item description..."
                       value={item.description}
                       onChange={e =>
                         updateItem(item.id, "description", e.target.value)
@@ -355,6 +330,7 @@ export default function ProfessionalQuotation() {
                   <div className="col-span-2">
                     <Label>Unit</Label>
                     <Input
+                      placeholder="SQM, PCS, etc."
                       value={item.unit}
                       onChange={e =>
                         updateItem(item.id, "unit", e.target.value)
@@ -364,6 +340,7 @@ export default function ProfessionalQuotation() {
                   <div className="col-span-1">
                     <Label>Rate</Label>
                     <Input
+                      placeholder="0.00"
                       value={item.rate}
                       onChange={e =>
                         updateItem(item.id, "rate", e.target.value)
@@ -414,7 +391,7 @@ export default function ProfessionalQuotation() {
               <div className="flex-shrink-0 mx-8">
                 <div className="w-20 h-20 flex items-center justify-center">
                   <img
-                    src="/attached_assets/image-logo.png"
+                    src={logoImage}
                     alt="Company Logo"
                     className="w-full h-full object-contain"
                     style={{ width: '72px', height: '72px' }}
@@ -656,47 +633,74 @@ export default function ProfessionalQuotation() {
           }
           
           .footer-section {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-        
-        /* PDF Compression styles */
-        .pdf-compress {
-          font-size: 11px !important;
-        }
-        
-        .pdf-compress .quotation-content {
-          padding: 1rem 1.5rem 1rem !important;
-          line-height: 1.2 !important;
-        }
-        
-        .pdf-compress .footer-text {
-          margin-bottom: 1rem !important;
-        }
-        
-        .pdf-compress .signature-block {
-          margin-bottom: 0.5rem !important;
-        }
-        
-        .pdf-compress h2 {
-          font-size: 14px !important;
-          margin-bottom: 0.5rem !important;
-        }
-        
-        .pdf-compress h3 {
-           font-size: 12px !important;
-           margin-bottom: 0.25rem !important;
-         }
-         
-         /* Optimize for single-page layout */
-          .single-page-optimized {
-             max-height: 280mm;
-             overflow: hidden;
-           }
-          
-          .compact-spacing {
-            line-height: 1.3;
+            page-break-inside: avoid;
+            break-inside: avoid;
           }
+        }
+        
+        /* PDF Export styles */
+        .pdf-export {
+          background: white !important;
+          color: black !important;
+          font-family: 'Inter', Arial, sans-serif !important;
+          line-height: 1.4 !important;
+          box-shadow: none !important;
+          border: none !important;
+          margin: 0 !important;
+          padding: 20mm !important;
+          width: 210mm !important;
+          min-height: 297mm !important;
+          box-sizing: border-box !important;
+        }
+        
+        .pdf-export * {
+          color: black !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          border-color: black !important;
+        }
+        
+        .pdf-export .quotation-content {
+          padding: 0 !important;
+          margin: 0 !important;
+          width: 100% !important;
+        }
+        
+        .pdf-export table {
+          border-collapse: collapse !important;
+          width: 100% !important;
+          margin: 1rem 0 !important;
+        }
+        
+        .pdf-export th,
+        .pdf-export td {
+          border: 1px solid black !important;
+          padding: 8px !important;
+          text-align: left !important;
+        }
+        
+        .pdf-export th {
+          background-color: #f5f5f5 !important;
+          font-weight: bold !important;
+        }
+        
+        .pdf-export .footer-section {
+          margin-top: 2rem !important;
+          page-break-inside: avoid !important;
+        }
+        
+        .pdf-export h1,
+        .pdf-export h2,
+        .pdf-export h3 {
+          color: black !important;
+          margin: 1rem 0 0.5rem 0 !important;
+        }
+        
+        .pdf-export .signature-block {
+          margin-top: 2rem !important;
+          border-top: 1px solid black !important;
+          padding-top: 1rem !important;
+        }
        `}</style>
     </div>
   );

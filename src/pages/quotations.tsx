@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus, FileText, Zap, Award } from "lucide-react";
+import { Plus, FileText, Award } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function Quotations() {
@@ -19,29 +19,9 @@ export default function Quotations() {
         </div>
 
         {/* Quotation Options */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {/* Standard Quotation */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
-            <Plus className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-              Standard Quotation
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Create a standard quotation with basic layout and customizable
-              fields
-            </p>
-            <Button
-              onClick={() => setLocation("/quotations/modern")}
-              size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full"
-            >
-              <Zap className="h-5 w-5 mr-2" />
-              Create Modern
-            </Button>
-          </div>
-
+        <div className="flex justify-center max-w-4xl mx-auto">
           {/* Professional Quotation */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700 max-w-md">
             <FileText className="h-16 w-16 text-pink-600 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
               Professional Template
