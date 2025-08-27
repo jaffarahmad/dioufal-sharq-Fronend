@@ -15,9 +15,9 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://dioufal-sharq-backend.onrender.com',
         changeOrigin: true,
-        secure: false
+        secure: true
       }
     }
   },
