@@ -151,7 +151,7 @@ export default function FixedAssets() {
   const getConditionBadge = (condition: string) => {
     const conditionMap = {
       Excellent: "bg-green-100 text-green-800",
-      Good: "bg-blue-100 text-blue-800",
+      Good: "bg-gray-100 text-gray-800",
       Fair: "bg-yellow-100 text-yellow-800",
       Poor: "bg-red-100 text-red-800",
     };
@@ -198,7 +198,7 @@ export default function FixedAssets() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-gray-600 hover:bg-gray-700">
               <Plus className="h-4 w-4 mr-2" />
               Add Asset
             </Button>
@@ -228,7 +228,7 @@ export default function FixedAssets() {
           value={totalAssets}
           icon={Package}
           iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          iconBgColor="bg-gray-50"
         />
         <StatsCard
           title="Active Assets"

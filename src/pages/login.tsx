@@ -127,7 +127,7 @@ export default function LoginPage() {
 
   if (showForgotPassword) {
     return (
-      <div className="min-h-screen bg-blue-50 dark:bg-gray-900 flex items-center justify-center p-2 sm:p-4 md:p-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-2 sm:p-4 md:p-6">
         <Card className="w-full max-w-sm sm:max-w-md shadow-xl border-0 bg-white dark:bg-gray-900">
           <CardHeader className="text-center space-y-3 sm:space-y-4 pb-4 sm:pb-6 px-4 sm:px-6 pt-4 sm:pt-6">
             {/* Company Logo */}
@@ -179,7 +179,7 @@ export default function LoginPage() {
               <div className="space-y-2 sm:space-y-3">
                 <Button
                   type="submit"
-                  className="w-full h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-sm sm:text-base"
+                  className="w-full h-10 sm:h-12 bg-gray-600 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700 text-sm sm:text-base"
                   disabled={isSendingReset}
                 >
                   {isSendingReset ? (
@@ -217,7 +217,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 dark:bg-gray-900 flex items-center justify-center p-2 sm:p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-2 sm:p-4 md:p-6">
       <Card className="w-full max-w-sm sm:max-w-md shadow-xl border-0 bg-white dark:bg-gray-900">
         <CardHeader className="text-center space-y-3 sm:space-y-4 pb-4 sm:pb-6 px-4 sm:px-6 pt-4 sm:pt-6">
           {/* Company Logo and Branding */}
@@ -306,7 +306,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="link"
-                className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 p-0 h-auto"
+                className="text-xs sm:text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300 p-0 h-auto"
                 onClick={() => setShowForgotPassword(true)}
               >
                 Forgot password?
@@ -316,7 +316,7 @@ export default function LoginPage() {
             {/* Login Button */}
             <Button
               type="submit"
-              className="w-full h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-sm sm:text-base"
+              className="w-full h-10 sm:h-12 bg-gray-600 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700 text-sm sm:text-base"
               disabled={isLoading || authLoading}
             >
               {isLoading || authLoading ? (

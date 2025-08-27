@@ -294,7 +294,7 @@ export default function Dashboard() {
       Active: "bg-green-100 text-green-800",
       Planning: "bg-yellow-100 text-yellow-800",
       "On Hold": "bg-red-100 text-red-800",
-      Completed: "bg-blue-100 text-blue-800",
+      Completed: "bg-gray-100 text-gray-800",
     };
     return (
       statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
@@ -319,8 +319,8 @@ export default function Dashboard() {
           title="Active Projects"
           value={(projects || []).filter(p => p.status === "active").length}
           icon={FolderOpen}
-          iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          iconColor="text-gray-600"
+          iconBgColor="bg-gray-50"
         />
         <StatsCard
           title="Total Employees"
@@ -376,12 +376,12 @@ export default function Dashboard() {
                 <p className="text-sm font-medium text-gray-600">
                   Active Suppliers
                 </p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-2xl font-bold text-gray-600">
                   {activeSuppliers}
                 </p>
               </div>
-              <div className="bg-blue-50 p-3 rounded-full">
-                <Wrench className="h-6 w-6 text-blue-600" />
+              <div className="bg-gray-50 p-3 rounded-full">
+                <Wrench className="h-6 w-6 text-gray-600" />
               </div>
             </div>
           </CardContent>
@@ -618,8 +618,8 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-2xl font-bold text-gray-600">
                 {(projects || []).length}
               </div>
               <div className="text-sm text-gray-600">Total Projects</div>

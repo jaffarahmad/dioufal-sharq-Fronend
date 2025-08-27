@@ -196,7 +196,7 @@ export default function WagesPage() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+            <Button className="bg-gray-600 hover:bg-gray-700 w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add Wage Entry
             </Button>

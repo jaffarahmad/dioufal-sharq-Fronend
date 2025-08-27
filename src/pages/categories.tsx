@@ -87,7 +87,7 @@ export default function Categories() {
   const getTypeColor = (type: string) => {
     switch (type) {
       case "Inventory":
-        return "bg-blue-100 text-blue-800";
+        return "bg-gray-100 text-gray-800";
       case "Project":
         return "bg-green-100 text-green-800";
       case "Financial":
@@ -121,7 +121,7 @@ export default function Categories() {
           value={totalCategories}
           icon={Tag}
           iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          iconBgColor="bg-gray-50"
         />
         <StatsCard
           title="Inventory Categories"

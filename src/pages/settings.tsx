@@ -845,8 +845,8 @@ export default function Settings() {
                       />
                     </div>
                   </div>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                  <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-lg">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
                       <strong>Username Rules:</strong> Must be at least 3
                       characters long and can only contain letters, numbers, and
                       underscores.
@@ -1481,7 +1481,7 @@ export default function Settings() {
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     <Card
-                      className={`cursor-pointer transition-all hover:shadow-md ${currentTheme === "light" ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""}`}
+                      className={`cursor-pointer transition-all hover:shadow-md ${currentTheme === "light" ? "ring-2 ring-gray-500 bg-gray-50 dark:bg-gray-900/20" : ""}`}
                       onClick={() => handleThemeChange("light")}
                     >
                       <CardContent className="p-3 sm:p-4 text-center">
@@ -1495,7 +1495,7 @@ export default function Settings() {
                       </CardContent>
                     </Card>
                     <Card
-                      className={`cursor-pointer transition-all hover:shadow-md ${currentTheme === "dark" ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""}`}
+                      className={`cursor-pointer transition-all hover:shadow-md ${currentTheme === "dark" ? "ring-2 ring-gray-500 bg-gray-50 dark:bg-gray-900/20" : ""}`}
                       onClick={() => handleThemeChange("dark")}
                     >
                       <CardContent className="p-3 sm:p-4 text-center">

@@ -154,7 +154,7 @@ function Workforce() {
           value={stats?.employees?.total || employees?.length || 0}
           icon={Users}
           iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          iconBgColor="bg-gray-50"
         />
         <StatsCard
           title="Active"
@@ -233,7 +233,7 @@ function Workforce() {
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                           <Users className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
@@ -287,7 +287,7 @@ function Workforce() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditEmployee(employee)}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>

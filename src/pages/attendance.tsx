@@ -137,12 +137,12 @@ export default function AttendancePage() {
       present: "bg-green-100 text-green-800",
       absent: "bg-red-100 text-red-800",
       late: "bg-yellow-100 text-yellow-800",
-      "half-day": "bg-blue-100 text-blue-800",
+      "half-day": "bg-gray-100 text-gray-800",
       // Keep capitalized versions for backward compatibility
       Present: "bg-green-100 text-green-800",
       Absent: "bg-red-100 text-red-800",
       Late: "bg-yellow-100 text-yellow-800",
-      "Half-Day": "bg-blue-100 text-blue-800",
+      "Half-Day": "bg-gray-100 text-gray-800",
     };
     return (
       statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
@@ -219,7 +219,7 @@ export default function AttendancePage() {
           value={totalRecords}
           icon={Clock}
           iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          iconBgColor="bg-gray-50"
         />
       </div>
 

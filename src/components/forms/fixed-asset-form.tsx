@@ -386,7 +386,7 @@ export default function FixedAssetForm({
 
             {/* Show calculated depreciation info */}
             {purchasePrice > 0 && depreciationRate > 0 && purchaseDate && (
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+              <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-lg">
                 <div className="text-sm text-blue-700 dark:text-blue-400">
                   <div className="font-medium mb-1">
                     Depreciation Information:
@@ -493,7 +493,7 @@ export default function FixedAssetForm({
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto order-1 sm:order-2 bg-blue-600 hover:bg-blue-700"
+            className="w-full sm:w-auto order-1 sm:order-2 bg-gray-600 hover:bg-gray-700"
           >
             {isLoading
               ? "Saving..."

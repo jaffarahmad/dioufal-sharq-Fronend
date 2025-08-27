@@ -72,7 +72,7 @@ export default function Projects() {
       Active: "bg-green-100 text-green-800",
       Planning: "bg-yellow-100 text-yellow-800",
       "On Hold": "bg-red-100 text-red-800",
-      Completed: "bg-blue-100 text-blue-800",
+      Completed: "bg-gray-100 text-gray-800",
     };
     return (
       statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"

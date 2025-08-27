@@ -164,7 +164,7 @@ export default function Suppliers() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+            <Button className="bg-gray-600 hover:bg-gray-700 w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add New Supplier
             </Button>
@@ -192,7 +192,7 @@ export default function Suppliers() {
           value={totalSuppliers}
           icon={Building2}
           iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          iconBgColor="bg-gray-50"
         />
         <StatsCard
           title="Active Suppliers"

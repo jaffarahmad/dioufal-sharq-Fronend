@@ -309,7 +309,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
               <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
                 Project Timeline
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50/30 p-4 rounded-lg border border-blue-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50/30 p-4 rounded-lg border border-gray-200">
                 <FormField
                   control={form.control}
                   name="startDate"
@@ -510,7 +510,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <>

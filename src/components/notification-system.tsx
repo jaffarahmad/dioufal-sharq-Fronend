@@ -124,7 +124,7 @@ export function NotificationSystem({
                   <div
                     className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
                       !notification.read
-                        ? "bg-blue-50 dark:bg-blue-900/10 border-l-4 border-l-blue-500"
+                        ? "bg-gray-50 dark:bg-gray-900/10 border-l-4 border-l-gray-500"
                         : ""
                     } ${notification.urgent ? "bg-red-50 dark:bg-red-900/10" : ""}`}
                   >

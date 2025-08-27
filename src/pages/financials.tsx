@@ -159,7 +159,7 @@ export default function Financials() {
           value={formatCurrency(stats?.financial.netProfit || 0)}
           icon={TrendingUp}
           iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          iconBgColor="bg-gray-50"
         />
         <StatsCard
           title="Pending Invoices"

@@ -238,7 +238,7 @@ export default function Purchases() {
   const getStatusBadge = (status: string) => {
     const statusMap = {
       Pending: "bg-yellow-100 text-yellow-800",
-      Approved: "bg-blue-100 text-blue-800",
+      Approved: "bg-gray-100 text-gray-800",
       Ordered: "bg-purple-100 text-purple-800",
       Delivered: "bg-green-100 text-green-800",
       Cancelled: "bg-red-100 text-red-800",
@@ -290,7 +290,7 @@ export default function Purchases() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+            <Button className="bg-gray-600 hover:bg-gray-700 w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Create Purchase Order
             </Button>
@@ -321,7 +321,7 @@ export default function Purchases() {
           value={totalPurchases}
           icon={ShoppingCart}
           iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          iconBgColor="bg-gray-50"
         />
         <StatsCard
           title="Pending Approval"

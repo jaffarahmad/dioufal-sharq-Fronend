@@ -62,7 +62,7 @@ export function EmailSettings() {
       </CardHeader>
       <CardContent className="px-4 sm:px-6 space-y-4">
         <div className="space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+          <div className="bg-gray-50 dark:bg-gray-900/20 p-4 rounded-lg">
             <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
               Email Notifications Enabled
             </h3>
