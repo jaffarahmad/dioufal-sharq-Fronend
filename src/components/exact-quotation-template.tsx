@@ -514,7 +514,7 @@ export default function ExactQuotationTemplate({
           
           input, textarea {
             border: none !important;
-            background: transparent !important;
+            background: white !important;
             box-shadow: none !important;
             resize: none !important;
             outline: none !important;

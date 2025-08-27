@@ -655,7 +655,7 @@ export default function ProfessionalQuotation() {
         
         .pdf-export * {
           color: black !important;
-          background: transparent !important;
+          background: white !important;
           box-shadow: none !important;
           border-color: black !important;
         }

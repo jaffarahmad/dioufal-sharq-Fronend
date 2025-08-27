@@ -273,7 +273,7 @@ export default function ProfessionalTemplate({
                 <Input
                   value={documentNumber}
                   onChange={e => setDocumentNumber(e.target.value)}
-                  className="print:border-none print:p-0 print:bg-transparent"
+                  className="print:border-none print:p-0 print:bg-white"
                 />
               </div>
               <div>
@@ -284,7 +284,7 @@ export default function ProfessionalTemplate({
                   type="date"
                   value={date}
                   onChange={e => setDate(e.target.value)}
-                  className="print:border-none print:p-0 print:bg-transparent"
+                  className="print:border-none print:p-0 print:bg-white"
                 />
               </div>
             </div>
@@ -298,7 +298,7 @@ export default function ProfessionalTemplate({
                   <Input
                     value={poNumber}
                     onChange={e => setPoNumber(e.target.value)}
-                    className="print:border-none print:p-0 print:bg-transparent"
+                    className="print:border-none print:p-0 print:bg-white"
                   />
                 </div>
                 <div>
@@ -309,7 +309,7 @@ export default function ProfessionalTemplate({
                     type="date"
                     value={dueDate}
                     onChange={e => setDueDate(e.target.value)}
-                    className="print:border-none print:p-0 print:bg-transparent"
+                    className="print:border-none print:p-0 print:bg-white"
                   />
                 </div>
               </div>
@@ -329,7 +329,7 @@ export default function ProfessionalTemplate({
                 <Input
                   value={clientName}
                   onChange={e => setClientName(e.target.value)}
-                  className="print:border-none print:p-0 print:bg-transparent"
+                  className="print:border-none print:p-0 print:bg-white"
                 />
               </div>
               <div>
@@ -339,7 +339,7 @@ export default function ProfessionalTemplate({
                 <Textarea
                   value={clientAddress}
                   onChange={e => setClientAddress(e.target.value)}
-                  className="print:border-none print:p-0 print:bg-transparent min-h-[60px]"
+                  className="print:border-none print:p-0 print:bg-white min-h-[60px]"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -350,7 +350,7 @@ export default function ProfessionalTemplate({
                   <Input
                     value={clientPhone}
                     onChange={e => setClientPhone(e.target.value)}
-                    className="print:border-none print:p-0 print:bg-transparent"
+                    className="print:border-none print:p-0 print:bg-white"
                   />
                 </div>
                 <div>
@@ -360,7 +360,7 @@ export default function ProfessionalTemplate({
                   <Input
                     value={clientEmail}
                     onChange={e => setClientEmail(e.target.value)}
-                    className="print:border-none print:p-0 print:bg-transparent"
+                    className="print:border-none print:p-0 print:bg-white"
                   />
                 </div>
               </div>
@@ -420,7 +420,7 @@ export default function ProfessionalTemplate({
                           onChange={e =>
                             updateItem(item.id, "description", e.target.value)
                           }
-                          className="w-full min-h-[60px] print:border-none print:p-0 print:bg-transparent"
+                          className="w-full min-h-[60px] print:border-none print:p-0 print:bg-white"
                           placeholder="Enter item description..."
                         />
                       </td>
@@ -431,7 +431,7 @@ export default function ProfessionalTemplate({
                           onChange={e =>
                             updateItem(item.id, "quantity", e.target.value)
                           }
-                          className="w-20 text-center print:border-none print:p-0 print:bg-transparent"
+                          className="w-20 text-center print:border-none print:p-0 print:bg-white"
                         />
                       </td>
                       <td className="border border-gray-300 p-2">
@@ -440,7 +440,7 @@ export default function ProfessionalTemplate({
                           onChange={e =>
                             updateItem(item.id, "unit", e.target.value)
                           }
-                          className="w-20 text-center print:border-none print:p-0 print:bg-transparent"
+                          className="w-20 text-center print:border-none print:p-0 print:bg-white"
                         />
                       </td>
                       <td className="border border-gray-300 p-2">
@@ -451,7 +451,7 @@ export default function ProfessionalTemplate({
                           onChange={e =>
                             updateItem(item.id, "rate", e.target.value)
                           }
-                          className="w-24 text-right print:border-none print:p-0 print:bg-transparent"
+                          className="w-24 text-right print:border-none print:p-0 print:bg-white"
                         />
                       </td>
                       <td className="border border-gray-300 p-2 text-right font-semibold">
@@ -513,7 +513,7 @@ export default function ProfessionalTemplate({
           <Textarea
             value={notes}
             onChange={e => setNotes(e.target.value)}
-            className="w-full min-h-[100px] print:border-none print:p-0 print:bg-transparent"
+            className="w-full min-h-[100px] print:border-none print:p-0 print:bg-white"
             placeholder="Enter any additional notes, terms, or conditions..."
           />
         </div>
@@ -581,8 +581,8 @@ export default function ProfessionalTemplate({
             padding: 0 !important;
           }
           
-          .print\\:bg-transparent {
-            background: transparent !important;
+          .print\:bg-white {
+            background: white !important;
           }
           
           .print\\:opacity-100 {
