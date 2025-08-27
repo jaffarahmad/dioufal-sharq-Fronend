@@ -279,7 +279,7 @@ export default function ViewInvoicePage() {
           <div className="flex gap-2 sm:gap-3">
             <Button
               onClick={handleDownloadPDF}
-              className="text-xs sm:text-sm bg-blue-600 hover:bg-blue-700"
+              className="text-xs sm:text-sm bg-gray-600 hover:bg-gray-700"
             >
               <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Download</span> PDF
@@ -302,7 +302,7 @@ export default function ViewInvoicePage() {
             <Button
               variant="outline"
               onClick={handleTestPDF}
-              className="text-xs sm:text-sm bg-blue-100 hover:bg-blue-200 text-blue-700"
+              className="text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700"
             >
               Test PDF
             </Button>

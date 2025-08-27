@@ -81,7 +81,7 @@ export default function InvoiceTemplateVariations() {
             >
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
+                  <div className="p-2 bg-gray-100 rounded-lg">
                     <FileText className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
@@ -113,7 +113,7 @@ export default function InvoiceTemplateVariations() {
                         key={index}
                         className="text-xs text-gray-600 flex items-center"
                       >
-                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2"></span>
+                        <span className="w-1 h-1 bg-gray-500 rounded-full mr-2"></span>
                         {feature}
                       </li>
                     ))}

@@ -438,7 +438,7 @@ export default function InvoicePreviewPage({
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-blue-50 dark:bg-blue-900/20">
+                    <TableRow className="bg-gray-50 dark:bg-gray-900/20">
                       <TableHead className="invoice-table text-center font-bold text-gray-900 dark:text-gray-100 w-20 whitespace-nowrap py-4">
                         <div>ITEM#</div>
                         <div className="text-xs font-medium mt-1" dir="rtl">
@@ -684,7 +684,7 @@ export default function InvoicePreviewPage({
                 <h3 className="invoice-heading text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   Bank Details
                 </h3>
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="bg-gray-50 dark:bg-gray-900/20 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between py-2">
                       <span className="invoice-body font-semibold text-gray-800 dark:text-gray-300">

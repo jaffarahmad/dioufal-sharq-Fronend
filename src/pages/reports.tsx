@@ -447,7 +447,7 @@ export default function Reports() {
   const getReportColor = (type: string) => {
     switch (type) {
       case "Project":
-        return "bg-blue-50 text-blue-700 hover:bg-blue-100";
+        return "bg-gray-50 text-gray-700 hover:bg-gray-100";
       case "Financial":
         return "bg-green-50 text-green-700 hover:bg-green-100";
       case "Workforce":
@@ -820,7 +820,7 @@ export default function Reports() {
           <Button
             onClick={handleExportReport}
             disabled={isExporting}
-            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+            className="bg-gray-600 hover:bg-gray-700 w-full sm:w-auto"
           >
             <Download className="h-4 w-4 mr-2" />
             {isExporting ? "Generating..." : "Export Report"}
@@ -883,7 +883,7 @@ export default function Reports() {
                   {activeProjects}
                 </p>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-full flex-shrink-0 ml-2">
+              <div className="bg-gray-50 dark:bg-gray-900/20 p-2 rounded-full flex-shrink-0 ml-2">
                 <Construction className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
               </div>
             </div>
@@ -997,7 +997,7 @@ export default function Reports() {
                     {formatCurrency(totalExpenses)}
                   </p>
                 </div>
-                <div className="text-center p-3 bg-blue-50 rounded-lg">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <p className="text-xs text-gray-600 mb-1">Purchase Orders</p>
                   <p className="text-lg font-bold text-blue-600">
                     {formatCurrency(totalPurchaseValue)}
@@ -1027,7 +1027,7 @@ export default function Reports() {
               </CardHeader>
               <CardContent className="p-4">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
+                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
                     <span className="text-sm font-medium">Total Projects</span>
                     <Badge variant="secondary" className="text-xs">
                       {projects.length}
@@ -1081,7 +1081,7 @@ export default function Reports() {
               </CardHeader>
               <CardContent className="p-4">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
+                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
                     <span className="text-sm font-medium">Total Employees</span>
                     <Badge variant="secondary" className="text-xs">
                       {employees.length}
@@ -1120,7 +1120,7 @@ export default function Reports() {
               {user ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-900/20 rounded-lg">
                       <User className="h-5 w-5 text-blue-600" />
                       <div>
                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">

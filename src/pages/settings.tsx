@@ -581,7 +581,7 @@ export default function Settings() {
                     Current Administrator
                   </h3>
 
-                  <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                  <Card className="bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-800">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
@@ -592,7 +592,7 @@ export default function Settings() {
                             {user?.email || "newemail@diouf-alsharq.com"}
                           </p>
                         </div>
-                        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
+                        <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100">
                           Active
                         </Badge>
                       </div>
@@ -617,25 +617,25 @@ export default function Settings() {
                         onDragOver={e => {
                           e.preventDefault();
                           e.currentTarget.classList.add(
-                            "border-blue-400",
-                            "bg-blue-50",
-                            "dark:bg-blue-900/20"
-                          );
+                             "border-gray-400",
+                             "bg-gray-50",
+                             "dark:bg-gray-900/20"
+                           );
                         }}
                         onDragLeave={e => {
                           e.preventDefault();
                           e.currentTarget.classList.remove(
-                            "border-blue-400",
-                            "bg-blue-50",
-                            "dark:bg-blue-900/20"
+                            "border-gray-400",
+                            "bg-gray-50",
+                            "dark:bg-gray-900/20"
                           );
                         }}
                         onDrop={e => {
                           e.preventDefault();
                           e.currentTarget.classList.remove(
-                            "border-blue-400",
-                            "bg-blue-50",
-                            "dark:bg-blue-900/20"
+                            "border-gray-400",
+                            "bg-gray-50",
+                            "dark:bg-gray-900/20"
                           );
                           const file = e.dataTransfer.files?.[0];
                           if (file && file.type.startsWith("image/")) {
@@ -954,7 +954,7 @@ export default function Settings() {
                       />
                     </div>
                   </div>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                  <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-lg">
                     <p className="text-xs text-blue-600 dark:text-blue-400">
                       <strong>Security Tip:</strong> Your password must be at
                       least 6 characters long and should include a mix of
@@ -1063,7 +1063,7 @@ export default function Settings() {
 
                   {/* Security Information */}
                   <div className="space-y-3">
-                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="bg-gray-50 dark:bg-gray-900/20 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
                       <div className="flex items-start gap-3">
                         <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                         <div>
@@ -1172,25 +1172,25 @@ export default function Settings() {
                             onDragOver={e => {
                               e.preventDefault();
                               e.currentTarget.classList.add(
-                                "border-blue-400",
-                                "bg-blue-50",
-                                "dark:bg-blue-900/20"
-                              );
+                             "border-gray-400",
+                             "bg-gray-50",
+                             "dark:bg-gray-900/20"
+                           );
                             }}
                             onDragLeave={e => {
                               e.preventDefault();
                               e.currentTarget.classList.remove(
-                                "border-blue-400",
-                                "bg-blue-50",
-                                "dark:bg-blue-900/20"
+                                "border-gray-400",
+                                "bg-gray-50",
+                                "dark:bg-gray-900/20"
                               );
                             }}
                             onDrop={e => {
                               e.preventDefault();
                               e.currentTarget.classList.remove(
-                                "border-blue-400",
-                                "bg-blue-50",
-                                "dark:bg-blue-900/20"
+                                "border-gray-400",
+                                "bg-gray-50",
+                                "dark:bg-gray-900/20"
                               );
                               const file = e.dataTransfer.files?.[0];
                               if (file && file.type.startsWith("image/")) {
@@ -1507,7 +1507,7 @@ export default function Settings() {
                       </CardContent>
                     </Card>
                     <Card
-                      className={`cursor-pointer transition-all hover:shadow-md ${currentTheme === "system" ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" : ""}`}
+                      className={`cursor-pointer transition-all hover:shadow-md ${currentTheme === "system" ? "ring-2 ring-gray-500 bg-gray-50 dark:bg-gray-900/20" : ""}`}
                       onClick={() => handleThemeChange("system")}
                     >
                       <CardContent className="p-3 sm:p-4 text-center">

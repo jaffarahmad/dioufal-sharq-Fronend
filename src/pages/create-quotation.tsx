@@ -178,7 +178,7 @@ export default function CreateQuotation() {
             </Button>
             <Button
               onClick={handlePreview}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-gray-600 hover:bg-gray-700"
             >
               <FileText className="h-4 w-4 mr-2" />
               Preview

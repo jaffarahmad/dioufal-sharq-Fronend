@@ -199,7 +199,7 @@ export default function ProfessionalTemplate({
           onClick={() => setIsRTL(!isRTL)}
           variant="outline"
           size="sm"
-          className={isRTL ? "bg-blue-50 border-blue-300" : ""}
+          className={isRTL ? "bg-gray-50 border-gray-300" : ""}
           title="Toggle text direction"
         >
           <Type className="h-4 w-4" />
@@ -255,7 +255,7 @@ export default function ProfessionalTemplate({
 
           {/* Document Type */}
           <div className="absolute right-0 top-0">
-            <div className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+            <div className="bg-gray-600 text-white px-4 py-2 rounded-lg">
               <h2 className="text-xl font-bold uppercase">{type}</h2>
             </div>
           </div>

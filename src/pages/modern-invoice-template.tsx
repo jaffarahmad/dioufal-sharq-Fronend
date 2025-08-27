@@ -353,7 +353,7 @@ export default function ModernInvoiceTemplate() {
             <Button
               variant="outline"
               onClick={handleTestPDF}
-              className="text-xs sm:text-sm bg-blue-100 hover:bg-blue-200 text-blue-700"
+              className="text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700"
             >
               Test PDF
             </Button>
