@@ -96,8 +96,8 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
         employeeId: manpower.employeeId,
         projectId: manpower.projectId,
         role: manpower.role,
-        startDate: manpower.startDate
-          ? new Date(manpower.startDate).toISOString().split("T")[0]
+        assignedDate: manpower.assignedDate
+          ? new Date(manpower.assignedDate).toISOString().split("T")[0]
           : "",
         endDate: manpower.endDate
           ? new Date(manpower.endDate).toISOString().split("T")[0]
@@ -176,7 +176,7 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
       employeeId: data.employeeId,
       projectId: data.projectId,
       role: data.role,
-      startDate: data.startDate,
+      assignedDate: data.assignedDate,
       endDate: data.endDate || undefined,
       dailyRate: data.dailyRate,
       status: data.status,
@@ -271,7 +271,7 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                           employees.map(employee => (
                             <SelectItem
                               key={employee.id}
-                              value={employee.id}
+                              value={String(employee.id)}
                             >
                               {employee.name} - {employee.position}
                             </SelectItem>
@@ -311,7 +311,7 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                           projects.map(project => (
                             <SelectItem
                               key={project.id}
-                              value={project.id}
+                              value={String(project.id)}
                             >
                               {project.name}
                             </SelectItem>

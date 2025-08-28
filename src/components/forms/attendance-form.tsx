@@ -291,7 +291,7 @@ export default function AttendanceForm({
                         {employees?.map(employee => (
                           <SelectItem
                             key={employee.id}
-                            value={employee.id}
+                            value={String(employee.id)}
                           >
                             {employee.name} - {employee.position}
                           </SelectItem>
@@ -325,7 +325,7 @@ export default function AttendanceForm({
                         {projects?.map(project => (
                           <SelectItem
                             key={project.id}
-                            value={project.id}
+                            value={String(project.id)}
                           >
                             {project.name}
                           </SelectItem>

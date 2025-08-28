@@ -381,13 +381,13 @@ export default function AliAlYamny() {
     ];
     const csvContent = [
       headers.join(","),
-      ...filteredRecords.map(record =>
+      ...filteredRecords.map((record: AliAlYamnyRecord) =>
         [
           `"${record.iqmasNo}"`,
           `"${record.companyName}"`,
           `"${record.contact}"`,
-          `"${record.agreement.replace(/"/g, '""')}"`,
-          `"${record.aliAlYamny.replace(/"/g, '""')}"`,
+          `"${record.agreement?.replace(/"/g, '""') || ''}"`,
+          `"${record.aliAlYamny?.replace(/"/g, '""') || ''}"`,
           `"${record.expireDate ? new Date(record.expireDate).toLocaleDateString() : 'Not set'}"`,
           `"${new Date(record.createdAt).toLocaleDateString()}"`,
         ].join(",")
@@ -413,7 +413,7 @@ export default function AliAlYamny() {
     });
   };
 
-  const filteredRecords = records.filter(record =>
+  const filteredRecords = records.filter((record: AliAlYamnyRecord) =>
     Object.values(record).some(value =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -467,7 +467,7 @@ export default function AliAlYamny() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {new Set(records.map(r => r.companyName)).size}
+              {new Set(records.map((r: AliAlYamnyRecord) => r.companyName)).size}
             </div>
           </CardContent>
         </Card>
@@ -480,7 +480,7 @@ export default function AliAlYamny() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {records.filter(r => r.agreement).length}
+              {records.filter((r: AliAlYamnyRecord) => r.agreement).length}
             </div>
           </CardContent>
         </Card>
@@ -493,7 +493,7 @@ export default function AliAlYamny() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {records.filter(r => r.contact).length}
+              {records.filter((r: AliAlYamnyRecord) => r.contact).length}
             </div>
           </CardContent>
         </Card>
@@ -565,7 +565,7 @@ export default function AliAlYamny() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredRecords.map(record => (
+                  filteredRecords.map((record: AliAlYamnyRecord) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">
                         {record.iqmasNo}
@@ -607,7 +607,7 @@ export default function AliAlYamny() {
                             variant="outline"
                             size="sm"
                             className="text-red-600 hover:text-red-700"
-                            onClick={() => handleDelete(record.id)}
+                            onClick={() => handleDelete(String(record.id))}
                           >
                             <Trash2 className="mr-1 h-3 w-3" />
                             Delete

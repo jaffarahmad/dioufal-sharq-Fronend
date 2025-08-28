@@ -90,14 +90,14 @@ export default function AttendancePage() {
   const attendance = attendanceData || [];
 
   // Helper functions to get names
-  const getEmployeeName = (employeeId: number | null) => {
-    const employee = employees?.find(emp => emp.id === employeeId);
+  const getEmployeeName = (employeeId: number | string | null) => {
+    const employee = employees?.find(emp => emp.id === Number(employeeId));
     return employee ? employee.name : "Unknown Employee";
   };
 
-  const getProjectName = (projectId: number | null) => {
+  const getProjectName = (projectId: number | string | null) => {
     if (!projectId) return "No Project";
-    const project = projects?.find(proj => proj.id === projectId?.toString());
+    const project = projects?.find(proj => proj.id === String(projectId));
     return project ? project.name : "Unknown Project";
   };
 

@@ -572,7 +572,7 @@ export default function Dashboard() {
                     </h4>
                     <p className="text-sm text-gray-500">
                       Budget:{" "}
-                      {formatCurrency(parseFloat(project.budget || "0"))}
+                      {formatCurrency(project.budget || 0)}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">

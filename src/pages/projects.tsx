@@ -248,7 +248,7 @@ export default function Projects() {
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Budget</span>
                   <span className="font-medium">
-                    {formatCurrency(project.budget)}
+                    {formatCurrency(String(project.budget))}
                   </span>
                 </div>
 
@@ -314,7 +314,7 @@ export default function Projects() {
                             Budget
                           </label>
                           <p className="text-sm text-gray-900">
-                            {formatCurrency(project.budget)}
+                            {formatCurrency(String(project.budget))}
                           </p>
                         </div>
                         <div>
@@ -364,7 +364,7 @@ export default function Projects() {
                     onClick={() => {
                       console.log('🗑️ Frontend: Delete button clicked for project:', project.id, typeof project.id);
                       if (window.confirm(`Are you sure you want to delete project "${project.name}"?`)) {
-                        deleteMutation.mutate(project.id);
+                        deleteMutation.mutate(String(project.id));
                       }
                     }}
                     disabled={deleteMutation.isPending}

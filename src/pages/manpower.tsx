@@ -246,8 +246,8 @@ export default function Manpower() {
                     </TableCell>
                     <TableCell className="text-gray-500">{item.role}</TableCell>
                     <TableCell className="text-gray-500">
-                      {item.startDate
-                        ? new Date(item.startDate).toLocaleDateString()
+                      {item.assignedDate
+                        ? new Date(item.assignedDate).toLocaleDateString()
                         : "N/A"}
                     </TableCell>
                     <TableCell className="text-gray-500">
@@ -315,8 +315,8 @@ export default function Manpower() {
                     <div>
                       <span className="text-gray-500">Assigned:</span>
                       <div className="font-medium">
-                        {item.startDate
-                          ? new Date(item.startDate).toLocaleDateString()
+                        {item.assignedDate
+                          ? new Date(item.assignedDate).toLocaleDateString()
                           : "N/A"}
                       </div>
                     </div>
