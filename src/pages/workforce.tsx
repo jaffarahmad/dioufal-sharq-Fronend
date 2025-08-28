@@ -50,29 +50,13 @@ function Workforce() {
     queryKey: ["/api/dashboard/stats"],
   });
 
-  const { data: employees, isLoading } = useQuery<Employee[]>({
-    queryKey: ["/api/employees"],
-  });
+  const { data: employees, isLoading } = useQuery<Employee[]>({    queryKey: ["/api/employees"],    queryFn: () => {      try {        const storedData = localStorage.getItem('employees-records');        return storedData ? JSON.parse(storedData) : [];      } catch (error) {        console.error('Error loading employees from localStorage:', error);        return [];      }    },  });
 
   const { data: projects } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) =>
-      apiRequest(`/api/employees/${id}`, { method: "DELETE" }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/employees"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
-      notifications.success(
-        "Employee Deleted",
-        "Employee deleted successfully"
-      );
-    },
-    onError: () => {
-      notifications.error("Delete Failed", "Failed to delete employee");
-    },
-  });
+  const deleteMutation = useMutation({    mutationFn: async (id: number) => {      try {        const storedData = localStorage.getItem('employees-records');        const existingRecords = storedData ? JSON.parse(storedData) : [];        const updatedRecords = existingRecords.filter((record: any) => record.id !== id);        localStorage.setItem('employees-records', JSON.stringify(updatedRecords));        return { success: true };      } catch (error) {        throw new Error('Failed to delete employee from localStorage');      }    },    onSuccess: () => {      queryClient.invalidateQueries({ queryKey: ["/api/employees"] });      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });      notifications.success(        "Employee Deleted",        "Employee deleted successfully"      );    },    onError: () => {      notifications.error("Delete Failed", "Failed to delete employee");    },  });
 
   const handleViewEmployee = (employee: Employee) => {
     setViewingEmployee(employee);

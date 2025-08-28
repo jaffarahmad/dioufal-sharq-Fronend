@@ -35,14 +35,30 @@ export default function Projects() {
   const notifications = useNotifications();
   const queryClient = useQueryClient();
 
-  const { data: projects, isLoading } = useQuery<Project[]>({
+  const { data: projects = [], isLoading } = useQuery<Project[]>({
     queryKey: ["/api/projects"],
+    queryFn: () => {
+      try {
+        const storedData = localStorage.getItem('projects-records');
+        return storedData ? JSON.parse(storedData) : [];
+      } catch (error) {
+        console.error('Error loading projects from localStorage:', error);
+        return [];
+      }
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => {
-      console.log('🌐 Frontend: Making DELETE request to /api/projects/' + id);
-      return apiRequest(`/api/projects/${id}`, { method: "DELETE" });
+    mutationFn: async (id: string) => {
+      try {
+        const storedData = localStorage.getItem('projects-records');
+        const existingRecords = storedData ? JSON.parse(storedData) : [];
+        const updatedRecords = existingRecords.filter((record: any) => record.id !== id);
+        localStorage.setItem('projects-records', JSON.stringify(updatedRecords));
+        return { success: true };
+      } catch (error) {
+        throw new Error('Failed to delete project from localStorage');
+      }
     },
     onSuccess: () => {
       console.log('✅ Frontend: Delete request successful');

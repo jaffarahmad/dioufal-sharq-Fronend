@@ -52,11 +52,19 @@ export default function Purchases() {
   const { data: purchases = [], isLoading: purchasesLoading } = useQuery<
     Purchase[]
   >({
-    queryKey: ["/api/purchases"],
+    queryKey: ["purchases-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem('purchases-records');
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const { data: suppliers = [] } = useQuery<Supplier[]>({
-    queryKey: ["/api/suppliers"],
+    queryKey: ["suppliers-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem('suppliers-records');
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const { data: categories = [] } = useQuery<Category[]>({
@@ -65,29 +73,27 @@ export default function Purchases() {
 
   const createPurchaseMutation = useMutation({
     mutationFn: async (data: any) => {
-      console.log('Frontend: Sending API request with data:', data);
+      console.log('Frontend: Saving purchase data to localStorage:', data);
       
-      const response = await apiRequest("/api/purchases", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      const stored = localStorage.getItem('purchases-records');
+      const purchases = stored ? JSON.parse(stored) : [];
       
-      console.log('Frontend: API response status:', response.status);
+      const newPurchase = {
+        ...data,
+        id: Date.now(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Frontend: API error response:', errorData);
-        throw new Error(`API Error: ${errorData.error || 'Unknown error'}`);
-      }
+      purchases.push(newPurchase);
+      localStorage.setItem('purchases-records', JSON.stringify(purchases));
       
-      const result = await response.json();
-      console.log('Frontend: API success response:', result);
-      return result;
+      console.log('Frontend: Purchase saved successfully:', newPurchase);
+      return newPurchase;
     },
     onSuccess: (data) => {
       console.log('Frontend: Purchase created successfully:', data);
-      queryClient.invalidateQueries({ queryKey: ["/api/purchases"] });
+      queryClient.invalidateQueries({ queryKey: ["purchases-records"] });
       setIsCreateDialogOpen(false);
     },
     onError: (error) => {
@@ -97,28 +103,37 @@ export default function Purchases() {
 
   const updatePurchaseMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const response = await apiRequest(`/api/purchases/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
-      return response.json();
+      const stored = localStorage.getItem('purchases-records');
+      const purchases = stored ? JSON.parse(stored) : [];
+      
+      const index = purchases.findIndex((purchase: any) => purchase.id === id);
+      if (index !== -1) {
+        purchases[index] = {
+          ...purchases[index],
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem('purchases-records', JSON.stringify(purchases));
+        return purchases[index];
+      }
+      throw new Error('Purchase not found');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/purchases"] });
+      queryClient.invalidateQueries({ queryKey: ["purchases-records"] });
       setEditingPurchase(null);
     },
   });
 
   const deletePurchaseMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest(`/api/purchases/${id}`, {
-        method: "DELETE",
-      });
-      return response;
+      const stored = localStorage.getItem('purchases-records');
+      const purchases = stored ? JSON.parse(stored) : [];
+      const filtered = purchases.filter((purchase: any) => purchase.id !== id);
+      localStorage.setItem('purchases-records', JSON.stringify(filtered));
+      return filtered;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/purchases"] });
+      queryClient.invalidateQueries({ queryKey: ["purchases-records"] });
     },
   });
 
@@ -134,30 +149,25 @@ export default function Purchases() {
       console.log('Frontend: Supplier not found, creating new supplier');
       try {
         const supplierData = {
+          id: Date.now(),
           name: data.supplierName,
           phone: data.supplierPhone,
           email: data.supplierEmail || '',
           category: 'General',
           status: 'active',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         };
         
-        const supplierResponse = await apiRequest('/api/suppliers', {
-          method: 'POST',
-          body: JSON.stringify(supplierData),
-          headers: { 'Content-Type': 'application/json' },
-        });
+        const storedSuppliers = localStorage.getItem('suppliers-records');
+        const suppliers = storedSuppliers ? JSON.parse(storedSuppliers) : [];
+        suppliers.push(supplierData);
+        localStorage.setItem('suppliers-records', JSON.stringify(suppliers));
         
-        if (supplierResponse.ok) {
-          const newSupplier = await supplierResponse.json();
-          supplierId = newSupplier.id;
-          console.log('Frontend: Created new supplier with ID:', supplierId);
-          // Refresh suppliers list
-          queryClient.invalidateQueries({ queryKey: ['/api/suppliers'] });
-        } else {
-          console.error('Frontend: Failed to create supplier');
-          alert('Failed to create supplier. Please try again.');
-          return;
-        }
+        supplierId = supplierData.id;
+        console.log('Frontend: Created new supplier with ID:', supplierId);
+        // Refresh suppliers list
+        queryClient.invalidateQueries({ queryKey: ['suppliers-records'] });
       } catch (error) {
         console.error('Frontend: Error creating supplier:', error);
         alert('Error creating supplier. Please try again.');

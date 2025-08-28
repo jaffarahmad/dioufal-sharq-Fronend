@@ -115,12 +115,27 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
   }, [employees, projects]);
 
   const createMutation = useMutation({
-    mutationFn: (data: InsertManpower) =>
-      apiRequest("/api/manpower", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }),
+    mutationFn: async (data: InsertManpower) => {
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('manpower-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Create new record with ID and timestamps
+      const newRecord = {
+        ...data,
+        id: Date.now().toString(), // Simple ID generation
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      // Add to existing records
+      const updatedRecords = [...existingRecords, newRecord];
+      
+      // Save back to localStorage
+      localStorage.setItem('manpower-records', JSON.stringify(updatedRecords));
+      
+      return newRecord;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/manpower"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
@@ -143,12 +158,23 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: InsertManpower) =>
-      apiRequest(`/api/manpower/${manpower?.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      }),
+    mutationFn: async (data: InsertManpower) => {
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('manpower-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Find and update the record
+      const updatedRecords = existingRecords.map((r: any) => 
+        r.id === manpower?.id 
+          ? { ...r, ...data, updatedAt: new Date().toISOString() }
+          : r
+      );
+      
+      // Save back to localStorage
+      localStorage.setItem('manpower-records', JSON.stringify(updatedRecords));
+      
+      return { ...manpower, ...data, updatedAt: new Date().toISOString() };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/manpower"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });

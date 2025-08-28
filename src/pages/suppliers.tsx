@@ -55,48 +55,68 @@ export default function Suppliers() {
   const { data: suppliers = [], isLoading: suppliersLoading } = useQuery<
     Supplier[]
   >({
-    queryKey: ["/api/suppliers"],
+    queryKey: ["suppliers-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem('suppliers-records');
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const createSupplierMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest("/api/suppliers", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
-      return response.json();
+      const stored = localStorage.getItem('suppliers-records');
+      const suppliers = stored ? JSON.parse(stored) : [];
+      
+      const newSupplier = {
+        ...data,
+        id: Date.now(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      suppliers.push(newSupplier);
+      localStorage.setItem('suppliers-records', JSON.stringify(suppliers));
+      return newSupplier;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/suppliers"] });
+      queryClient.invalidateQueries({ queryKey: ["suppliers-records"] });
       setIsCreateDialogOpen(false);
     },
   });
 
   const updateSupplierMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {
-      const response = await apiRequest(`/api/suppliers/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
-      return response.json();
+      const stored = localStorage.getItem('suppliers-records');
+      const suppliers = stored ? JSON.parse(stored) : [];
+      
+      const index = suppliers.findIndex((supplier: any) => supplier.id === id);
+      if (index !== -1) {
+        suppliers[index] = {
+          ...suppliers[index],
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem('suppliers-records', JSON.stringify(suppliers));
+        return suppliers[index];
+      }
+      throw new Error('Supplier not found');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/suppliers"] });
+      queryClient.invalidateQueries({ queryKey: ["suppliers-records"] });
       setEditingSupplier(null);
     },
   });
 
   const deleteSupplierMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest(`/api/suppliers/${id}`, {
-        method: "DELETE",
-      });
-      return response;
+      const stored = localStorage.getItem('suppliers-records');
+      const suppliers = stored ? JSON.parse(stored) : [];
+      const filtered = suppliers.filter((supplier: any) => supplier.id !== id);
+      localStorage.setItem('suppliers-records', JSON.stringify(filtered));
+      return filtered;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/suppliers"] });
+      queryClient.invalidateQueries({ queryKey: ["suppliers-records"] });
     },
   });
 

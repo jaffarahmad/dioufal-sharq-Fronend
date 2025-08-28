@@ -79,32 +79,82 @@ interface DashboardStats {
 export default function Dashboard() {
   const [, setLocation] = useLocation();
 
-  const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
-    queryKey: ["/api/dashboard/stats"],
-  });
-
   const { data: projects, isLoading: projectsLoading } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["projects-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("projects-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching projects from localStorage:", error);
+        return [];
+      }
+    },
   });
 
   const { data: transactions = [] } = useQuery<Transaction[]>({
-    queryKey: ["/api/transactions"],
+    queryKey: ["transactions-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("transactions-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching transactions from localStorage:", error);
+        return [];
+      }
+    },
   });
 
   const { data: employees = [] } = useQuery<Employee[]>({
-    queryKey: ["/api/employees"],
+    queryKey: ["employees-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("employees-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching employees from localStorage:", error);
+        return [];
+      }
+    },
   });
 
   const { data: purchases = [] } = useQuery<Purchase[]>({
-    queryKey: ["/api/purchases"],
+    queryKey: ["purchases-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("purchases-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching purchases from localStorage:", error);
+        return [];
+      }
+    },
   });
 
   const { data: suppliers = [] } = useQuery<Supplier[]>({
-    queryKey: ["/api/suppliers"],
+    queryKey: ["suppliers-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("suppliers-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching suppliers from localStorage:", error);
+        return [];
+      }
+    },
   });
 
   const { data: manpower = [] } = useQuery<Manpower[]>({
-    queryKey: ["/api/manpower"],
+    queryKey: ["manpower-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("manpower-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching manpower from localStorage:", error);
+        return [];
+      }
+    },
   });
 
   const formatCurrency = (amount: number) => {
@@ -118,7 +168,7 @@ export default function Dashboard() {
       .replace(/\s/g, " "); // Ensure single space for professional display
   };
 
-  if (statsLoading || projectsLoading) {
+  if (projectsLoading) {
     return (
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -256,6 +306,12 @@ export default function Dashboard() {
     ],
   };
 
+  // Manpower calculations
+  const totalManpower = manpower.length;
+  const activeManpower = manpower.filter((m: any) => m.status === "active").length;
+  const completedManpower = manpower.filter((m: any) => m.status === "completed").length;
+  const terminatedManpower = manpower.filter((m: any) => m.status === "terminated").length;
+
   // Manpower Status Distribution
   const manpowerStatusData = {
     labels: ["Active", "Completed", "Terminated"],
@@ -301,22 +357,16 @@ export default function Dashboard() {
 
   // Calculate totals for display
   const totalRevenue = transactions
-    .filter(t => t.type === "income")
-    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
+    .filter((t: any) => t.type === "income")
+    .reduce((sum: number, t: any) => sum + parseFloat(t.amount.toString()), 0);
   const totalExpenses = transactions
-    .filter(t => t.type === "expense")
-    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0);
+    .filter((t: any) => t.type === "expense")
+    .reduce((sum: number, t: any) => sum + parseFloat(t.amount.toString()), 0);
   const totalPurchases = purchases.reduce(
-    (sum, p) => sum + parseFloat(p.totalAmount || "0"),
+    (sum: number, p: any) => sum + parseFloat(p.totalAmount || "0"),
     0
   );
-  const activeSuppliers = suppliers.filter(s => s.status === "Active").length;
-
-  // Manpower calculations
-  const totalManpower = manpower.length;
-  const activeManpower = manpower.filter(m => m.status === "active").length;
-  const completedManpower = manpower.filter(m => m.status === "completed").length;
-  const terminatedManpower = manpower.filter(m => m.status === "terminated").length;
+  const activeSuppliers = suppliers.filter((s: any) => s.status === "Active").length;
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
@@ -346,7 +396,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatsCard
           title="Active Projects"
-          value={(projects || []).filter(p => p.status === "active").length}
+          value={(projects || []).filter((p: any) => p.status === "active").length}
           icon={FolderOpen}
           iconColor="text-gray-600"
           iconBgColor="bg-gray-50"
@@ -425,7 +475,7 @@ export default function Dashboard() {
                 </p>
                 <p className="text-2xl font-bold text-emerald-600">
                   {
-                    (projects || []).filter(p => p.status === "completed")
+                    (projects || []).filter((p: any) => p.status === "completed")
                       .length
                   }
                 </p>

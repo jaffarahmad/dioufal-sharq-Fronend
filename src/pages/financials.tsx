@@ -38,18 +38,32 @@ export default function Financials() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
-    queryKey: ["/api/dashboard/stats"],
-  });
-
   const { data: transactions, isLoading: transactionsLoading } = useQuery<
     Transaction[]
   >({
-    queryKey: ["/api/transactions"],
+    queryKey: ["transactions-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("transactions-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching transactions from localStorage:", error);
+        return [];
+      }
+    },
   });
 
   const { data: projects } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["projects-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("projects-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching projects from localStorage:", error);
+        return [];
+      }
+    },
   });
 
   const formatCurrency = (amount: number) => {
@@ -95,7 +109,13 @@ export default function Financials() {
       : `-${formatCurrency(absAmount)}`;
   };
 
-  if (statsLoading || transactionsLoading) {
+  // Calculate financial stats from localStorage data
+  const totalRevenue = transactions?.filter(t => t.type === 'income').reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0) || 0;
+  const totalExpenses = transactions?.filter(t => t.type === 'expense').reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0) || 0;
+  const netProfit = totalRevenue - totalExpenses;
+  const pendingInvoices = transactions?.filter(t => t.status === 'Pending').length || 0;
+
+  if (transactionsLoading) {
     return (
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -140,30 +160,28 @@ export default function Financials() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatsCard
           title="Total Revenue"
-          value={formatCurrency(stats?.financial.totalRevenue || 0)}
+          value={formatCurrency(totalRevenue)}
           icon={DollarSign}
-
           iconColor="text-green-600"
           iconBgColor="bg-green-50"
         />
         <StatsCard
           title="Total Expenses"
-          value={formatCurrency(stats?.financial.totalExpenses || 0)}
+          value={formatCurrency(totalExpenses)}
           icon={CreditCard}
-
           iconColor="text-red-600"
           iconBgColor="bg-red-50"
         />
         <StatsCard
           title="Net Profit"
-          value={formatCurrency(stats?.financial.netProfit || 0)}
+          value={formatCurrency(netProfit)}
           icon={TrendingUp}
           iconColor="text-blue-600"
           iconBgColor="bg-gray-50"
         />
         <StatsCard
           title="Pending Invoices"
-          value={stats?.financial.pendingInvoices || 0}
+          value={pendingInvoices}
           icon={Clock}
           iconColor="text-yellow-600"
           iconBgColor="bg-yellow-50"

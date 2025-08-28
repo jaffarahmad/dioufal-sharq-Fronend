@@ -115,11 +115,19 @@ export default function InvoicesPage() {
   const notifications = useNotifications();
 
   const { data: invoices = [], isLoading } = useQuery<Invoice[]>({
-    queryKey: ["/api/invoices"],
+    queryKey: ["invoices-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("invoices-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const { data: projects = [] } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["projects-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("projects-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const form = useForm<CreateInvoiceForm>({
@@ -175,6 +183,7 @@ export default function InvoicesPage() {
       const calculatedTotalAmount = calculatedSubtotal + calculatedTaxAmount;
 
       const invoiceData = {
+        id: Date.now(),
         invoiceNumber: data.invoiceNumber,
         poNumber: data.poNumber || undefined,
         clientName: data.clientName,
@@ -197,6 +206,8 @@ export default function InvoicesPage() {
         dueDate: data.dueDate || new Date().toISOString(),
         paidDate: data.paidDate || undefined,
         notes: data.notes || undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         items: data.items.map(item => ({
           description: item.description,
           quantity: parseFloat(item.quantity),
@@ -205,27 +216,14 @@ export default function InvoicesPage() {
         })),
       };
 
-      const response = await fetch("/api/invoices", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(invoiceData),
-      });
+      const existingRecords = JSON.parse(localStorage.getItem("invoices-records") || "[]");
+      const updatedRecords = [...existingRecords, invoiceData];
+      localStorage.setItem("invoices-records", JSON.stringify(updatedRecords));
 
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ error: "Unknown error" }));
-        throw new Error(
-          errorData.error || `HTTP ${response.status}: Failed to create invoice`
-        );
-      }
-
-      return response.json();
+      return invoiceData;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices-records"] });
       notifications.success("Invoice Created", "Invoice created successfully");
       setOpen(false);
       form.reset();
@@ -282,6 +280,7 @@ export default function InvoicesPage() {
         dueDate: data.dueDate ? new Date(data.dueDate) : new Date(),
         paidDate: data.paidDate ? new Date(data.paidDate) : undefined,
         notes: data.notes || undefined,
+        updatedAt: new Date().toISOString(),
         items: data.items.map(item => ({
           description: item.description,
           quantity: parseFloat(item.quantity),
@@ -290,27 +289,19 @@ export default function InvoicesPage() {
         })),
       };
 
-      const response = await fetch(`/api/invoices/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(invoiceData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ error: "Unknown error" }));
-        throw new Error(
-          errorData.error || `HTTP ${response.status}: Failed to update invoice`
-        );
+      const existingRecords = JSON.parse(localStorage.getItem("invoices-records") || "[]");
+      const recordIndex = existingRecords.findIndex((record: any) => record.id === id);
+      
+      if (recordIndex !== -1) {
+        existingRecords[recordIndex] = { ...existingRecords[recordIndex], ...invoiceData };
+        localStorage.setItem("invoices-records", JSON.stringify(existingRecords));
+        return existingRecords[recordIndex];
       }
-
-      return response.json();
+      
+      throw new Error("Invoice not found");
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices-records"] });
       notifications.success("Invoice Updated", "Invoice updated successfully");
       setOpen(false);
       setEditingInvoice(null);
@@ -327,19 +318,13 @@ export default function InvoicesPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest(`/api/invoices/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ error: "Failed to delete invoice" }));
-        throw new Error(errorData.error || "Failed to delete invoice");
-      }
-      return response;
+      const existingRecords = JSON.parse(localStorage.getItem("invoices-records") || "[]");
+      const filteredRecords = existingRecords.filter((record: any) => record.id !== id);
+      localStorage.setItem("invoices-records", JSON.stringify(filteredRecords));
+      return { success: true };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices-records"] });
       notifications.success("Invoice Deleted", "Invoice deleted successfully");
     },
     onError: (error: any) => {
@@ -349,9 +334,8 @@ export default function InvoicesPage() {
 
   const handleEditInvoice = async (invoice: Invoice) => {
     try {
-      // Fetch invoice items
-      const itemsResponse = await fetch(`/api/invoices/${invoice.id}/items`);
-      const items = itemsResponse.ok ? await itemsResponse.json() : [];
+      // Use items stored directly with the invoice
+      const items = (invoice as any).items || [];
 
       // Format items for the form
       const formItems =
@@ -390,7 +374,7 @@ export default function InvoicesPage() {
           : "",
         taxRate: "15", // Default tax rate
         items: formItems,
-        notes: "",
+        notes: (invoice as any).notes || "",
       });
 
       setEditingInvoice(invoice);

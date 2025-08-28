@@ -65,11 +65,27 @@ export default function EmployeeForm({
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: InsertEmployee) =>
-      apiRequest("/api/employees", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
+    mutationFn: async (data: InsertEmployee) => {
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('employees-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Create new record with ID and timestamps
+      const newRecord = {
+        ...data,
+        id: Date.now(), // Simple ID generation
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      // Add to existing records
+      const updatedRecords = [...existingRecords, newRecord];
+      
+      // Save back to localStorage
+      localStorage.setItem('employees-records', JSON.stringify(updatedRecords));
+      
+      return newRecord;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/employees"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
@@ -88,11 +104,23 @@ export default function EmployeeForm({
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: InsertEmployee) =>
-      apiRequest(`/api/employees/${employee?.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      }),
+    mutationFn: async (data: InsertEmployee) => {
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('employees-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Find and update the record
+      const updatedRecords = existingRecords.map((r: any) => 
+        r.id === employee?.id 
+          ? { ...r, ...data, updatedAt: new Date().toISOString() }
+          : r
+      );
+      
+      // Save back to localStorage
+      localStorage.setItem('employees-records', JSON.stringify(updatedRecords));
+      
+      return { ...employee, ...data, updatedAt: new Date().toISOString() };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/employees"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });

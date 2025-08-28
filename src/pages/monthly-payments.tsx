@@ -94,15 +94,16 @@ export default function MonthlyPaymentsPage() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["payments", selectedMonth, selectedYear],
+    queryKey: ["payments-records", selectedMonth, selectedYear],
     queryFn: async () => {
-      const monthStr = `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`;
-      const response = await apiRequest(`/api/payments?month=${monthStr}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch payments: ${response.statusText}`);
+      try {
+        const allPayments = JSON.parse(localStorage.getItem("payments-records") || "[]");
+        const monthStr = `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`;
+        return allPayments.filter((payment: PaymentRecord) => payment.month === monthStr);
+      } catch (error) {
+        console.error("Error fetching payments from localStorage:", error);
+        return [];
       }
-      const data = await response.json();
-      return Array.isArray(data) ? data : ([] as PaymentRecord[]);
     },
   });
 
@@ -110,20 +111,22 @@ export default function MonthlyPaymentsPage() {
   const addPaymentMutation = useMutation({
     mutationFn: async (paymentData: any) => {
       console.log("Adding payment:", paymentData);
-      const response = await apiRequest("/api/payments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...paymentData,
-          month: `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`,
-        }),
-      });
-      console.log("Payment added successfully:", response);
-      return response;
+      const existingPayments = JSON.parse(localStorage.getItem("payments-records") || "[]");
+      const newPayment = {
+        ...paymentData,
+        id: Date.now().toString(),
+        month: `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const updatedPayments = [...existingPayments, newPayment];
+      localStorage.setItem("payments-records", JSON.stringify(updatedPayments));
+      console.log("Payment added successfully:", newPayment);
+      return newPayment;
     },
     onSuccess: () => {
       console.log("Payment creation successful, invalidating queries");
-      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      queryClient.invalidateQueries({ queryKey: ["payments-records"] });
       setShowAddForm(false);
       setNewPaymentData({
         iqamaNo: "",
@@ -152,17 +155,19 @@ export default function MonthlyPaymentsPage() {
   const updatePaymentMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
       console.log("Updating payment:", id, data);
-      const response = await apiRequest(`/api/payments/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      console.log("Payment updated successfully:", response);
-      return response;
+      const existingPayments = JSON.parse(localStorage.getItem("payments-records") || "[]");
+      const updatedPayments = existingPayments.map((payment: PaymentRecord) =>
+        payment.id === id
+          ? { ...payment, ...data, updatedAt: new Date().toISOString() }
+          : payment
+      );
+      localStorage.setItem("payments-records", JSON.stringify(updatedPayments));
+      console.log("Payment updated successfully:", data);
+      return data;
     },
     onSuccess: () => {
       console.log("Payment update successful, invalidating queries");
-      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      queryClient.invalidateQueries({ queryKey: ["payments-records"] });
       setEditingPayment(null);
       setEditFormData({});
       toast({
@@ -184,14 +189,14 @@ export default function MonthlyPaymentsPage() {
   const deletePaymentMutation = useMutation({
     mutationFn: async (id: string) => {
       console.log("Deleting payment:", id);
-      await apiRequest(`/api/payments/${id}`, {
-        method: "DELETE",
-      });
+      const existingPayments = JSON.parse(localStorage.getItem("payments-records") || "[]");
+      const updatedPayments = existingPayments.filter((payment: PaymentRecord) => payment.id !== id);
+      localStorage.setItem("payments-records", JSON.stringify(updatedPayments));
       console.log("Payment deleted successfully");
     },
     onSuccess: () => {
       console.log("Payment deletion successful, invalidating queries");
-      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      queryClient.invalidateQueries({ queryKey: ["payments-records"] });
       toast({
         title: "Success",
         description: "Payment record deleted successfully",
@@ -247,7 +252,7 @@ export default function MonthlyPaymentsPage() {
   });
 
   // Filter payments based on status
-  const filteredPayments = (payments || []).filter(payment => {
+  const filteredPayments = (payments || []).filter((payment: any) => {
     if (paymentFilter === "paid") return payment.status === "paid";
     if (paymentFilter === "unpaid") return payment.status === "not_paid";
     return true;
@@ -342,17 +347,17 @@ export default function MonthlyPaymentsPage() {
 
   // Calculate statistics
   const totalPayments = filteredPayments.length;
-  const paidPayments = filteredPayments.filter(p => p.status === "paid").length;
+  const paidPayments = filteredPayments.filter((p: any) => p.status === "paid").length;
   const unpaidPayments = filteredPayments.filter(
-    p => p.status === "not_paid"
+    (p: any) => p.status === "not_paid"
   ).length;
-  const totalAmount = filteredPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalAmount = filteredPayments.reduce((sum: number, p: any) => sum + p.amount, 0);
   const paidAmount = filteredPayments
-    .filter(p => p.status === "paid")
-    .reduce((sum, p) => sum + p.amount, 0);
+    .filter((p: any) => p.status === "paid")
+    .reduce((sum: number, p: any) => sum + p.amount, 0);
   const unpaidAmount = filteredPayments
-    .filter(p => p.status === "not_paid")
-    .reduce((sum, p) => sum + p.amount, 0);
+    .filter((p: any) => p.status === "not_paid")
+    .reduce((sum: number, p: any) => sum + p.amount, 0);
 
   // CSV Export Function
   const exportToCSV = () => {
@@ -365,7 +370,7 @@ export default function MonthlyPaymentsPage() {
       "Status",
       "Created Date",
     ];
-    const csvData = filteredPayments.map(payment => [
+    const csvData = filteredPayments.map((payment: any) => [
       payment.iqamaNo,
       payment.name,
       payment.companyNo,
@@ -376,7 +381,7 @@ export default function MonthlyPaymentsPage() {
     ]);
 
     const csvContent = [csvHeaders, ...csvData]
-      .map(row => row.map(field => `"${field}"`).join(","))
+      .map((row: any[]) => row.map((field: any) => `"${field}"`).join(","))
       .join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -810,7 +815,7 @@ export default function MonthlyPaymentsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPayments.map(payment => (
+                {filteredPayments.map((payment: any) => (
                   <TableRow key={payment.id}>
                     <TableCell>
                       {editingPayment === payment.id ? (

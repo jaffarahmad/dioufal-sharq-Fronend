@@ -82,12 +82,27 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
   }, [project, form]);
 
   const createMutation = useMutation({
-    mutationFn: (data: InsertProject) => {
+    mutationFn: async (data: InsertProject) => {
       console.log("Creating project with data:", data);
-      return apiRequest("/api/projects", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('projects-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Create new record with ID and timestamps
+      const newRecord = {
+        ...data,
+        id: Date.now().toString(), // Simple ID generation
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      // Add to existing records
+      const updatedRecords = [...existingRecords, newRecord];
+      
+      // Save back to localStorage
+      localStorage.setItem('projects-records', JSON.stringify(updatedRecords));
+      
+      return newRecord;
     },
     onSuccess: (response) => {
       console.log("Project created successfully:", response);
@@ -109,12 +124,23 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: InsertProject) => {
+    mutationFn: async (data: InsertProject) => {
       console.log("Updating project with data:", data);
-      return apiRequest(`/api/projects/${project?.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('projects-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Find and update the record
+      const updatedRecords = existingRecords.map((r: any) => 
+        r.id === project?.id 
+          ? { ...r, ...data, updatedAt: new Date().toISOString() }
+          : r
+      );
+      
+      // Save back to localStorage
+      localStorage.setItem('projects-records', JSON.stringify(updatedRecords));
+      
+      return { ...project, ...data, updatedAt: new Date().toISOString() };
     },
     onSuccess: (response) => {
       console.log("Project updated successfully:", response);

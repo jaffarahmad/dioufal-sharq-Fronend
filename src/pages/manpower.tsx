@@ -48,6 +48,15 @@ export default function Manpower() {
     error,
   } = useQuery<Manpower[]>({
     queryKey: ["/api/manpower"],
+    queryFn: async () => {
+      // Try to get data from localStorage first
+      const storedData = localStorage.getItem('manpower-records');
+      if (storedData) {
+        return JSON.parse(storedData);
+      }
+      // Return empty array if no stored data
+      return [];
+    },
   });
 
   const { data: employees } = useQuery<Employee[]>({
@@ -59,8 +68,19 @@ export default function Manpower() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) =>
-      apiRequest(`/api/manpower/${id}`, { method: "DELETE" }),
+    mutationFn: async (id: string) => {
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('manpower-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Filter out the record to delete
+      const updatedRecords = existingRecords.filter((r: any) => r.id !== id);
+      
+      // Save back to localStorage
+      localStorage.setItem('manpower-records', JSON.stringify(updatedRecords));
+      
+      return { success: true };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/manpower"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });

@@ -91,18 +91,20 @@ export default function CreateQuotation() {
 
   const handleSave = () => {
     const quotationDataToSave = {
+      id: Date.now().toString(),
       ...quotationData,
       items,
       total: calculateTotal(),
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     // Save to localStorage for now
     const savedQuotations = JSON.parse(
-      localStorage.getItem("quotations") || "[]"
+      localStorage.getItem("quotations-records") || "[]"
     );
     savedQuotations.push(quotationDataToSave);
-    localStorage.setItem("quotations", JSON.stringify(savedQuotations));
+    localStorage.setItem("quotations-records", JSON.stringify(savedQuotations));
 
     alert("Quotation saved successfully!");
   };
