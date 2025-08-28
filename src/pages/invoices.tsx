@@ -188,7 +188,7 @@ export default function InvoicesPage() {
         status: data.status,
         projectId:
           data.projectId && data.projectId !== "none" && data.projectId !== ""
-            ? data.projectId
+            ? parseInt(data.projectId)
             : undefined,
         quotationId:
           data.quotationId && data.quotationId !== ""
@@ -273,7 +273,7 @@ export default function InvoicesPage() {
         status: data.status,
         projectId:
           data.projectId && data.projectId !== "none" && data.projectId !== ""
-            ? data.projectId
+            ? parseInt(data.projectId)
             : undefined,
         quotationId:
           data.quotationId && data.quotationId !== ""

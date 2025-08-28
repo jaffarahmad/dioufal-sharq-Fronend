@@ -41,10 +41,10 @@ import { z } from "zod";
 
 // Extended schema for form validation - matching actual manpower schema
 const manpowerFormSchema = z.object({
-  employeeId: z.coerce.number({ required_error: "Employee is required" }),
-  projectId: z.coerce.number({ required_error: "Project is required" }),
+  employeeId: z.string({ required_error: "Employee is required" }),
+  projectId: z.string({ required_error: "Project is required" }),
   role: z.string().min(1, "Role is required"),
-  startDate: z.string().min(1, "Start date is required"),
+  assignedDate: z.string().min(1, "Assigned date is required"),
   endDate: z.string().optional(),
   dailyRate: z.coerce.number().min(0, "Daily rate must be positive"),
   status: z.enum(["active", "completed", "terminated"]).default("active"),
@@ -74,11 +74,11 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
   const form = useForm<ManpowerFormData>({
     resolver: zodResolver(manpowerFormSchema),
     defaultValues: {
-      employeeId: manpower?.employeeId || 0,
-      projectId: manpower?.projectId || 0,
+      employeeId: manpower?.employeeId || "",
+      projectId: manpower?.projectId || "",
       role: manpower?.role || "",
-      startDate: manpower?.startDate
-        ? new Date(manpower.startDate).toISOString().split("T")[0]
+      assignedDate: manpower?.assignedDate
+        ? new Date(manpower.assignedDate).toISOString().split("T")[0]
         : "",
       endDate: manpower?.endDate
         ? new Date(manpower.endDate).toISOString().split("T")[0]
@@ -173,10 +173,10 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
     console.log("Form submitted with data:", data);
 
     const manpowerData = {
-      employeeId: data.employeeId.toString(),
-      projectId: data.projectId.toString(),
+      employeeId: data.employeeId,
+      projectId: data.projectId,
       role: data.role,
-      assignedDate: data.startDate,
+      startDate: data.startDate,
       endDate: data.endDate || undefined,
       dailyRate: data.dailyRate,
       status: data.status,
@@ -197,10 +197,10 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
   const handleDialogChange = (newOpen: boolean) => {
     if (newOpen && !manpower) {
       form.reset({
-        employeeId: undefined,
-        projectId: undefined,
+        employeeId: "",
+        projectId: "",
         role: "",
-        startDate: "",
+        assignedDate: "",
         endDate: "",
         dailyRate: 0,
         status: "active",
@@ -251,9 +251,9 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                   <FormItem>
                     <FormLabel>Employee *</FormLabel>
                     <Select
-                      onValueChange={value => field.onChange(parseInt(value))}
-                      value={field.value?.toString()}
-                      defaultValue={field.value?.toString()}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -271,7 +271,7 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                           employees.map(employee => (
                             <SelectItem
                               key={employee.id}
-                              value={employee.id.toString()}
+                              value={employee.id}
                             >
                               {employee.name} - {employee.position}
                             </SelectItem>
@@ -291,9 +291,9 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                   <FormItem>
                     <FormLabel>Project *</FormLabel>
                     <Select
-                      onValueChange={value => field.onChange(parseInt(value))}
-                      value={field.value?.toString()}
-                      defaultValue={field.value?.toString()}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -311,7 +311,7 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                           projects.map(project => (
                             <SelectItem
                               key={project.id}
-                              value={project.id.toString()}
+                              value={project.id}
                             >
                               {project.name}
                             </SelectItem>
@@ -365,10 +365,10 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="startDate"
+                name="assignedDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Start Date *</FormLabel>
+                    <FormLabel>Assigned Date *</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} className="w-full" />
                     </FormControl>

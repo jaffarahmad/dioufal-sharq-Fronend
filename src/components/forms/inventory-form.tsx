@@ -66,6 +66,17 @@ export default function InventoryForm({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Fetch categories and suppliers for dropdowns
+  const { data: categories = [] } = useQuery({
+    queryKey: ["/api/categories"],
+    queryFn: () => apiRequest("/api/categories").then(res => res.json()),
+  });
+
+  const { data: suppliers = [] } = useQuery({
+    queryKey: ["/api/suppliers"],
+    queryFn: () => apiRequest("/api/suppliers").then(res => res.json()),
+  });
+
   const form = useForm<InventoryFormData>({
     resolver: zodResolver(inventoryFormSchema),
     defaultValues: {
@@ -74,7 +85,7 @@ export default function InventoryForm({
       quantity: inventory?.quantity || 1,
       unit: inventory?.unit || "pieces",
       unitPrice: inventory?.unitPrice || 0,
-      categoryId: inventory?.categoryId || 1,
+      categoryId: inventory?.categoryId || (categories.length > 0 ? categories[0].id : undefined),
       supplierId: inventory?.supplierId || undefined,
       minStock: inventory?.minStock || 0,
       status: inventory?.status || "available",
@@ -135,24 +146,16 @@ export default function InventoryForm({
   });
 
   const onSubmit = (data: InventoryFormData) => {
-    console.log("Form submitted with data:", data);
-    console.log("Form errors:", form.formState.errors);
-
-    // Calculate total value
-    const totalValue = data.quantity * data.unitPrice;
-
-    // Create inventory data with all fields
-    const inventoryData: InsertInventory = {
+    // Calculate totalValue
+    const dataWithTotalValue = {
       ...data,
-      totalValue,
+      totalValue: data.quantity * data.unitPrice,
     };
-
-    console.log("Sending inventory data:", inventoryData);
-
+    
     if (inventory) {
-      updateMutation.mutate(inventoryData);
+      updateMutation.mutate(dataWithTotalValue);
     } else {
-      createMutation.mutate(inventoryData);
+      createMutation.mutate(dataWithTotalValue);
     }
   };
 
@@ -310,15 +313,29 @@ export default function InventoryForm({
                 name="categoryId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category ID *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="1"
-                        placeholder="Enter category ID"
-                        {...field}
-                      />
-                    </FormControl>
+                    <FormLabel>Category *</FormLabel>
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={value =>
+                        field.onChange(value ? parseInt(value) : undefined)
+                      }
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category: any) => (
+                          <SelectItem
+                            key={category.id}
+                            value={category.id.toString()}
+                          >
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -329,16 +346,30 @@ export default function InventoryForm({
                 name="supplierId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Supplier ID</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="1"
-                        placeholder="Enter supplier ID (optional)"
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
+                    <FormLabel>Supplier</FormLabel>
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={value =>
+                        field.onChange(value ? parseInt(value) : undefined)
+                      }
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select supplier (optional)" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="">No supplier</SelectItem>
+                        {suppliers.map((supplier: any) => (
+                          <SelectItem
+                            key={supplier.id}
+                            value={supplier.id.toString()}
+                          >
+                            {supplier.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

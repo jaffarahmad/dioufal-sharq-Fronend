@@ -82,8 +82,8 @@ export default function AttendanceForm({
   const form = useForm<AttendanceFormData>({
     resolver: zodResolver(attendanceFormSchema),
     defaultValues: {
-      employeeId: attendance?.employeeId ? attendance.employeeId.toString() : "",
-      projectId: attendance?.projectId ? attendance.projectId.toString() : "",
+      employeeId: attendance?.employeeId || "",
+      projectId: attendance?.projectId || "",
       date: attendance?.date
         ? new Date(attendance.date).toISOString().split("T")[0]
         : new Date().toISOString().split("T")[0],
@@ -200,7 +200,7 @@ export default function AttendanceForm({
 
     const attendanceData: InsertAttendance = {
       employeeId: data.employeeId,
-      projectId: data.projectId && data.projectId !== "" ? data.projectId : "1", // Default to project 1 if none selected
+      projectId: data.projectId && data.projectId !== "" && data.projectId !== "none" ? data.projectId : "68aff612bbbcdeaeb26eb9af", // Default to first available project if none selected
       date: data.date,
       hoursWorked: calculatedHours ? parseFloat(calculatedHours) : (data.hoursWorked ? parseFloat(data.hoursWorked) : 0),
       overtime: data.overtime ? parseFloat(data.overtime) : 0,
@@ -291,7 +291,7 @@ export default function AttendanceForm({
                         {employees?.map(employee => (
                           <SelectItem
                             key={employee.id}
-                            value={employee.id.toString()}
+                            value={employee.id}
                           >
                             {employee.name} - {employee.position}
                           </SelectItem>
@@ -325,7 +325,7 @@ export default function AttendanceForm({
                         {projects?.map(project => (
                           <SelectItem
                             key={project.id}
-                            value={project.id.toString()}
+                            value={project.id}
                           >
                             {project.name}
                           </SelectItem>

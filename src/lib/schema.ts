@@ -69,6 +69,10 @@ export const insertSupplierSchema = z.object({
   email: z.string().email().optional(),
   address: z.string().optional(),
   taxNumber: z.string().optional(),
+  category: z.string().optional(),
+  status: z.string().optional(),
+  rating: z.number().min(1).max(5).optional(),
+  notes: z.string().optional(),
 });
 
 export type InsertSupplier = z.infer<typeof insertSupplierSchema>;
@@ -133,8 +137,8 @@ export interface Purchase extends InsertPurchase {
 
 // Attendance schemas
 export const insertAttendanceSchema = z.object({
-  employeeId: z.number(),
-  projectId: z.number(),
+  employeeId: z.string(),
+  projectId: z.string(),
   date: z.string(),
   hoursWorked: z.number().min(0).max(24),
   overtime: z.number().min(0).default(0),
@@ -219,7 +223,7 @@ export interface Transaction extends InsertTransaction {
 
 // Invoice schemas
 export const insertInvoiceSchema = z.object({
-  projectId: z.number(),
+  projectId: z.union([z.number(), z.string()]).optional(),
   invoiceNumber: z.string().min(1, "Invoice number is required"),
   clientName: z.string().min(1, "Client name is required"),
   clientAddress: z.string().optional(),
@@ -264,7 +268,7 @@ export interface QuotationItem {
 }
 
 export const insertQuotationSchema = z.object({
-  projectId: z.number(),
+  projectId: z.string(),
   quotationNumber: z.string().min(1, "Quotation number is required"),
   clientName: z.string().min(1, "Client name is required"),
   clientAddress: z.string().optional(),
@@ -292,12 +296,12 @@ export interface Quotation extends InsertQuotation {
 
 // Manpower schemas
 export const insertManpowerSchema = z.object({
-  projectId: z.number(),
-  employeeId: z.number(),
-  role: z.string().min(1, "Role is required"),
-  startDate: z.string(),
+  projectId: z.string(),
+  employeeId: z.string(),
+  role: z.string(),
+  assignedDate: z.string(),
   endDate: z.string().optional(),
-  dailyRate: z.number().min(0),
+  dailyRate: z.number(),
   status: z.enum(["active", "completed", "terminated"]).default("active"),
 });
 

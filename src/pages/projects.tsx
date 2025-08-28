@@ -69,6 +69,11 @@ export default function Projects() {
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
+      active: "bg-green-100 text-green-800",
+      planning: "bg-yellow-100 text-yellow-800",
+      cancelled: "bg-red-100 text-red-800",
+      completed: "bg-gray-100 text-gray-800",
+      // Legacy support for capitalized values
       Active: "bg-green-100 text-green-800",
       Planning: "bg-yellow-100 text-yellow-800",
       "On Hold": "bg-red-100 text-red-800",
@@ -77,6 +82,16 @@ export default function Projects() {
     return (
       statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
     );
+  };
+
+  const getStatusDisplay = (status: string) => {
+    const displayMap = {
+      active: "Active",
+      planning: "Planning",
+      cancelled: "On Hold",
+      completed: "Completed",
+    };
+    return displayMap[status as keyof typeof displayMap] || status;
   };
 
   const formatCurrency = (amount: string) => {
@@ -215,7 +230,7 @@ export default function Projects() {
                   {project.name}
                 </h3>
                 <Badge className={getStatusBadge(project.status)}>
-                  {project.status}
+                  {getStatusDisplay(project.status)}
                 </Badge>
               </div>
 
@@ -291,7 +306,7 @@ export default function Projects() {
                             Status
                           </label>
                           <Badge className={getStatusBadge(project.status)}>
-                            {project.status}
+                            {getStatusDisplay(project.status)}
                           </Badge>
                         </div>
                         <div>
