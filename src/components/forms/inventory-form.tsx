@@ -29,7 +29,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import {
   insertInventorySchema,
   type InsertInventory,
@@ -68,13 +67,19 @@ export default function InventoryForm({
 
   // Fetch categories and suppliers for dropdowns
   const { data: categories = [] } = useQuery({
-    queryKey: ["/api/categories"],
-    queryFn: () => apiRequest("/api/categories").then(res => res.json()),
+    queryKey: ["categories-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("categories-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const { data: suppliers = [] } = useQuery({
-    queryKey: ["/api/suppliers"],
-    queryFn: () => apiRequest("/api/suppliers").then(res => res.json()),
+    queryKey: ["suppliers-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("suppliers-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const form = useForm<InventoryFormData>({
@@ -93,14 +98,22 @@ export default function InventoryForm({
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: InsertInventory) =>
-      apiRequest("/api/inventory", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
+    mutationFn: (data: InsertInventory) => {
+      const stored = localStorage.getItem("inventory-records");
+      const inventory = stored ? JSON.parse(stored) : [];
+      const newInventory = {
+        ...data,
+        id: Date.now(),
+        totalValue: data.quantity * data.unitPrice,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const updatedInventory = [...inventory, newInventory];
+      localStorage.setItem("inventory-records", JSON.stringify(updatedInventory));
+      return Promise.resolve(newInventory);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Inventory item created successfully",
@@ -112,7 +125,7 @@ export default function InventoryForm({
     onError: (error: any) => {
       const { dismiss } = toast({
         title: "Error",
-        description: error.message || "Failed to create inventory item",
+        description: "Failed to create inventory item",
         variant: "destructive",
       });
       setTimeout(() => dismiss(), 5000);
@@ -120,14 +133,24 @@ export default function InventoryForm({
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: InsertInventory) =>
-      apiRequest(`/api/inventory/${inventory?.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      }),
+    mutationFn: (data: InsertInventory) => {
+      const stored = localStorage.getItem("inventory-records");
+      const inventoryList = stored ? JSON.parse(stored) : [];
+      const updatedInventoryList = inventoryList.map((item: any) =>
+        item.id === inventory?.id
+          ? {
+              ...item,
+              ...data,
+              totalValue: data.quantity * data.unitPrice,
+              updatedAt: new Date().toISOString(),
+            }
+          : item
+      );
+      localStorage.setItem("inventory-records", JSON.stringify(updatedInventoryList));
+      return Promise.resolve();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Inventory item updated successfully",
@@ -426,10 +449,7 @@ export default function InventoryForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => {
-                  console.log("Cancel button clicked");
-                  setOpen(false);
-                }}
+                onClick={() => setOpen(false)}
                 disabled={isPending}
               >
                 Cancel

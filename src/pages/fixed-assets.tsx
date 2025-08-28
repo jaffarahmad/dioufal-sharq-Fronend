@@ -38,7 +38,7 @@ import {
 } from "lucide-react";
 import StatsCard from "@/components/ui/stats-card";
 import FixedAssetForm from "@/components/forms/fixed-asset-form";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import type { FixedAsset, Category } from "@/lib/schema";
 
 export default function FixedAssets() {
@@ -51,28 +51,42 @@ export default function FixedAssets() {
   const { data: assets = [], isLoading: assetsLoading } = useQuery<
     FixedAsset[]
   >({
-    queryKey: ["/api/fixed-assets"],
+    queryKey: ["fixed-assets-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("fixed-assets-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const { data: categories = [] } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
+    queryKey: ["categories-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("categories-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const createAssetMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log("[FRONTEND] Sending fixed asset data:", JSON.stringify(data, null, 2));
-      const response = await apiRequest("/api/fixed-assets", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
-      const result = await response.json();
-      console.log("[FRONTEND] API response:", JSON.stringify(result, null, 2));
-      return result;
+      
+      const assetData = {
+        id: Date.now(),
+        ...data,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      const existingRecords = JSON.parse(localStorage.getItem("fixed-assets-records") || "[]");
+      const updatedRecords = [...existingRecords, assetData];
+      localStorage.setItem("fixed-assets-records", JSON.stringify(updatedRecords));
+      
+      console.log("[FRONTEND] Asset saved to localStorage:", assetData);
+      return assetData;
     },
     onSuccess: (data) => {
       console.log("[FRONTEND] Asset created successfully:", data);
-      queryClient.invalidateQueries({ queryKey: ["/api/fixed-assets"] });
+      queryClient.invalidateQueries({ queryKey: ["fixed-assets-records"] });
       setIsCreateDialogOpen(false);
     },
     onError: (error) => {
@@ -82,28 +96,37 @@ export default function FixedAssets() {
 
   const updateAssetMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const response = await apiRequest(`/api/fixed-assets/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
-      return response.json();
+      const existingRecords = JSON.parse(localStorage.getItem("fixed-assets-records") || "[]");
+      const recordIndex = existingRecords.findIndex((record: any) => record.id === parseInt(id));
+      
+      if (recordIndex !== -1) {
+        const updatedAsset = {
+          ...existingRecords[recordIndex],
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+        existingRecords[recordIndex] = updatedAsset;
+        localStorage.setItem("fixed-assets-records", JSON.stringify(existingRecords));
+        return updatedAsset;
+      }
+      
+      throw new Error("Asset not found");
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/fixed-assets"] });
+      queryClient.invalidateQueries({ queryKey: ["fixed-assets-records"] });
       setEditingAsset(null);
     },
   });
 
   const deleteAssetMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiRequest(`/api/fixed-assets/${id}`, {
-        method: "DELETE",
-      });
-      return response;
+      const existingRecords = JSON.parse(localStorage.getItem("fixed-assets-records") || "[]");
+      const filteredRecords = existingRecords.filter((record: any) => record.id !== parseInt(id));
+      localStorage.setItem("fixed-assets-records", JSON.stringify(filteredRecords));
+      return { success: true };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/fixed-assets"] });
+      queryClient.invalidateQueries({ queryKey: ["fixed-assets-records"] });
     },
   });
 

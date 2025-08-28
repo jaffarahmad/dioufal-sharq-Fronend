@@ -29,7 +29,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit } from "lucide-react";
 
@@ -106,7 +105,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
     },
     onSuccess: (response) => {
       console.log("Project created successfully:", response);
-      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      queryClient.invalidateQueries({ queryKey: ["projects-records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Success", description: "Project created successfully" });
       setOpen(false);
@@ -144,7 +143,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
     },
     onSuccess: (response) => {
       console.log("Project updated successfully:", response);
-      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      queryClient.invalidateQueries({ queryKey: ["projects-records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Success", description: "Project updated successfully" });
       setOpen(false);

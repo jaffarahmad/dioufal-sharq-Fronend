@@ -29,7 +29,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+
 import {
   insertCategorySchema,
   type InsertCategory,
@@ -64,16 +64,20 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertCategory) => {
-      const res = await apiRequest("/api/categories", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to create category");
-      return res.json();
+      const stored = localStorage.getItem("categories-records");
+      const categories = stored ? JSON.parse(stored) : [];
+      const newCategory = {
+        ...data,
+        id: Date.now(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      categories.push(newCategory);
+      localStorage.setItem("categories-records", JSON.stringify(categories));
+      return Promise.resolve(newCategory);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["categories-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Category created successfully",
@@ -94,16 +98,21 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
 
   const updateMutation = useMutation({
     mutationFn: async (data: InsertCategory) => {
-      const res = await apiRequest(`/api/categories/${category?.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to update category");
-      return res.json();
+      const stored = localStorage.getItem("categories-records");
+      const categories = stored ? JSON.parse(stored) : [];
+      const categoryIndex = categories.findIndex((cat: Category) => cat.id === category?.id);
+      if (categoryIndex !== -1) {
+        categories[categoryIndex] = {
+          ...categories[categoryIndex],
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem("categories-records", JSON.stringify(categories));
+      }
+      return Promise.resolve(categories[categoryIndex]);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["categories-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Category updated successfully",
@@ -122,13 +131,9 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
   });
 
   const onSubmit = (data: CategoryFormData) => {
-    console.log("Form submitted with data:", data);
-
     const categoryData: InsertCategory = {
       ...data,
     };
-
-    console.log("Sending category data:", categoryData);
 
     if (category) {
       updateMutation.mutate(categoryData);
@@ -176,9 +181,7 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit, errors => {
-              console.log("Form validation errors:", errors);
-            })}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
           >
             <FormField
@@ -246,10 +249,7 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => {
-                  console.log("Cancel button clicked");
-                  setOpen(false);
-                }}
+                onClick={() => setOpen(false)}
                 disabled={isPending}
               >
                 Cancel
@@ -257,7 +257,6 @@ export default function CategoryForm({ category, trigger }: CategoryFormProps) {
               <Button
                 type="submit"
                 disabled={isPending}
-                onClick={() => console.log("Add Category button clicked")}
               >
                 {isPending
                   ? "Saving..."

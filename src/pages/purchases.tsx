@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import StatsCard from "@/components/ui/stats-card";
 import PurchaseForm from "@/components/forms/purchase-form";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import type { Purchase, Supplier, Category } from "@/lib/schema";
 
 export default function Purchases() {
@@ -68,7 +68,11 @@ export default function Purchases() {
   });
 
   const { data: categories = [] } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
+    queryKey: ["categories-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem('categories-records');
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const createPurchaseMutation = useMutation({

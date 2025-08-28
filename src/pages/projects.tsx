@@ -13,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import ProgressBar from "@/components/ui/progress-bar";
 import ProjectForm from "@/components/forms/project-form";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Eye, Edit, Trash2 } from "lucide-react";
@@ -36,7 +35,7 @@ export default function Projects() {
   const queryClient = useQueryClient();
 
   const { data: projects = [], isLoading } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["projects-records"],
     queryFn: () => {
       try {
         const storedData = localStorage.getItem('projects-records');

@@ -16,7 +16,7 @@ import { Tag, Search, Edit, Trash2, Plus } from "lucide-react";
 import StatsCard from "@/components/ui/stats-card";
 import CategoryForm from "@/components/forms/category-form";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+
 import { type Category } from "@/lib/schema";
 
 export default function Categories() {
@@ -29,15 +29,23 @@ export default function Categories() {
     isLoading,
     error,
   } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
+    queryKey: ["categories-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("categories-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) =>
-      apiRequest(`/api/categories/${id}`, { method: "DELETE" }),
+    mutationFn: (id: number) => {
+      const stored = localStorage.getItem("categories-records");
+      const categories = stored ? JSON.parse(stored) : [];
+      const updatedCategories = categories.filter((cat: Category) => cat.id !== id);
+      localStorage.setItem("categories-records", JSON.stringify(updatedCategories));
+      return Promise.resolve();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["categories-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Category deleted successfully",

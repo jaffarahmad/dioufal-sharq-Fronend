@@ -80,8 +80,8 @@ import logoPath from "@assets/image_17540348329.png";
 
 const lineItemSchema = z.object({
   description: z.string().min(1, "Description is required"),
-  quantity: z.string().min(1, "Quantity is required"),
-  rate: z.string().min(1, "Rate is required"),
+  quantity: z.string().min(1, "Quantity is required").refine(val => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Quantity must be a positive number"),
+  rate: z.string().min(1, "Rate is required").refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, "Rate must be a valid number"),
   amount: z.number().optional(),
 });
 
@@ -147,7 +147,7 @@ export default function InvoicesPage() {
       paidDate: "",
       dueDate: "",
       taxRate: "15",
-      items: [{ description: "", quantity: "1", rate: "0" }],
+      items: [{ description: "Service", quantity: "1", rate: "100" }],
       notes: "",
     },
   });

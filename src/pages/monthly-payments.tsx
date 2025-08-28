@@ -50,7 +50,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface PaymentRecord {
@@ -216,14 +215,45 @@ export default function MonthlyPaymentsPage() {
   const generatePaymentsMutation = useMutation({
     mutationFn: async (month: string) => {
       console.log("Generating payments for month:", month);
-      const response = await apiRequest(`/api/payments/generate/${month}`, {
-        method: "POST",
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to generate payments");
+      // Simulate payment generation from localStorage employees data
+      const employees = JSON.parse(localStorage.getItem("employees-records") || "[]");
+      const existingPayments = JSON.parse(localStorage.getItem("payments-records") || "[]");
+      
+      let created = 0;
+      let skipped = 0;
+      const newPayments = [];
+      
+      for (const employee of employees) {
+        const existingPayment = existingPayments.find((p: PaymentRecord) => 
+          p.iqamaNo === employee.id?.toString() && p.month === month
+        );
+        
+        if (!existingPayment) {
+          const newPayment = {
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            iqamaNo: employee.id?.toString() || "",
+            name: employee.name || "",
+            companyNo: "",
+            phone: employee.phone || "",
+            month: month,
+            amount: employee.salary || 0,
+            status: "not_paid" as const,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          newPayments.push(newPayment);
+          created++;
+        } else {
+          skipped++;
+        }
       }
-      return await response.json();
+      
+      if (newPayments.length > 0) {
+        const updatedPayments = [...existingPayments, ...newPayments];
+        localStorage.setItem("payments-records", JSON.stringify(updatedPayments));
+      }
+      
+      return { created, skipped, errors: [] };
     },
     onSuccess: data => {
       console.log("Payment generation successful:", data);

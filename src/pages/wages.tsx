@@ -28,7 +28,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import WageForm from "@/components/forms/wage-form";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import { format } from "date-fns";
 import type { Wage, Employee } from "@/lib/schema";
 
@@ -38,13 +38,10 @@ export default function WagesPage() {
   const [selectedWage, setSelectedWage] = useState<Wage | undefined>();
 
   const { data: wagesData = [], isLoading: wagesLoading, error } = useQuery<Wage[]>({
-    queryKey: ["/api/wages"],
+    queryKey: ["wages-records"],
     queryFn: async (): Promise<Wage[]> => {
-      const response = await apiRequest("/api/wages");
-      if (!response.ok) {
-        throw new Error("Failed to fetch wages");
-      }
-      return response.json();
+      const stored = localStorage.getItem("wages-records");
+      return stored ? JSON.parse(stored) : [];
     },
   });
 
@@ -60,21 +57,31 @@ export default function WagesPage() {
   const wages: Wage[] = wagesData as Wage[];
 
   const { data: employees = [] } = useQuery<Employee[]>({
-    queryKey: ["/api/employees"],
+    queryKey: ["employees-records"],
+    queryFn: async (): Promise<Employee[]> => {
+      const stored = localStorage.getItem("employees-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const createWageMutation = useMutation({
     mutationFn: (data: any) => {
       console.log("Frontend: Sending wage creation request:", data);
-      return apiRequest("/api/wages", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      const stored = localStorage.getItem("wages-records");
+      const wages = stored ? JSON.parse(stored) : [];
+      const newWage = {
+        ...data,
+        id: Date.now(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      wages.push(newWage);
+      localStorage.setItem("wages-records", JSON.stringify(wages));
+      return Promise.resolve(newWage);
     },
     onSuccess: (response) => {
       console.log("Frontend: Wage creation successful:", response);
-      queryClient.invalidateQueries({ queryKey: ["/api/wages"] });
+      queryClient.invalidateQueries({ queryKey: ["wages-records"] });
       setIsCreateDialogOpen(false);
     },
     onError: (error) => {
@@ -91,36 +98,56 @@ export default function WagesPage() {
       id: number;
       status: string;
       paidDate?: string;
-    }) =>
-      apiRequest(`/api/wages/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ status, paidDate }),
-        headers: { "Content-Type": "application/json" },
-      }),
+    }) => {
+      const stored = localStorage.getItem("wages-records");
+      const wages = stored ? JSON.parse(stored) : [];
+      const wageIndex = wages.findIndex((w: Wage) => w.id === id);
+      if (wageIndex !== -1) {
+        wages[wageIndex] = {
+          ...wages[wageIndex],
+          status,
+          paidDate,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem("wages-records", JSON.stringify(wages));
+      }
+      return Promise.resolve(wages[wageIndex]);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/wages"] });
+      queryClient.invalidateQueries({ queryKey: ["wages-records"] });
     },
   });
 
   const deleteWageMutation = useMutation({
-    mutationFn: (id: number) =>
-      apiRequest(`/api/wages/${id}`, {
-        method: "DELETE",
-      }),
+    mutationFn: (id: number) => {
+      const stored = localStorage.getItem("wages-records");
+      const wages = stored ? JSON.parse(stored) : [];
+      const filteredWages = wages.filter((w: Wage) => w.id !== id);
+      localStorage.setItem("wages-records", JSON.stringify(filteredWages));
+      return Promise.resolve();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/wages"] });
+      queryClient.invalidateQueries({ queryKey: ["wages-records"] });
     },
   });
 
   const updateWageMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: any }) =>
-      apiRequest(`/api/wages/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      }),
+    mutationFn: ({ id, data }: { id: number; data: any }) => {
+      const stored = localStorage.getItem("wages-records");
+      const wages = stored ? JSON.parse(stored) : [];
+      const wageIndex = wages.findIndex((w: Wage) => w.id === id);
+      if (wageIndex !== -1) {
+        wages[wageIndex] = {
+          ...wages[wageIndex],
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+        localStorage.setItem("wages-records", JSON.stringify(wages));
+      }
+      return Promise.resolve(wages[wageIndex]);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/wages"] });
+      queryClient.invalidateQueries({ queryKey: ["wages-records"] });
       setIsEditDialogOpen(false);
       setSelectedWage(undefined);
     },

@@ -32,7 +32,6 @@ import {
 import StatsCard from "@/components/ui/stats-card";
 import InventoryForm from "@/components/forms/inventory-form";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { type Inventory } from "@/lib/schema";
 
 export default function Inventory() {
@@ -47,15 +46,23 @@ export default function Inventory() {
     isLoading,
     error,
   } = useQuery<Inventory[]>({
-    queryKey: ["/api/inventory"],
+    queryKey: ["inventory-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("inventory-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) =>
-      apiRequest(`/api/inventory/${id}`, { method: "DELETE" }),
+    mutationFn: (id: number) => {
+      const stored = localStorage.getItem("inventory-records");
+      const inventory = stored ? JSON.parse(stored) : [];
+      const updatedInventory = inventory.filter((item: any) => item.id !== id);
+      localStorage.setItem("inventory-records", JSON.stringify(updatedInventory));
+      return Promise.resolve();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Inventory item deleted successfully",
@@ -65,7 +72,7 @@ export default function Inventory() {
     onError: (error: any) => {
       const { dismiss } = toast({
         title: "Error",
-        description: error.message || "Failed to delete inventory item",
+        description: "Failed to delete inventory item",
         variant: "destructive",
       });
       setTimeout(() => dismiss(), 5000);

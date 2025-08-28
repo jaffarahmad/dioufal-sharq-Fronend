@@ -31,7 +31,6 @@ import {
 import StatsCard from "@/components/ui/stats-card";
 import ManpowerForm from "@/components/forms/manpower-form";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { type Manpower, type Employee, type Project } from "@/lib/schema";
 
 // Real data from API instead of mock data
@@ -47,42 +46,60 @@ export default function Manpower() {
     isLoading,
     error,
   } = useQuery<Manpower[]>({
-    queryKey: ["/api/manpower"],
-    queryFn: async () => {
-      // Try to get data from localStorage first
-      const storedData = localStorage.getItem('manpower-records');
-      if (storedData) {
-        return JSON.parse(storedData);
+    queryKey: ["manpower-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("manpower-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error loading manpower records:", error);
+        return [];
       }
-      // Return empty array if no stored data
-      return [];
     },
   });
 
   const { data: employees } = useQuery<Employee[]>({
-    queryKey: ["/api/employees"],
+    queryKey: ["employees-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("employees-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error loading employees:", error);
+        return [];
+      }
+    },
   });
 
   const { data: projects } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["projects-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("projects-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error loading projects:", error);
+        return [];
+      }
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Get existing records from localStorage
-      const storedData = localStorage.getItem('manpower-records');
-      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      const existingRecords = JSON.parse(
+        localStorage.getItem("manpower-records") || "[]"
+      );
       
-      // Filter out the record to delete
-      const updatedRecords = existingRecords.filter((r: any) => r.id !== id);
+      const updatedRecords = existingRecords.filter(
+        (record: any) => record.id.toString() !== id
+      );
       
-      // Save back to localStorage
-      localStorage.setItem('manpower-records', JSON.stringify(updatedRecords));
+      localStorage.setItem("manpower-records", JSON.stringify(updatedRecords));
       
-      return { success: true };
+      return { id };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/manpower"] });
+      queryClient.invalidateQueries({ queryKey: ["manpower-records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       const { dismiss } = toast({
         title: "Success",

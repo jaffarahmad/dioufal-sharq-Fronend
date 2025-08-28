@@ -28,7 +28,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import {
   insertManpowerSchema,
   type InsertManpower,
@@ -64,11 +63,29 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
 
   // Fetch employees and projects for dropdowns
   const { data: employees } = useQuery<Employee[]>({
-    queryKey: ["/api/employees"],
+    queryKey: ["employees-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("employees-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error loading employees:", error);
+        return [];
+      }
+    },
   });
 
   const { data: projects } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["projects-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("projects-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error loading projects:", error);
+        return [];
+      }
+    },
   });
 
   const form = useForm<ManpowerFormData>({
@@ -137,7 +154,7 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
       return newRecord;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/manpower"] });
+      queryClient.invalidateQueries({ queryKey: ["manpower-records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       const { dismiss } = toast({
         title: "Success",
@@ -176,7 +193,7 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
       return { ...manpower, ...data, updatedAt: new Date().toISOString() };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/manpower"] });
+      queryClient.invalidateQueries({ queryKey: ["manpower-records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       const { dismiss } = toast({
         title: "Success",

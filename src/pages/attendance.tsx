@@ -29,7 +29,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { type Attendance, type Employee, type Project } from "@/lib/schema";
 import AttendanceForm from "@/components/forms/attendance-form";
 import StatsCard from "@/components/ui/stats-card";
@@ -46,23 +45,39 @@ export default function AttendancePage() {
     isLoading,
     error,
   } = useQuery<Attendance[]>({
-    queryKey: ["/api/attendance"],
+    queryKey: ["attendance-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("attendance-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const { data: employees } = useQuery<Employee[]>({
-    queryKey: ["/api/employees"],
+    queryKey: ["employees-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("employees-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const { data: projects } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["projects-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("projects-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) =>
-      apiRequest(`/api/attendance/${id}`, { method: "DELETE" }),
+    mutationFn: (id: string) => {
+      const stored = localStorage.getItem("attendance-records");
+      const records = stored ? JSON.parse(stored) : [];
+      const updatedRecords = records.filter((record: Attendance) => record.id !== Number(id));
+      localStorage.setItem("attendance-records", JSON.stringify(updatedRecords));
+      return Promise.resolve();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/attendance"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Attendance record deleted successfully",

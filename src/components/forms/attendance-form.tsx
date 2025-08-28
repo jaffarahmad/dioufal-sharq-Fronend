@@ -29,7 +29,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import {
   insertAttendanceSchema,
   type InsertAttendance,
@@ -72,11 +71,19 @@ export default function AttendanceForm({
 
   // Fetch employees and projects for dropdowns
   const { data: employees } = useQuery<Employee[]>({
-    queryKey: ["/api/employees"],
+    queryKey: ["employees-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("employees-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const { data: projects } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["projects-records"],
+    queryFn: () => {
+      const stored = localStorage.getItem("projects-records");
+      return stored ? JSON.parse(stored) : [];
+    },
   });
 
   const form = useForm<AttendanceFormData>({
@@ -102,28 +109,32 @@ export default function AttendanceForm({
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertAttendance) => {
-      console.log("Making API request to create attendance:", data);
-      const res = await apiRequest("/api/attendance", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      const stored = localStorage.getItem("attendance-records");
+      const records = stored ? JSON.parse(stored) : [];
       
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        console.error("API Error Response:", { status: res.status, statusText: res.statusText, errorData });
-        
-        if (res.status === 409) {
-          throw new Error(errorData.message || "Attendance record already exists for this employee on this date");
-        }
-        
-        throw new Error(errorData.error || errorData.message || "Failed to create attendance");
+      // Check for existing record on same date for same employee
+      const existingRecord = records.find((record: Attendance) => 
+        record.employeeId === data.employeeId && 
+        new Date(record.date).toDateString() === new Date(data.date).toDateString()
+      );
+      
+      if (existingRecord) {
+        throw new Error("Attendance record already exists for this employee on this date");
       }
       
-      return res.json();
+      const newRecord = {
+        ...data,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      const updatedRecords = [...records, newRecord];
+      localStorage.setItem("attendance-records", JSON.stringify(updatedRecords));
+      return Promise.resolve(newRecord);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/attendance"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Attendance recorded successfully",
@@ -133,7 +144,6 @@ export default function AttendanceForm({
       setTimeout(() => dismiss(), 3000);
     },
     onError: (error: any) => {
-      console.error("Create mutation error:", error);
       const { dismiss } = toast({
         title: "Error",
         description: error.message || "Failed to record attendance",
@@ -145,28 +155,26 @@ export default function AttendanceForm({
 
   const updateMutation = useMutation({
     mutationFn: async (data: InsertAttendance) => {
-      console.log("Making API request to update attendance:", data);
-      console.log("Attendance ID:", attendance?.id);
+      const stored = localStorage.getItem("attendance-records");
+      const records = stored ? JSON.parse(stored) : [];
       
-      const res = await apiRequest(`/api/attendance/${attendance?.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
-      
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        console.error("API Error Response:", { status: res.status, statusText: res.statusText, errorData });
-        throw new Error(errorData.error || errorData.message || "Failed to update attendance");
+      const recordIndex = records.findIndex((record: Attendance) => record.id === attendance?.id);
+      if (recordIndex === -1) {
+        throw new Error("Attendance record not found");
       }
       
-      const result = await res.json();
-      console.log("Update API response:", result);
-      return result;
+      const updatedRecord = {
+        ...records[recordIndex],
+        ...data,
+        updatedAt: new Date().toISOString(),
+      };
+      
+      records[recordIndex] = updatedRecord;
+      localStorage.setItem("attendance-records", JSON.stringify(records));
+      return Promise.resolve(updatedRecord);
     },
-    onSuccess: (data) => {
-      console.log("Update mutation successful:", data);
-      queryClient.invalidateQueries({ queryKey: ["/api/attendance"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
       const { dismiss } = toast({
         title: "Success",
         description: "Attendance updated successfully",
@@ -175,7 +183,6 @@ export default function AttendanceForm({
       setTimeout(() => dismiss(), 3000);
     },
     onError: (error: any) => {
-      console.error("Update mutation error:", error);
       const { dismiss } = toast({
         title: "Error",
         description: error.message || "Failed to update attendance",
@@ -186,8 +193,6 @@ export default function AttendanceForm({
   });
 
   const onSubmit = (data: AttendanceFormData) => {
-    console.log("Form submitted with data:", data);
-
     // Calculate hours worked if both check-in and check-out are provided
     let calculatedHours = data.hoursWorked;
     if (data.checkIn && data.checkOut && !data.hoursWorked) {
@@ -200,14 +205,12 @@ export default function AttendanceForm({
 
     const attendanceData: InsertAttendance = {
       employeeId: data.employeeId,
-      projectId: data.projectId && data.projectId !== "" && data.projectId !== "none" ? data.projectId : "68aff612bbbcdeaeb26eb9af", // Default to first available project if none selected
+      projectId: data.projectId && data.projectId !== "" && data.projectId !== "none" ? data.projectId : "",
       date: data.date,
       hoursWorked: calculatedHours ? parseFloat(calculatedHours) : (data.hoursWorked ? parseFloat(data.hoursWorked) : 0),
       overtime: data.overtime ? parseFloat(data.overtime) : 0,
       notes: data.notes || undefined,
     };
-
-    console.log("Sending attendance data:", attendanceData);
 
     if (attendance) {
       updateMutation.mutate(attendanceData);
@@ -266,9 +269,7 @@ export default function AttendanceForm({
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit, errors => {
-              console.log("Form validation errors:", errors);
-            })}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -478,10 +479,7 @@ export default function AttendanceForm({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => {
-                  console.log("Cancel button clicked");
-                  setOpen(false);
-                }}
+                onClick={() => setOpen(false)}
                 disabled={isPending}
                 className="w-full sm:w-auto"
               >
@@ -490,7 +488,6 @@ export default function AttendanceForm({
               <Button
                 type="submit"
                 disabled={isPending}
-                onClick={() => console.log("Save Attendance button clicked")}
                 className="w-full sm:w-auto"
               >
                 {isPending
