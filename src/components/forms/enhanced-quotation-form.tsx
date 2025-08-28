@@ -313,7 +313,7 @@ export default function EnhancedQuotationForm({
                       <Input
                         {...form.register(`items.${index}.total`)}
                         readOnly
-                        className="bg-gray-50"
+                        className="bg-teal-50"
                         value={watchedItems[index]?.total || "0"}
                       />
                     </TableCell>
@@ -373,7 +373,7 @@ export default function EnhancedQuotationForm({
             </div>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+          <div className="bg-violet-50 p-4 rounded-lg space-y-2">
             <div className="flex justify-between">
               <span>Subtotal:</span>
               <span className="font-medium">{subtotal.toFixed(2)} SAR</span>

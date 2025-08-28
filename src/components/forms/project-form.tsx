@@ -256,7 +256,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
               <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
                 Budget & Status
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50/50 p-4 rounded-lg border">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50/50 p-4 rounded-lg border">
                 <FormField
                   control={form.control}
                   name="budget"
@@ -319,7 +319,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
               <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
                 Project Timeline
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50/30 p-4 rounded-lg border border-gray-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-purple-50/30 p-4 rounded-lg border border-purple-200">
                 <FormField
                   control={form.control}
                   name="startDate"
@@ -394,7 +394,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
               <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
                 Client Information
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-green-50/30 p-4 rounded-lg border border-green-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-emerald-50/30 p-4 rounded-lg border border-emerald-200">
                 <FormField
                   control={form.control}
                   name="clientName"
@@ -508,7 +508,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
             </div>
 
             {/* Form Actions */}
-            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-6 border-t mt-8 bg-gray-50/30 p-4 rounded-lg">
+            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-6 border-t mt-8 bg-indigo-50/30 p-4 rounded-lg">
               <Button
                 type="button"
                 variant="outline"

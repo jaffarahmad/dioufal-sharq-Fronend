@@ -531,7 +531,7 @@ export default function PurchaseForm({
                           <Input
                             type="number"
                             readOnly
-                            className="bg-gray-50"
+                            className="bg-amber-50"
                             {...field}
                           />
                         </FormControl>

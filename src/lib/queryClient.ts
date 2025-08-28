@@ -21,9 +21,11 @@ export async function apiRequest(
   };
 
   // Construct full URL with base URL
-  const fullUrl = url.startsWith('/') 
-    ? `${apiBaseUrl}${url}`
-    : `${apiBaseUrl}/${url}`;
+  // Remove /api prefix from url if it exists to avoid duplication
+  const cleanUrl = url.startsWith('/api/') ? url.substring(4) : url;
+  const fullUrl = cleanUrl.startsWith('/') 
+    ? `${apiBaseUrl}${cleanUrl}`
+    : `${apiBaseUrl}/${cleanUrl}`;
 
   console.log("Making API request:", {
     url: fullUrl,
@@ -63,7 +65,7 @@ export async function apiRequest(
 type UnauthorizedBehavior = "returnNull" | "throw";
 // Get API base URL from environment variables
 const getApiBaseUrl = () => {
-  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 };
 
 export const getQueryFn: <T>(options: {
@@ -83,10 +85,12 @@ export const getQueryFn: <T>(options: {
     }
 
     // Construct full URL with base URL
+    // Remove /api prefix from firstKey if it exists to avoid duplication
     const firstKey = queryKey[0] as string;
-    const url = firstKey.startsWith('/') 
-      ? `${apiBaseUrl}${firstKey}`
-      : `${apiBaseUrl}/${firstKey}`; 
+    const cleanKey = firstKey.startsWith('/api/') ? firstKey.substring(4) : firstKey;
+    const url = cleanKey.startsWith('/') 
+      ? `${apiBaseUrl}${cleanKey}`
+      : `${apiBaseUrl}/${cleanKey}`; 
 
     const res = await fetch(url, {
        credentials: "include",

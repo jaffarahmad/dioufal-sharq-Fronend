@@ -386,7 +386,7 @@ export default function FixedAssetForm({
 
             {/* Show calculated depreciation info */}
             {purchasePrice > 0 && depreciationRate > 0 && purchaseDate && (
-              <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-lg">
+              <div className="bg-rose-50 dark:bg-rose-900/20 p-3 rounded-lg">
                 <div className="text-sm text-blue-700 dark:text-blue-400">
                   <div className="font-medium mb-1">
                     Depreciation Information:

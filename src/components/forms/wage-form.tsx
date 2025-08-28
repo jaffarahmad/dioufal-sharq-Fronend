@@ -343,7 +343,7 @@ export default function WageForm({
         </div>
 
         {/* Total Pay Summary */}
-        <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg">
+        <div className="bg-cyan-50 dark:bg-cyan-800 p-3 sm:p-4 rounded-lg">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
             <span className="font-medium text-sm sm:text-base">Total Pay:</span>
             <span className="text-lg sm:text-xl font-bold text-green-600">
