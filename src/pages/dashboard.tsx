@@ -39,6 +39,7 @@ import type {
   Employee,
   Purchase,
   Supplier,
+  Manpower,
 } from "@/lib/schema";
 
 // Register Chart.js components with error handling
@@ -100,6 +101,10 @@ export default function Dashboard() {
 
   const { data: suppliers = [] } = useQuery<Supplier[]>({
     queryKey: ["/api/suppliers"],
+  });
+
+  const { data: manpower = [] } = useQuery<Manpower[]>({
+    queryKey: ["/api/manpower"],
   });
 
   const formatCurrency = (amount: number) => {
@@ -221,6 +226,8 @@ export default function Dashboard() {
     ],
   };
 
+
+
   // Employee Department Distribution
   const departmentData = employees.reduce(
     (acc, emp) => {
@@ -243,6 +250,22 @@ export default function Dashboard() {
           "#F59E0B",
           "#EF4444",
           "#06B6D4",
+        ],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  // Manpower Status Distribution
+  const manpowerStatusData = {
+    labels: ["Active", "Completed", "Terminated"],
+    datasets: [
+      {
+        data: [activeManpower, completedManpower, terminatedManpower],
+        backgroundColor: [
+          "#10B981", // Green for active
+          "#3B82F6", // Blue for completed
+          "#F59E0B", // Orange for terminated
         ],
         borderWidth: 0,
       },
@@ -288,6 +311,12 @@ export default function Dashboard() {
     0
   );
   const activeSuppliers = suppliers.filter(s => s.status === "Active").length;
+
+  // Manpower calculations
+  const totalManpower = manpower.length;
+  const activeManpower = manpower.filter(m => m.status === "active").length;
+  const completedManpower = manpower.filter(m => m.status === "completed").length;
+  const terminatedManpower = manpower.filter(m => m.status === "terminated").length;
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
@@ -337,11 +366,11 @@ export default function Dashboard() {
           iconBgColor="bg-emerald-50"
         />
         <StatsCard
-          title="Purchase Orders"
-          value={purchases.length}
-          icon={ShoppingCart}
-          iconColor="text-purple-600"
-          iconBgColor="bg-purple-50"
+          title="Active Manpower"
+          value={activeManpower}
+          icon={Users}
+          iconColor="text-blue-600"
+          iconBgColor="bg-blue-50"
         />
       </div>
 
@@ -374,14 +403,14 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  Active Suppliers
+                  Total Manpower
                 </p>
-                <p className="text-2xl font-bold text-gray-600">
-                  {activeSuppliers}
+                <p className="text-2xl font-bold text-blue-600">
+                  {totalManpower}
                 </p>
               </div>
-              <div className="bg-gray-50 p-3 rounded-full">
-                <Wrench className="h-6 w-6 text-gray-600" />
+              <div className="bg-blue-50 p-3 rounded-full">
+                <Users className="h-6 w-6 text-blue-600" />
               </div>
             </div>
           </CardContent>
@@ -486,23 +515,23 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Purchase Orders Status */}
+        {/* Manpower Status Distribution */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Purchase Orders Status
+              <Users className="h-5 w-5 mr-2" />
+              Manpower Status Distribution
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64">
-              {Object.keys(purchaseStatusData).length > 0 ? (
-                <Doughnut data={purchaseChartData} options={chartOptions} />
+              {totalManpower > 0 ? (
+                <Doughnut data={manpowerStatusData} options={chartOptions} />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-500">
                   <div className="text-center">
-                    <ShoppingCart className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                    <p>No purchase data available</p>
+                    <Users className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                    <p>No manpower data available</p>
                   </div>
                 </div>
               )}
@@ -524,15 +553,31 @@ export default function Dashboard() {
               variant="outline"
               onClick={() => setLocation("/projects")}
             >
-              <FolderOpen className="h-4 w-4 mr-2" />
-              Create New Project
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Project
             </Button>
             <Button
               className="w-full justify-start"
               variant="outline"
-              onClick={() => setLocation("/workforce")}
+              onClick={() => setLocation("/transactions")}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Record Transaction
+            </Button>
+            <Button
+              className="w-full justify-start"
+              variant="outline"
+              onClick={() => setLocation("/manpower")}
             >
               <Users className="h-4 w-4 mr-2" />
+              Assign Manpower
+            </Button>
+            <Button
+              className="w-full justify-start"
+              variant="outline"
+              onClick={() => setLocation("/employees")}
+            >
+              <Plus className="h-4 w-4 mr-2" />
               Add Employee
             </Button>
             <Button
@@ -542,14 +587,6 @@ export default function Dashboard() {
             >
               <ShoppingCart className="h-4 w-4 mr-2" />
               New Purchase Order
-            </Button>
-            <Button
-              className="w-full justify-start"
-              variant="outline"
-              onClick={() => setLocation("/reports")}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Generate Report
             </Button>
           </CardContent>
         </Card>
