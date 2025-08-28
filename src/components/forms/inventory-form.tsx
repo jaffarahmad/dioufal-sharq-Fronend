@@ -144,7 +144,7 @@ export default function InventoryForm({
     // Create inventory data with all fields
     const inventoryData: InsertInventory = {
       ...data,
-      totalValue: totalValue.toString(),
+      totalValue,
     };
 
     console.log("Sending inventory data:", inventoryData);

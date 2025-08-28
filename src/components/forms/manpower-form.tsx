@@ -172,10 +172,14 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
   const onSubmit = (data: ManpowerFormData) => {
     console.log("Form submitted with data:", data);
 
-    const manpowerData: InsertManpower = {
-      ...data,
-      startDate: data.startDate,
+    const manpowerData = {
+      employeeId: data.employeeId.toString(),
+      projectId: data.projectId.toString(),
+      role: data.role,
+      assignedDate: data.startDate,
       endDate: data.endDate || undefined,
+      dailyRate: data.dailyRate,
+      status: data.status,
     };
 
     console.log("Sending manpower data:", manpowerData);

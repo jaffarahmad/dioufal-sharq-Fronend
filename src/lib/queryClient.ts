@@ -10,7 +10,7 @@ async function throwIfResNotOk(res: Response) {
 export async function apiRequest(
   url: string,
   options?: RequestInit
-): Promise<Response> {
+): Promise<any> {
   const token = localStorage.getItem("auth_token");
   const apiBaseUrl = getApiBaseUrl();
 
@@ -25,13 +25,39 @@ export async function apiRequest(
     ? `${apiBaseUrl}${url}`
     : `${apiBaseUrl}/${url}`;
 
+  console.log("Making API request:", {
+    url: fullUrl,
+    method: options?.method || 'GET',
+    headers,
+    body: options?.body
+  });
+
   const res = await fetch(fullUrl, {
     credentials: "include",
     ...options,
     headers,
   });
 
-  return res; // Don't throw here, let caller handle errors
+  console.log("API response:", {
+    status: res.status,
+    statusText: res.statusText,
+    ok: res.ok
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
+    const errorText = await res.text();
+    console.error("API error response:", errorText);
+    throw new Error(`HTTP error! status: ${res.status}, message: ${errorText}`);
+  }
+
+  const responseData = await res.json();
+  console.log("API response data:", responseData);
+  return responseData;
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -59,8 +85,8 @@ export const getQueryFn: <T>(options: {
     // Construct full URL with base URL
     const firstKey = queryKey[0] as string;
     const url = firstKey.startsWith('/') 
-      ? `${apiBaseUrl}${queryKey.map(String).join('/')}`
-      : `${apiBaseUrl}/${queryKey.map(String).join('/')}`; 
+      ? `${apiBaseUrl}${firstKey}`
+      : `${apiBaseUrl}/${firstKey}`; 
 
     const res = await fetch(url, {
        credentials: "include",

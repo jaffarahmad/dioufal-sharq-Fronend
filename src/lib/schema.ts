@@ -28,7 +28,7 @@ export const insertProjectSchema = z.object({
   description: z.string().optional(),
   startDate: z.string(),
   endDate: z.string().optional(),
-  budget: z.union([z.number(), z.string()]).transform(val => typeof val === 'string' ? val : val.toString()),
+  budget: z.union([z.number(), z.string()]).transform(val => typeof val === 'string' ? parseFloat(val) || 0 : val),
   status: z.enum(["planning", "active", "completed", "cancelled"]).default("planning"),
   clientName: z.string().optional(),
   clientContact: z.string().optional(),
@@ -90,7 +90,7 @@ export const insertInventorySchema = z.object({
   categoryId: z.number(),
   supplierId: z.number().optional(),
   minStock: z.number().min(0).default(0),
-  totalValue: z.union([z.number(), z.string()]).optional(),
+  totalValue: z.number().min(0, "Total value must be non-negative"),
   minStockLevel: z.number().min(0).optional(),
   status: z.enum(["available", "sold", "damaged", "reserved"]).default("available"),
 });

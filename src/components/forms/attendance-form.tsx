@@ -199,8 +199,8 @@ export default function AttendanceForm({
     }
 
     const attendanceData: InsertAttendance = {
-      employeeId: parseInt(data.employeeId, 10),
-      projectId: data.projectId && data.projectId !== "" ? parseInt(data.projectId, 10) : 1, // Default to project 1 if none selected
+      employeeId: data.employeeId,
+      projectId: data.projectId && data.projectId !== "" ? data.projectId : "1", // Default to project 1 if none selected
       date: data.date,
       hoursWorked: calculatedHours ? parseFloat(calculatedHours) : (data.hoursWorked ? parseFloat(data.hoursWorked) : 0),
       overtime: data.overtime ? parseFloat(data.overtime) : 0,

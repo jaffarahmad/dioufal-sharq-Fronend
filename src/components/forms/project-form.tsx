@@ -49,7 +49,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
       name: "",
       description: "",
       status: "planning",
-      budget: "0",
+      budget: 0,
       startDate: new Date().toISOString().split('T')[0],
       endDate: undefined,
       clientName: "",
@@ -68,7 +68,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
         name: project.name || "",
         description: project.description || "",
         status: project.status || "planning",
-        budget: project.budget || "0",
+        budget: typeof project.budget === 'string' ? parseFloat(project.budget) || 0 : project.budget || 0,
         startDate: project.startDate || new Date().toISOString().split('T')[0],
         endDate: project.endDate || undefined,
         clientName: project.clientName || "",
@@ -82,12 +82,15 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
   }, [project, form]);
 
   const createMutation = useMutation({
-    mutationFn: (data: InsertProject) =>
-      apiRequest("/api/projects", {
+    mutationFn: (data: InsertProject) => {
+      console.log("Creating project with data:", data);
+      return apiRequest("/api/projects", {
         method: "POST",
         body: JSON.stringify(data),
-      }),
-    onSuccess: () => {
+      });
+    },
+    onSuccess: (response) => {
+      console.log("Project created successfully:", response);
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Success", description: "Project created successfully" });
@@ -95,7 +98,8 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
       form.reset();
       onSuccess?.();
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Failed to create project:", error);
       toast({
         title: "Error",
         description: "Failed to create project",
@@ -105,19 +109,23 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: InsertProject) =>
-      apiRequest(`/api/projects/${project?.id}`, {
+    mutationFn: (data: InsertProject) => {
+      console.log("Updating project with data:", data);
+      return apiRequest(`/api/projects/${project?.id}`, {
         method: "PUT",
         body: JSON.stringify(data),
-      }),
-    onSuccess: () => {
+      });
+    },
+    onSuccess: (response) => {
+      console.log("Project updated successfully:", response);
       queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Success", description: "Project updated successfully" });
       setOpen(false);
       onSuccess?.();
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Failed to update project:", error);
       toast({
         title: "Error",
         description: "Failed to update project",
@@ -127,6 +135,8 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
   });
 
   const onSubmit = (data: InsertProject) => {
+    console.log("Form submitted with data:", data);
+    console.log("Project ID:", project?.id);
     if (project?.id) {
       updateMutation.mutate(data);
     } else {

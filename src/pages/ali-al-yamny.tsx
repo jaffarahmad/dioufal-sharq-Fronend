@@ -75,15 +75,25 @@ function AliAlYamnyForm({ record, trigger }: AliAlYamnyFormProps) {
 
   const createMutation = useMutation({
     mutationFn: async (data: AliAlYamnyFormData) => {
-      const response = await apiRequest("/api/ali-al-yamny", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to create record");
-      }
-      return await response.json();
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('ali-al-yamny-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Create new record with ID and timestamps
+      const newRecord = {
+        ...data,
+        id: Date.now().toString(), // Simple ID generation
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      // Add to existing records
+      const updatedRecords = [...existingRecords, newRecord];
+      
+      // Save back to localStorage
+      localStorage.setItem('ali-al-yamny-records', JSON.stringify(updatedRecords));
+      
+      return newRecord;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/ali-al-yamny"] });
@@ -105,15 +115,21 @@ function AliAlYamnyForm({ record, trigger }: AliAlYamnyFormProps) {
 
   const updateMutation = useMutation({
     mutationFn: async (data: AliAlYamnyFormData) => {
-      const response = await apiRequest(`/api/ali-al-yamny/${record?.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to update record");
-      }
-      return await response.json();
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('ali-al-yamny-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Find and update the record
+      const updatedRecords = existingRecords.map((r: any) => 
+        r.id === record?.id 
+          ? { ...r, ...data, updatedAt: new Date().toISOString() }
+          : r
+      );
+      
+      // Save back to localStorage
+      localStorage.setItem('ali-al-yamny-records', JSON.stringify(updatedRecords));
+      
+      return { ...record, ...data, updatedAt: new Date().toISOString() };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/ali-al-yamny"] });
@@ -294,28 +310,33 @@ export default function AliAlYamny() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Temporary mock data until backend endpoint is implemented
   const { data: records = [], isLoading } = useQuery({
     queryKey: ["/api/ali-al-yamny"],
     queryFn: async () => {
-      const response = await apiRequest("/api/ali-al-yamny");
-      if (!response.ok) {
-        throw new Error(`Failed to fetch records: ${response.statusText}`);
+      // Try to get data from localStorage first
+      const storedData = localStorage.getItem('ali-al-yamny-records');
+      if (storedData) {
+        return JSON.parse(storedData);
       }
-      const data = await response.json();
-      return Array.isArray(data) ? data : [];
+      // Return empty array if no stored data
+      return [];
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiRequest(`/api/ali-al-yamny/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to delete record");
-      }
-      return await response.json();
+      // Get existing records from localStorage
+      const storedData = localStorage.getItem('ali-al-yamny-records');
+      const existingRecords = storedData ? JSON.parse(storedData) : [];
+      
+      // Filter out the record to delete
+      const updatedRecords = existingRecords.filter((r: any) => r.id !== id);
+      
+      // Save back to localStorage
+      localStorage.setItem('ali-al-yamny-records', JSON.stringify(updatedRecords));
+      
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/ali-al-yamny"] });
@@ -408,6 +429,22 @@ export default function AliAlYamny() {
           </p>
         </div>
         <AliAlYamnyForm />
+      </div>
+
+      {/* Temporary Notice */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="flex items-center">
+          <div className="flex-shrink-0">
+            <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <p className="text-sm text-yellow-800">
+              <strong>Notice:</strong> This page is currently using temporary local storage. Data will be saved locally in your browser until the backend endpoint is implemented.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Statistics Cards */}
