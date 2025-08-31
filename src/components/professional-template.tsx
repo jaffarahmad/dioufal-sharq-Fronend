@@ -7,20 +7,9 @@ import { Download, Printer, Plus, Trash2, Type } from "lucide-react";
 import ProfessionalStamp from "./professional-stamp";
 import logoImage from "@assets/image_17540348329.png";
 
-// Load external libraries
-function loadLibrary(name: string, src: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if ((window as any)[name]) {
-      resolve();
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error(`Failed to load ${name}`));
-    document.head.appendChild(script);
-  });
-}
+import { generateEnhancedPDF } from '@/utils/enhanced-pdf-generator';
+
+
 
 interface ProfessionalTemplateItem {
   id: string;
@@ -135,33 +124,18 @@ export default function ProfessionalTemplate({
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
     try {
-      await loadLibrary(
-        "html2pdf",
-        "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-      );
-
-      const element = printRef.current;
-      if (!element) return;
-
-      const opt = {
-        margin: [10, 10, 10, 10],
-        filename: `${documentNumber}-professional.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#ffffff",
-        },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "portrait",
-          compress: true,
-        },
-      };
-
-      await (window as any).html2pdf().set(opt).from(element).save();
+      await generateEnhancedPDF({
+         elementId: 'professional-template-content',
+         filename: `${documentNumber}-professional.pdf`,
+         pageFormat: 'a4',
+         orientation: 'portrait',
+         margins: { top: 10, right: 10, bottom: 10, left: 10 },
+         scale: 2,
+         quality: 0.98
+       }, {
+         show: true,
+         message: 'Generating professional template PDF...'
+       });
     } catch (error) {
       console.error("PDF generation failed:", error);
     } finally {
@@ -224,6 +198,7 @@ export default function ProfessionalTemplate({
       {/* Printable Content */}
       <div
         ref={printRef}
+        id="professional-template-content"
         className="max-w-5xl mx-auto p-8 bg-white min-h-screen"
       >
         {/* Header */}

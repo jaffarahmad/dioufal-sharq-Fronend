@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertPaymentSchema, type InsertPayment } from "@/lib/schema";
 import {
   Card,
   CardContent,
@@ -33,6 +36,14 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   CheckCircle,
   XCircle,
@@ -74,18 +85,23 @@ export default function MonthlyPaymentsPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingPayment, setEditingPayment] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
-  const [newPaymentData, setNewPaymentData] = useState({
-    iqamaNo: "",
-    name: "",
-    companyNo: "",
-    phone: "",
-    amount: "",
-    status: "not_paid",
-  });
   const [showImportDialog, setShowImportDialog] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // React Hook Form setup for Add Payment
+  const form = useForm<InsertPayment>({
+    resolver: zodResolver(insertPaymentSchema),
+    defaultValues: {
+      iqamaNo: "",
+      name: "",
+      companyNo: "",
+      phone: "",
+      amount: 0,
+      status: "not_paid",
+    },
+  });
 
   // Fetch payments for selected month/year
   const {
@@ -127,17 +143,11 @@ export default function MonthlyPaymentsPage() {
       console.log("Payment creation successful, invalidating queries");
       queryClient.invalidateQueries({ queryKey: ["payments-records"] });
       setShowAddForm(false);
-      setNewPaymentData({
-        iqamaNo: "",
-        name: "",
-        companyNo: "",
-        phone: "",
-        amount: "",
-        status: "not_paid",
-      });
+      form.reset();
       toast({
         title: "Success",
         description: "Payment record added successfully",
+        variant: "success",
       });
     },
     onError: (error: any) => {
@@ -172,6 +182,7 @@ export default function MonthlyPaymentsPage() {
       toast({
         title: "Success",
         description: "Payment record updated successfully",
+        variant: "success",
       });
     },
     onError: (error: any) => {
@@ -199,6 +210,7 @@ export default function MonthlyPaymentsPage() {
       toast({
         title: "Success",
         description: "Payment record deleted successfully",
+        variant: "success",
       });
     },
     onError: (error: any) => {
@@ -261,6 +273,7 @@ export default function MonthlyPaymentsPage() {
       toast({
         title: "Success",
         description: `Generated ${data.created} payment records. ${data.skipped} already existed.`,
+        variant: "success",
       });
       if (data.errors && data.errors.length > 0) {
         console.warn("Generation errors:", data.errors);
@@ -289,47 +302,45 @@ export default function MonthlyPaymentsPage() {
   });
 
   // Handle form submissions
-  const handleAddPayment = () => {
-    console.log("Form submission started:", newPaymentData);
-
-    // Validation
-    if (
-      !newPaymentData.iqamaNo ||
-      !newPaymentData.name ||
-      !newPaymentData.amount
-    ) {
-      console.log("Validation failed: Missing required fields");
-      toast({
-        title: "Validation Error",
-        description:
-          "Please fill in all required fields (Iqama No, Name, Amount)",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const paymentData = {
-      iqamaNo: newPaymentData.iqamaNo,
-      name: newPaymentData.name,
-      companyNo: newPaymentData.companyNo,
-      phone: newPaymentData.phone,
-      amount: parseFloat(newPaymentData.amount),
-      status: newPaymentData.status,
-    };
-
-    console.log("Prepared payment data:", paymentData);
-    addPaymentMutation.mutate(paymentData);
+  const handleAddPayment = (data: InsertPayment) => {
+    console.log("Form submission started:", data);
+    addPaymentMutation.mutate(data);
   };
 
   const handleUpdatePayment = (id: string) => {
     console.log("Update payment started:", id, editFormData);
 
+    // Validation for update
+    if (
+      !editFormData.iqamaNo?.trim() ||
+      !editFormData.name?.trim() ||
+      !editFormData.amount?.trim()
+    ) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields (Iqama No, Name, Amount)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate amount is a valid number
+    const amountValue = parseFloat(editFormData.amount);
+    if (isNaN(amountValue) || amountValue <= 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid amount greater than 0",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const updateData = {
-      iqamaNo: editFormData.iqamaNo,
-      name: editFormData.name,
-      companyNo: editFormData.companyNo,
-      phone: editFormData.phone,
-      amount: parseFloat(editFormData.amount),
+      iqamaNo: editFormData.iqamaNo.trim(),
+      name: editFormData.name.trim(),
+      companyNo: editFormData.companyNo?.trim() || "",
+      phone: editFormData.phone?.trim() || "",
+      amount: amountValue,
       status: editFormData.status,
     };
 
@@ -354,10 +365,6 @@ export default function MonthlyPaymentsPage() {
       amount: payment.amount.toString(),
       status: payment.status,
     });
-  };
-
-  const handleNewPaymentInputChange = (field: string, value: string) => {
-    setNewPaymentData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleEditInputChange = (field: string, value: string) => {
@@ -499,6 +506,7 @@ export default function MonthlyPaymentsPage() {
       toast({
         title: "Success",
         description: `Imported ${importedPayments.length} payment records successfully`,
+        variant: "success",
       });
     };
 
@@ -718,94 +726,133 @@ export default function MonthlyPaymentsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="iqamaNo">Iqama No *</Label>
-                <Input
-                  id="iqamaNo"
-                  value={newPaymentData.iqamaNo}
-                  onChange={e =>
-                    handleNewPaymentInputChange("iqamaNo", e.target.value)
-                  }
-                  placeholder="Enter Iqama number"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
-                <Input
-                  id="name"
-                  value={newPaymentData.name}
-                  onChange={e =>
-                    handleNewPaymentInputChange("name", e.target.value)
-                  }
-                  placeholder="Enter employee name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="companyNo">Company No</Label>
-                <Input
-                  id="companyNo"
-                  value={newPaymentData.companyNo}
-                  onChange={e =>
-                    handleNewPaymentInputChange("companyNo", e.target.value)
-                  }
-                  placeholder="Enter company number"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  value={newPaymentData.phone}
-                  onChange={e =>
-                    handleNewPaymentInputChange("phone", e.target.value)
-                  }
-                  placeholder="Enter phone number"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="amount">Amount *</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  value={newPaymentData.amount}
-                  onChange={e =>
-                    handleNewPaymentInputChange("amount", e.target.value)
-                  }
-                  placeholder="Enter amount"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={newPaymentData.status}
-                  onValueChange={value =>
-                    handleNewPaymentInputChange("status", value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="not_paid">Not Paid</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-4">
-              <Button variant="outline" onClick={() => setShowAddForm(false)}>
-                <X className="h-4 w-4 mr-2" />
-                Cancel
-              </Button>
-              <Button
-                onClick={handleAddPayment}
-                disabled={addPaymentMutation.isPending}
-              >
-                <Save className="h-4 w-4 mr-2" />
-                {addPaymentMutation.isPending ? "Adding..." : "Add Payment"}
-              </Button>
-            </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleAddPayment)} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="iqamaNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Iqama No *</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Iqama number"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name *</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter employee name"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="companyNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Company No</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter company number"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter phone number"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Amount *</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="Enter amount (SAR)"
+                            {...field}
+                            onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="paid">Paid</SelectItem>
+                            <SelectItem value="not_paid">Not Paid</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <Button variant="outline" type="button" onClick={() => setShowAddForm(false)}>
+                    <X className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={addPaymentMutation.isPending}
+                  >
+                    <Save className="h-4 w-4 mr-2" />
+                    {addPaymentMutation.isPending ? "Adding..." : "Add Payment"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       )}

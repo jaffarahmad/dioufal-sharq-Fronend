@@ -313,6 +313,25 @@ export interface Manpower extends InsertManpower {
   updatedAt: string;
 }
 
+// Payment schemas
+export const insertPaymentSchema = z.object({
+  iqamaNo: z.string().min(1, "Iqama No is required"),
+  name: z.string().min(1, "Name is required"),
+  companyNo: z.string().optional(),
+  phone: z.string().optional(),
+  month: z.string().optional(),
+  amount: z.number().min(0.01, "Amount must be greater than 0"),
+  status: z.enum(["paid", "not_paid"]).default("not_paid"),
+});
+
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
+
+export interface PaymentRecord extends InsertPayment {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Ali Al Yamny schemas
 export const insertAliAlYamnySchema = z.object({
   date: z.string(),

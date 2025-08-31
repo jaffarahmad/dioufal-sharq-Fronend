@@ -141,15 +141,25 @@ export class EnhancedPDFGenerator {
     elementsToOptimize.forEach(el => {
       originalStyles.set(el, el.style.cssText);
 
-      // Optimize for PDF rendering
+      // Optimize for PDF rendering with enhanced color preservation
       (el.style as any).webkitPrintColorAdjust = "exact";
       (el.style as any).colorAdjust = "exact";
+      (el.style as any).printColorAdjust = "exact";
       (el.style as any).webkitFontSmoothing = "antialiased";
       (el.style as any).mozOsxFontSmoothing = "grayscale";
 
-      // Ensure backgrounds are preserved
-      if (window.getComputedStyle(el).backgroundColor !== "transparent") {
+      // Force color preservation for all elements
+      const computedStyle = window.getComputedStyle(el);
+      if (computedStyle.backgroundColor && computedStyle.backgroundColor !== "transparent" && computedStyle.backgroundColor !== "rgba(0, 0, 0, 0)") {
+        el.style.backgroundColor = computedStyle.backgroundColor;
         (el.style as any).webkitPrintColorAdjust = "exact";
+        (el.style as any).printColorAdjust = "exact";
+      }
+      if (computedStyle.color && computedStyle.color !== "transparent") {
+        el.style.color = computedStyle.color;
+      }
+      if (computedStyle.borderColor && computedStyle.borderColor !== "transparent") {
+        el.style.borderColor = computedStyle.borderColor;
       }
 
       // Fix potential layout issues
@@ -178,12 +188,29 @@ export class EnhancedPDFGenerator {
             -webkit-font-smoothing: antialiased !important;
             -moz-osx-font-smoothing: grayscale !important;
           }
+          #${element.id} .bg-red-600,
+          #${element.id} .bg-blue-600,
+          #${element.id} .bg-gray-600,
+          #${element.id} .bg-gray-50,
+          #${element.id} .bg-gray-100,
+          #${element.id} .text-red-600,
+          #${element.id} .text-blue-600,
+          #${element.id} .text-white,
+          #${element.id} .border-red-600,
+          #${element.id} .border-gray-300 {
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           #${element.id} .bg-gradient-to-r,
           #${element.id} .bg-gradient-to-l,
           #${element.id} .bg-gradient-to-t,
           #${element.id} .bg-gradient-to-b {
             background-image: none !important;
             background-color: var(--fallback-bg, #f8f9fa) !important;
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
         `;
         document.head.appendChild(pdfStyleSheet);
@@ -230,8 +257,21 @@ export class EnhancedPDFGenerator {
     } = options;
 
     const element = document.getElementById(elementId);
+    console.log('PDF Generation Debug:', {
+      elementId,
+      elementFound: !!element,
+      elementType: element?.tagName,
+      elementClasses: element?.className,
+      hasContent: element?.innerHTML?.length || 0
+    });
+    
     if (!element) {
       throw new Error(`Element with ID '${elementId}' not found`);
+    }
+    
+    // Additional element validation
+    if (element.innerHTML.trim().length === 0) {
+      console.warn('Warning: Element appears to have no content');
     }
 
     this.showLoading(loadingOptions);
@@ -249,14 +289,48 @@ export class EnhancedPDFGenerator {
           display: element.style.display,
           visibility: element.style.visibility,
           opacity: element.style.opacity,
+          position: element.style.position,
+          zIndex: element.style.zIndex,
         };
 
+        // Make element fully visible and accessible
         element.style.display = "block";
         element.style.visibility = "visible";
         element.style.opacity = "1";
+        element.style.position = "relative";
+        element.style.zIndex = "9999";
 
-        // Force reflow
+        // Force multiple reflows to ensure rendering
         element.offsetHeight;
+        await new Promise(resolve => setTimeout(resolve, 100));
+        element.offsetHeight;
+        
+        // Scroll element into view if needed
+        element.scrollIntoView({ behavior: 'instant', block: 'start' });
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        // Debug element dimensions and visibility
+        const computedStyle = window.getComputedStyle(element);
+        console.log('Element dimensions and visibility:', {
+          offsetWidth: element.offsetWidth,
+          offsetHeight: element.offsetHeight,
+          scrollWidth: element.scrollWidth,
+          scrollHeight: element.scrollHeight,
+          clientWidth: element.clientWidth,
+          clientHeight: element.clientHeight,
+          display: computedStyle.display,
+          visibility: computedStyle.visibility,
+          opacity: computedStyle.opacity,
+          backgroundColor: computedStyle.backgroundColor,
+          color: computedStyle.color,
+          position: computedStyle.position,
+          zIndex: computedStyle.zIndex
+        });
+
+        // Ensure element has proper dimensions
+        if (element.offsetWidth === 0 || element.offsetHeight === 0) {
+          throw new Error(`Element has zero dimensions: width=${element.offsetWidth}, height=${element.offsetHeight}. Make sure the element is visible and has content.`);
+        }
 
         // Generate high-quality canvas
         let canvas: HTMLCanvasElement;
@@ -276,6 +350,10 @@ export class EnhancedPDFGenerator {
             foreignObjectRendering: true,
             imageTimeout: 5000,
             removeContainer: true,
+            ignoreElements: (element) => {
+              // Skip elements that might interfere with color rendering
+              return element.classList?.contains('print-hidden') || false;
+            },
             onclone: clonedDoc => {
               try {
                 // Ensure cloned document has the same optimizations
@@ -301,20 +379,56 @@ export class EnhancedPDFGenerator {
             },
           });
 
+          console.log('Canvas generated successfully:', {
+            width: canvas.width,
+            height: canvas.height,
+            element_id: elementId
+          });
+          
           if (canvas.width === 0 || canvas.height === 0) {
             throw new Error(
               "Generated canvas has no content. Please check if the element is visible."
             );
+          }
+          
+          // Test if canvas has actual content by checking a few pixels
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            const imageData = ctx.getImageData(0, 0, Math.min(canvas.width, 100), Math.min(canvas.height, 100));
+            const hasContent = imageData.data.some((value, index) => {
+              // Check if any pixel is not white (255,255,255) or transparent
+              if (index % 4 === 3) return false; // Skip alpha channel
+              return value !== 255;
+            });
+            console.log('Canvas has visible content:', hasContent);
+            
+            if (!hasContent) {
+              console.warn('Canvas appears to be empty or all white');
+            }
           }
         } finally {
           // Restore original styles
           element.style.display = originalStyles.display;
           element.style.visibility = originalStyles.visibility;
           element.style.opacity = originalStyles.opacity;
+          element.style.position = originalStyles.position;
+          element.style.zIndex = originalStyles.zIndex;
         }
 
         // Convert to high-quality image
         const imgData = canvas.toDataURL("image/jpeg", quality);
+        
+        // Debug canvas and image data
+        console.log('Canvas details:', {
+          width: canvas.width,
+          height: canvas.height,
+          dataURL_length: imgData.length,
+          dataURL_prefix: imgData.substring(0, 50)
+        });
+        
+        if (imgData.length < 1000) {
+          console.warn('Image data seems too small, might be empty');
+        }
 
         // Create PDF with precise dimensions
         const pdf = new jsPDF({

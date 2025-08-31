@@ -13,8 +13,7 @@ import {
   Download,
 } from "lucide-react";
 import { useLocation } from "wouter";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import { generateEnhancedPDF } from "@/utils/enhanced-pdf-generator";
 import companyStamp from "@assets/image_17540348329.png";
 import logoImage from "@assets/image-logo.png";
 
@@ -31,24 +30,38 @@ export default function ProfessionalQuotation() {
   const quotationRef = useRef<HTMLDivElement>(null);
 
   const [quotationData, setQuotationData] = useState({
-    reference: "",
+    reference: "QUO-2024-001",
     date: new Date().toLocaleDateString('en-GB', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     }),
-    clientName: "",
-    project: "",
-    subject: "",
+    clientName: "Sample Client Company",
+    project: "Sample Construction Project",
+    subject: "Quotation for Construction Services",
   });
 
   const [items, setItems] = useState<QuotationItem[]>([
     {
       id: "1",
       srNo: 1,
-      description: "",
-      unit: "",
-      rate: "",
+      description: "Concrete Foundation Work",
+      unit: "m³",
+      rate: "450.00",
+    },
+    {
+      id: "2",
+      srNo: 2,
+      description: "Steel Structure Installation",
+      unit: "ton",
+      rate: "2,800.00",
+    },
+    {
+      id: "3",
+      srNo: 3,
+      description: "Electrical Wiring and Installation",
+      unit: "point",
+      rate: "125.00",
     },
   ]);
 
@@ -117,84 +130,38 @@ export default function ProfessionalQuotation() {
   }, [items, quotationData]);
 
   const exportToPDF = async () => {
-    if (!quotationRef.current) return;
-
-    const element = quotationRef.current;
-    const originalStyles = {
-      transform: element.style.transform,
-      width: element.style.width,
-      height: element.style.height,
-      position: element.style.position,
-      left: element.style.left,
-      top: element.style.top,
-    };
-
     try {
-      // Prepare element for PDF capture
-      element.style.transform = 'scale(1)';
-      element.style.width = '210mm';
-      element.style.height = 'auto';
-      element.style.position = 'absolute';
-      element.style.left = '-9999px';
-      element.style.top = '0';
-      
-      // Add PDF-specific styling
-      element.classList.add('pdf-export');
-      
-      // Wait for layout to settle
-      await new Promise(resolve => setTimeout(resolve, 200));
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: 794, // A4 width in pixels at 96 DPI
-        height: element.scrollHeight,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794,
-        windowHeight: element.scrollHeight,
+      // Debug current data state
+      console.log('PDF Export Debug - Current Data:', {
+        quotationData,
+        itemsCount: items.length,
+        items: items.map(item => ({
+          id: item.id,
+          description: item.description?.substring(0, 50) + '...',
+          unit: item.unit,
+          rate: item.rate
+        }))
       });
-
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      const imgData = canvas.toDataURL('image/png', 1.0);
-
-      if (imgHeight <= pageHeight) {
-        // Single page
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      } else {
-        // Multiple pages
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        // First page
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        // Additional pages
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-      }
-
-      pdf.save(`${quotationData.reference || 'quotation'}.pdf`);
-    } finally {
-      // Restore original styles
-      element.style.transform = originalStyles.transform;
-      element.style.width = originalStyles.width;
-      element.style.height = originalStyles.height;
-      element.style.position = originalStyles.position;
-      element.style.left = originalStyles.left;
-      element.style.top = originalStyles.top;
-      element.classList.remove('pdf-export');
+      const fileName = `${quotationData.reference || 'Professional_Quotation'}_${new Date()
+        .toISOString()
+        .split("T")[0]}.pdf`;
+      
+      await generateEnhancedPDF({
+         elementId: "professional-quotation-content",
+         filename: fileName,
+         pageFormat: "a4",
+         orientation: "portrait",
+         margins: { top: 15, right: 15, bottom: 15, left: 15 },
+         scale: 2,
+         quality: 1.0
+       }, {
+         show: true,
+         message: "Generating Professional Quotation PDF..."
+       });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF. Please try again.");
     }
   };
 
@@ -366,6 +333,7 @@ export default function ProfessionalQuotation() {
         {/* Professional Quotation Template */}
         <div
           ref={quotationRef}
+          id="professional-quotation-content"
           className="bg-white shadow-lg relative mx-auto"
           style={{ width: "210mm", minHeight: "auto" }}
         >
@@ -613,6 +581,18 @@ export default function ProfessionalQuotation() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Export PDF Button Below Preview */}
+      <div className="flex justify-center mt-8 mb-8">
+        <Button 
+          onClick={exportToPDF} 
+          size="lg"
+          className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg font-semibold shadow-lg"
+        >
+          <Download className="h-5 w-5 mr-3" />
+          Export PDF
+        </Button>
       </div>
 
       {/* Print and PDF Optimization Styles */}

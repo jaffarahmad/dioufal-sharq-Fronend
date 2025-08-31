@@ -64,15 +64,15 @@ export function Notification({
   const getTypeStyles = () => {
     switch (type) {
       case "success":
-        return "bg-green-50/70 border-green-200/70 text-green-800 dark:bg-green-900/10 dark:border-green-800/50 dark:text-green-300";
+        return "bg-green-50 border-green-200 text-green-800 dark:bg-green-900 dark:border-green-800 dark:text-green-300";
       case "error":
-        return "bg-red-50/70 border-red-200/70 text-red-800 dark:bg-red-900/10 dark:border-red-800/50 dark:text-red-300";
+        return "bg-red-50 border-red-200 text-red-800 dark:bg-red-900 dark:border-red-800 dark:text-red-300";
       case "warning":
-        return "bg-yellow-50/70 border-yellow-200/70 text-yellow-800 dark:bg-yellow-900/10 dark:border-yellow-800/50 dark:text-yellow-300";
+        return "bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:border-yellow-800 dark:text-yellow-300";
       case "info":
-        return "bg-gray-50/70 border-gray-200/70 text-gray-800 dark:bg-gray-900/10 dark:border-gray-800/50 dark:text-gray-300";
+        return "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-300";
       default:
-        return "bg-gray-50/70 border-gray-200/70 text-gray-800 dark:bg-gray-900/10 dark:border-gray-800/50 dark:text-gray-300";
+        return "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-300";
     }
   };
 

@@ -122,11 +122,11 @@ export function NotificationSystem({
               {notifications.map((notification, index) => (
                 <div key={notification.id}>
                   <div
-                    className={`p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors ${
+                    className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
                       !notification.read
-                        ? "bg-gray-50/60 dark:bg-gray-900/5 border-l-4 border-l-gray-500/70"
+                        ? "bg-gray-50 dark:bg-gray-900 border-l-4 border-l-gray-500"
                         : ""
-                    } ${notification.urgent ? "bg-red-50/60 dark:bg-red-900/5" : ""}`}
+                    } ${notification.urgent ? "bg-red-50 dark:bg-red-900" : ""}`}
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 mt-0.5">
@@ -188,7 +188,7 @@ export function NotificationSystem({
                               variant="ghost"
                               size="sm"
                               onClick={() => onDelete(notification.id)}
-                              className="h-6 w-6 p-0 hover:bg-red-100/70 dark:hover:bg-red-900/10"
+                              className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900"
                             >
                               <X className="h-3 w-3" />
                             </Button>

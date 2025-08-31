@@ -38,9 +38,10 @@ import type { AliAlYamny, InsertAliAlYamny } from "@/lib/schema";
 
 // Ali Al Yamny form schema
 const aliAlYamnyFormSchema = z.object({
-  iqmasNo: z.string().min(1, "Iqmas number is required"),
-  companyName: z.string().min(1, "Company name is required"),
-  contact: z.string().min(1, "Contact information is required"),
+  name: z.string().min(1, "Name is required"),
+  iqmasNo: z.string().min(1, "Iqama number is required"),
+  companyName: z.string().min(1, "Company number is required"),
+  contact: z.string().min(1, "Contact number is required"),
   agreement: z.string().min(1, "Agreement details are required"),
   aliAlYamny: z.string().min(1, "Ali Al Yamny information is required"),
   expireDate: z.string().optional(),
@@ -64,6 +65,7 @@ function AliAlYamnyForm({ record, trigger }: AliAlYamnyFormProps) {
   const form = useForm<AliAlYamnyFormData>({
     resolver: zodResolver(aliAlYamnyFormSchema),
     defaultValues: {
+      name: record?.aliAlYamny || "",
       iqmasNo: record?.iqmasNo || "",
       companyName: record?.companyName || "",
       contact: record?.contact || "",
@@ -186,12 +188,26 @@ function AliAlYamnyForm({ record, trigger }: AliAlYamnyFormProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="iqmasNo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Iqmas No</FormLabel>
+                    <FormLabel>Iqama No</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Iqmas number" {...field} />
+                      <Input placeholder="Enter Iqama number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -203,9 +219,9 @@ function AliAlYamnyForm({ record, trigger }: AliAlYamnyFormProps) {
                 name="companyName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name</FormLabel>
+                    <FormLabel>Company No</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter company name" {...field} />
+                      <Input placeholder="Enter company number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -219,10 +235,10 @@ function AliAlYamnyForm({ record, trigger }: AliAlYamnyFormProps) {
                 name="contact"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contact</FormLabel>
+                    <FormLabel>Contact No</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter contact information"
+                        placeholder="Enter contact number"
                         {...field}
                       />
                     </FormControl>
@@ -371,25 +387,25 @@ export default function AliAlYamny() {
     }
 
     const headers = [
-      "Iqmas No",
-      "Company Name",
-      "Contact",
+      "Name",
+      "Iqama No",
+      "Company No",
+      "Contact No",
       "Agreement",
       "Ali Al Yamny",
       "Expire Date",
-      "Created Date",
     ];
     const csvContent = [
       headers.join(","),
       ...filteredRecords.map((record: AliAlYamnyRecord) =>
         [
-          `"${record.iqmasNo}"`,
-          `"${record.companyName}"`,
-          `"${record.contact}"`,
-          `"${record.agreement?.replace(/"/g, '""') || ''}"`,
-          `"${record.aliAlYamny?.replace(/"/g, '""') || ''}"`,
+          `"${record.aliAlYamny || 'N/A'}"`,
+          `"${record.iqmasNo || 'N/A'}"`,
+          `"${record.companyName || 'N/A'}"`,
+          `"${record.contact || 'N/A'}"`,
+          `"${record.agreement?.replace(/"/g, '""') || 'N/A'}"`,
+          `"${record.aliAlYamny?.replace(/"/g, '""') || 'N/A'}"`,
           `"${record.expireDate ? new Date(record.expireDate).toLocaleDateString() : 'Not set'}"`,
-          `"${new Date(record.createdAt).toLocaleDateString()}"`,
         ].join(",")
       ),
     ].join("\n");
@@ -521,14 +537,14 @@ export default function AliAlYamny() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Iqmas No</TableHead>
-                  <TableHead>Company Name</TableHead>
-                  <TableHead>Contact</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Iqama No</TableHead>
+                  <TableHead>Company No</TableHead>
+                  <TableHead>Contact No</TableHead>
                   <TableHead>Agreement</TableHead>
                   <TableHead>Ali Al Yamny</TableHead>
                   <TableHead>Expire Date</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -554,15 +570,16 @@ export default function AliAlYamny() {
                   filteredRecords.map((record: AliAlYamnyRecord) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">
-                        {record.iqmasNo}
+                        {record.aliAlYamny || 'N/A'}
                       </TableCell>
-                      <TableCell>{record.companyName}</TableCell>
-                      <TableCell>{record.contact}</TableCell>
+                      <TableCell>{record.iqmasNo || 'N/A'}</TableCell>
+                      <TableCell>{record.companyName || 'N/A'}</TableCell>
+                      <TableCell>{record.contact || 'N/A'}</TableCell>
                       <TableCell className="max-w-xs truncate">
-                        {record.agreement}
+                        {record.agreement || 'N/A'}
                       </TableCell>
                       <TableCell className="max-w-xs truncate">
-                        {record.aliAlYamny}
+                        {record.aliAlYamny || 'N/A'}
                       </TableCell>
                       <TableCell>
                         {record.expireDate ? (
@@ -572,11 +589,6 @@ export default function AliAlYamny() {
                         ) : (
                           <span className="text-gray-400">Not set</span>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {new Date(record.createdAt).toLocaleDateString()}
-                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
