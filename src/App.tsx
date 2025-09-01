@@ -8,6 +8,7 @@ import { NotificationProvider } from "@/hooks/use-notifications";
 import { ThemeProvider } from "@/contexts/theme-context";
 import Sidebar from "@/components/layout/sidebar";
 import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 import Dashboard from "@/pages/dashboard";
 import Projects from "@/pages/projects";
 import Inventory from "@/pages/inventory";
@@ -40,6 +41,7 @@ import MonthlyPayments from "@/pages/monthly-payments";
 import MonthlyReports from "@/pages/monthly-reports";
 import Settings from "@/pages/settings";
 import AliAlYamny from "@/pages/ali-al-yamny";
+import DeleteProjectData from "@/components/delete-project-data";
 import LoginPage from "@/pages/login";
 import NotFound from "@/pages/not-found";
 import { useState, useEffect } from "react";
@@ -66,16 +68,16 @@ function AuthenticatedApp() {
 
   return (
     <ProtectedRoute>
-      <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
         <Sidebar
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           isCollapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
-        <div className="flex flex-col flex-1 overflow-hidden min-w-0">
+        <div className="flex flex-col flex-1 min-w-0">
           <Header onMenuClick={() => setSidebarOpen(true)} />
-          <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-2 sm:p-4 lg:p-6">
+          <main className="flex-1 bg-gray-50 dark:bg-gray-900 p-2 sm:p-4 lg:p-6">
             <div className="max-w-full">
               <Switch>
                 <Route path="/" component={Dashboard} />
@@ -112,6 +114,7 @@ function AuthenticatedApp() {
                 <Route path="/quotation-preview" component={QuotationPreview} />
                 <Route path="/invoices" component={Invoices} />
                 <Route path="/invoices/:id" component={InvoicePreview} />
+                <Route path="/invoice-preview/:id" component={InvoicePreview} />
                 <Route path="/view-invoice/:id" component={ViewInvoicePage} />
                 <Route path="/tax-invoice/:id" component={TaxInvoicePage} />
                 <Route
@@ -135,11 +138,15 @@ function AuthenticatedApp() {
 
                 {/* Settings Route */}
                 <Route path="/settings" component={Settings} />
+                
+                {/* Data Management Route */}
+                <Route path="/delete-project-data" component={DeleteProjectData} />
 
                 <Route component={NotFound} />
               </Switch>
             </div>
           </main>
+          <Footer />
         </div>
       </div>
     </ProtectedRoute>

@@ -26,8 +26,15 @@ export interface Employee extends InsertEmployee {
 export const insertProjectSchema = z.object({
   name: z.string().min(1, "Project name is required"),
   description: z.string().optional(),
-  startDate: z.string(),
-  endDate: z.string().optional(),
+  startDate: z.string().min(1, "Start date is required").refine((date) => {
+    const parsedDate = new Date(date);
+    return !isNaN(parsedDate.getTime());
+  }, "Please enter a valid start date"),
+  endDate: z.string().optional().refine((date) => {
+    if (!date) return true;
+    const parsedDate = new Date(date);
+    return !isNaN(parsedDate.getTime());
+  }, "Please enter a valid end date"),
   budget: z.union([z.number(), z.string()]).transform(val => typeof val === 'string' ? parseFloat(val) || 0 : val),
   status: z.enum(["planning", "active", "completed", "cancelled"]).default("planning"),
   clientName: z.string().optional(),
@@ -36,6 +43,14 @@ export const insertProjectSchema = z.object({
   progress: z.number().min(0).max(100).default(0),
   type: z.string().optional(),
   imageUrl: z.string().optional(),
+}).refine((data) => {
+  if (!data.endDate) return true;
+  const startDate = new Date(data.startDate);
+  const endDate = new Date(data.endDate);
+  return endDate > startDate;
+}, {
+  message: "End date must be after start date",
+  path: ["endDate"],
 });
 
 export type InsertProject = z.infer<typeof insertProjectSchema>;

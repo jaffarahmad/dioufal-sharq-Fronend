@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,7 @@ import {
   MapPin,
   Users,
   TrendingUp,
+  Eye,
 } from "lucide-react";
 import StatsCard from "@/components/ui/stats-card";
 import SupplierForm from "@/components/forms/supplier-form";
@@ -51,6 +53,7 @@ export default function Suppliers() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null);
+  const [viewingSupplier, setViewingSupplier] = useState<Supplier | null>(null);
 
   const { data: suppliers = [], isLoading: suppliersLoading } = useQuery<
     Supplier[]
@@ -358,6 +361,14 @@ export default function Suppliers() {
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => setViewingSupplier(supplier)}
+                          title="View Details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => setEditingSupplier(supplier)}
                           title="Edit Supplier"
                         >
@@ -392,6 +403,108 @@ export default function Suppliers() {
           )}
         </CardContent>
       </Card>
+
+      {/* View Supplier Details Dialog */}
+      <Dialog open={!!viewingSupplier} onOpenChange={() => setViewingSupplier(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Supplier Details</DialogTitle>
+            <DialogDescription>
+              Comprehensive information for the selected supplier
+            </DialogDescription>
+          </DialogHeader>
+          {viewingSupplier && (
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4 p-4 bg-muted rounded-lg">
+                <div className="p-3 bg-blue-100 rounded-full">
+                  <Building2 className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">{viewingSupplier.name}</h3>
+                  {viewingSupplier.contactPerson && (
+                    <p className="text-sm text-muted-foreground">
+                      Contact Person: {viewingSupplier.contactPerson}
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <Label className="text-sm font-medium text-muted-foreground">Phone Number</Label>
+                  </div>
+                  <p className="text-sm pl-6">{viewingSupplier.phone || "Not provided"}</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <Label className="text-sm font-medium text-muted-foreground">Email Address</Label>
+                  </div>
+                  <p className="text-sm pl-6">{viewingSupplier.email || "Not provided"}</p>
+                </div>
+              </div>
+              
+              {viewingSupplier.address && (
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    <Label className="text-sm font-medium text-muted-foreground">Address</Label>
+                  </div>
+                  <p className="text-sm pl-6 bg-muted p-3 rounded">{viewingSupplier.address}</p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Status</Label>
+                  <Badge variant={viewingSupplier.status === 'Active' ? 'default' : 'secondary'}>
+                    {viewingSupplier.status || 'Active'}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Category</Label>
+                  <Badge variant="outline">General</Badge>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Created At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(viewingSupplier.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(viewingSupplier.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setViewingSupplier(null);
+                    setEditingSupplier(viewingSupplier);
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Supplier
+                </Button>
+                <Button onClick={() => setViewingSupplier(null)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Supplier Dialog */}
       <Dialog

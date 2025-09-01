@@ -31,6 +31,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit } from "lucide-react";
+import { captureProjectCard } from "@/utils/png-screenshot";
 
 interface ProjectFormProps {
   onSuccess?: () => void;
@@ -103,11 +104,23 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
       
       return newRecord;
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       console.log("Project created successfully:", response);
       queryClient.invalidateQueries({ queryKey: ["projects-records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Success", description: "Project created successfully" });
+      
+      // Capture screenshot of the project card after creation
+      try {
+        // Wait longer for the UI to fully update and render
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await captureProjectCard(response.id, `project-${response.name}-screenshot.png`);
+        console.log("Screenshot captured successfully for project:", response.id);
+      } catch (error) {
+        console.error("Failed to capture screenshot:", error);
+        // Don't show error to user as screenshot is not critical
+      }
+      
       setOpen(false);
       form.reset();
       onSuccess?.();
@@ -141,12 +154,25 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
       
       return { ...project, ...data, updatedAt: new Date().toISOString() };
     },
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       console.log("Project updated successfully:", response);
       queryClient.invalidateQueries({ queryKey: ["projects-records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       toast({ title: "Success", description: "Project updated successfully" });
+      
+      // Capture screenshot of the updated project card
+      try {
+        // Wait longer for the UI to fully update and render
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await captureProjectCard(response.id, `project-${response.name}-updated-screenshot.png`);
+        console.log("Screenshot captured successfully for updated project:", response.id);
+      } catch (error) {
+        console.error("Failed to capture screenshot:", error);
+        // Don't show error to user as screenshot is not critical
+      }
+      
       setOpen(false);
+      form.reset();
       onSuccess?.();
     },
     onError: (error) => {
@@ -366,9 +392,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           }
                           onChange={e =>
                             field.onChange(
-                              e.target.value
-                                ? new Date(e.target.value)
-                                : undefined
+                              e.target.value || undefined
                             )
                           }
                           className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -399,9 +423,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           }
                           onChange={e =>
                             field.onChange(
-                              e.target.value
-                                ? new Date(e.target.value)
-                                : undefined
+                              e.target.value || undefined
                             )
                           }
                           className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"

@@ -59,6 +59,7 @@ import {
   Upload,
   FileDown,
   RefreshCw,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -86,6 +87,7 @@ export default function MonthlyPaymentsPage() {
   const [editingPayment, setEditingPayment] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
   const [showImportDialog, setShowImportDialog] = useState(false);
+  const [viewingPayment, setViewingPayment] = useState<PaymentRecord | null>(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -1019,6 +1021,14 @@ export default function MonthlyPaymentsPage() {
                             <Button
                               size="sm"
                               variant="outline"
+                              onClick={() => setViewingPayment(payment)}
+                              title="View Details"
+                            >
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
                               onClick={() => handleEditPayment(payment)}
                             >
                               <Edit className="h-3 w-3" />
@@ -1042,6 +1052,90 @@ export default function MonthlyPaymentsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* View Payment Details Dialog */}
+      <Dialog open={!!viewingPayment} onOpenChange={() => setViewingPayment(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Payment Details</DialogTitle>
+            <DialogDescription>
+              Comprehensive information for the selected payment record
+            </DialogDescription>
+          </DialogHeader>
+          {viewingPayment && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Iqama Number</Label>
+                  <p className="text-sm font-mono bg-muted p-2 rounded">{viewingPayment.iqamaNo}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Employee Name</Label>
+                  <p className="text-sm font-semibold">{viewingPayment.name}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Company Number</Label>
+                  <p className="text-sm font-mono bg-muted p-2 rounded">{viewingPayment.companyNo}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Phone Number</Label>
+                  <p className="text-sm">{viewingPayment.phone}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Payment Month</Label>
+                  <p className="text-sm">{viewingPayment.month}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Amount</Label>
+                  <p className="text-lg font-bold text-green-600">SAR {viewingPayment.amount.toLocaleString()}</p>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-muted-foreground">Payment Status</Label>
+                <Badge variant={viewingPayment.status === 'paid' ? 'default' : 'destructive'}>
+                  {viewingPayment.status === 'paid' ? (
+                    <><CheckCircle className="w-3 h-3 mr-1" /> Paid</>
+                  ) : (
+                    <><XCircle className="w-3 h-3 mr-1" /> Not Paid</>
+                  )}
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Created At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(viewingPayment.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(viewingPayment.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setViewingPayment(null);
+                    handleEditPayment(viewingPayment);
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Payment
+                </Button>
+                <Button onClick={() => setViewingPayment(null)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* CSV Import Dialog */}
       <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>

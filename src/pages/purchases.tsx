@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -37,6 +38,7 @@ import {
   Clock,
   CheckCircle,
   Package,
+  Eye,
 } from "lucide-react";
 import StatsCard from "@/components/ui/stats-card";
 import PurchaseForm from "@/components/forms/purchase-form";
@@ -48,6 +50,7 @@ export default function Purchases() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingPurchase, setEditingPurchase] = useState<Purchase | null>(null);
+  const [viewingPurchase, setViewingPurchase] = useState<Purchase | null>(null);
 
   const { data: purchases = [], isLoading: purchasesLoading } = useQuery<
     Purchase[]
@@ -469,6 +472,14 @@ export default function Purchases() {
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => setViewingPurchase(purchase)}
+                          title="View Details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => setEditingPurchase(purchase)}
                           title="Edit Purchase"
                         >
@@ -503,6 +514,133 @@ export default function Purchases() {
           )}
         </CardContent>
       </Card>
+
+      {/* View Purchase Details Dialog */}
+      <Dialog open={!!viewingPurchase} onOpenChange={() => setViewingPurchase(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Purchase Order Details</DialogTitle>
+            <DialogDescription>
+              Comprehensive information for the selected purchase order
+            </DialogDescription>
+          </DialogHeader>
+          {viewingPurchase && (
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4 p-4 bg-muted rounded-lg">
+                <div className="p-3 bg-green-100 rounded-full">
+                  <ShoppingCart className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">{viewingPurchase.itemName}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Purchase Order #{viewingPurchase.id}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Supplier</Label>
+                  <p className="text-sm font-semibold">
+                    {(() => {
+                      const supplier = suppliers.find(s => s.id === viewingPurchase.supplierId);
+                      return supplier?.name || viewingPurchase.supplierName || "Unknown Supplier";
+                    })()}
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Item Name</Label>
+                  <p className="text-sm">{viewingPurchase.itemName}</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Quantity</Label>
+                  <p className="text-sm font-mono bg-muted p-2 rounded">
+                    {viewingPurchase.quantity} units
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Unit Price</Label>
+                  <p className="text-sm font-mono bg-muted p-2 rounded">
+                    SAR {parseFloat(viewingPurchase.unitPrice?.toString() || "0").toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Total Amount</Label>
+                  <p className="text-lg font-bold text-green-600">
+                    SAR {parseFloat(viewingPurchase.totalAmount?.toString() || "0").toLocaleString()}
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Purchase Date</Label>
+                  <p className="text-sm">
+                    {viewingPurchase.purchaseDate 
+                      ? new Date(viewingPurchase.purchaseDate).toLocaleDateString()
+                      : "Not specified"
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              {viewingPurchase.expectedDelivery && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Expected Delivery</Label>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <p className="text-sm">
+                      {new Date(viewingPurchase.expectedDelivery).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {viewingPurchase.notes && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Notes</Label>
+                  <p className="text-sm bg-muted p-3 rounded">{viewingPurchase.notes}</p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Created At</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(viewingPurchase.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(viewingPurchase.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setViewingPurchase(null);
+                    setEditingPurchase(viewingPurchase);
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Purchase
+                </Button>
+                <Button onClick={() => setViewingPurchase(null)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Purchase Dialog */}
       <Dialog

@@ -13,7 +13,7 @@ import {
   Download,
 } from "lucide-react";
 import { useLocation } from "wouter";
-import { generateEnhancedPDF } from "@/utils/enhanced-pdf-generator";
+import { generateA4PDF } from "@/utils/html2pdf-generator";
 import companyStamp from "@assets/image_17540348329.png";
 import logoImage from "@assets/image-logo.png";
 
@@ -131,42 +131,23 @@ export default function ProfessionalQuotation() {
 
   const exportToPDF = async () => {
     try {
-      // Debug current data state
-      console.log('PDF Export Debug - Current Data:', {
-        quotationData,
-        itemsCount: items.length,
-        items: items.map(item => ({
-          id: item.id,
-          description: item.description?.substring(0, 50) + '...',
-          unit: item.unit,
-          rate: item.rate
-        }))
-      });
+      console.log('🚀 Starting PDF export with html2pdf.js...');
       
       const fileName = `${quotationData.reference || 'Professional_Quotation'}_${new Date()
         .toISOString()
         .split("T")[0]}.pdf`;
       
-      await generateEnhancedPDF({
-         elementId: "professional-quotation-content",
-         filename: fileName,
-         pageFormat: "a4",
-         orientation: "portrait",
-         margins: { top: 15, right: 15, bottom: 15, left: 15 },
-         scale: 2,
-         quality: 1.0
-       }, {
-         show: true,
-         message: "Generating Professional Quotation PDF..."
-       });
+      await generateA4PDF('professional-quotation-content', fileName);
+      
+      console.log('✅ PDF export completed successfully!');
     } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("Failed to generate PDF. Please try again.");
+      console.error('❌ PDF export failed:', error);
+      alert('Failed to generate PDF. Please try again.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header Controls */}
         <div className="flex items-center justify-between mb-8">
@@ -334,7 +315,7 @@ export default function ProfessionalQuotation() {
         <div
           ref={quotationRef}
           id="professional-quotation-content"
-          className="bg-white shadow-lg relative mx-auto"
+          className="pdf-content bg-white shadow-lg relative mx-auto"
           style={{ width: "210mm", minHeight: "auto" }}
         >
           {/* Header */}
@@ -383,7 +364,7 @@ export default function ProfessionalQuotation() {
           </div>
 
           {/* Content */}
-          <div className="p-6 pb-16 quotation-content compact-spacing">
+          <div className="p-6 pb-16 quotation-content compact-spacing quotation-section">
             {/* Reference and Date */}
             <div className="flex justify-between mb-4">
               <div>
@@ -424,9 +405,9 @@ export default function ProfessionalQuotation() {
             </div>
 
             {/* Table */}
-            <div className="mb-8">
+            <div className="mb-8 quotation-items">
               <table className="w-full border-collapse">
-                <thead>
+                <thead className="table-header-group">
                   <tr className="bg-orange-600 text-white">
                     <th
                       className="border border-gray-400 px-3 py-2 text-sm font-bold text-center"
@@ -456,7 +437,7 @@ export default function ProfessionalQuotation() {
                 </thead>
                 <tbody>
                   {items.map(item => (
-                    <tr key={item.id}>
+                    <tr key={item.id} className="no-page-break">
                       <td className="border border-gray-400 px-3 py-2 text-sm text-center">
                         {item.srNo}
                       </td>
@@ -476,11 +457,11 @@ export default function ProfessionalQuotation() {
             </div>
 
             {/* Terms and Conditions */}
-            <div className="mb-6">
+            <div className="mb-6 quotation-section terms-section">
               <div className="text-sm font-bold mb-3 text-gray-900 border-b-2 border-red-600 pb-1 shadow-sm">
                 Terms and Conditions:
               </div>
-              <div className="text-xs space-y-1 text-gray-800 leading-relaxed terms-compact terms-section">
+              <div className="text-xs space-y-1 text-gray-800 leading-relaxed terms-compact">
                 <div>
                   <span className="font-bold">1. Advance Payment:</span> The
                   client must pay 40% of the contract amount upfront. The rest
@@ -540,7 +521,7 @@ export default function ProfessionalQuotation() {
             </div>
 
             {/* Signature */}
-            <div className="flex justify-between items-end footer-section">
+            <div className="flex justify-between items-end footer-section no-page-break">
               <div>
                 <div className="text-sm font-bold mb-2">
                   Muhammad Hafeez Khan
@@ -549,7 +530,7 @@ export default function ProfessionalQuotation() {
                 <div className="text-sm mb-1">Diouf al Sharq</div>
                 <div className="text-sm">Cell: 00966632428200</div>
               </div>
-              <div className="text-center">
+              <div className="text-center company-stamp">
                 <div className="w-32 h-20 mb-2 flex items-center justify-center">
                   <img
                     src={companyStamp}
@@ -567,7 +548,7 @@ export default function ProfessionalQuotation() {
           </div>
 
           {/* Footer */}
-          <div className="absolute bottom-0 left-0 right-0">
+          <div className="mt-8">
             {/* Thick Red Line */}
             <div className="w-full h-1 bg-gradient-to-r from-red-600 via-red-500 to-red-600 mb-2 shadow-sm"></div>
             <div className="bg-white text-black text-center py-2 border-t border-gray-200">
@@ -583,17 +564,7 @@ export default function ProfessionalQuotation() {
         </div>
       </div>
 
-      {/* Export PDF Button Below Preview */}
-      <div className="flex justify-center mt-8 mb-8">
-        <Button 
-          onClick={exportToPDF} 
-          size="lg"
-          className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 text-lg font-semibold shadow-lg"
-        >
-          <Download className="h-5 w-5 mr-3" />
-          Export PDF
-        </Button>
-      </div>
+
 
       {/* Print and PDF Optimization Styles */}
       <style>{`
@@ -603,18 +574,19 @@ export default function ProfessionalQuotation() {
             -webkit-print-color-adjust: exact !important;
           }
           
-          @page {
-            margin: 15mm;
-            size: A4;
-          }
-          
           .quotation-content {
-            page-break-inside: avoid;
+            page-break-inside: auto;
           }
           
           .footer-section {
             page-break-inside: avoid;
             break-inside: avoid;
+          }
+          
+          .terms-section {
+            page-break-inside: auto !important;
+            break-inside: auto !important;
+            page-break-before: auto !important;
           }
         }
         
@@ -623,15 +595,20 @@ export default function ProfessionalQuotation() {
           background: white !important;
           color: black !important;
           font-family: 'Inter', Arial, sans-serif !important;
-          line-height: 1.4 !important;
+          line-height: 1.3 !important;
           box-shadow: none !important;
           border: none !important;
           margin: 0 !important;
-          padding: 20mm !important;
+          padding: 3mm !important;
           width: 210mm !important;
-          min-height: 297mm !important;
+          min-height: auto !important;
           box-sizing: border-box !important;
+          overflow: visible !important;
+          position: relative !important;
+          page-break-inside: auto !important;
         }
+        
+
         
         .pdf-export * {
           color: black !important;
@@ -644,29 +621,144 @@ export default function ProfessionalQuotation() {
           padding: 0 !important;
           margin: 0 !important;
           width: 100% !important;
+          max-width: 204mm !important;
+          margin-bottom: 5mm !important;
+          position: relative !important;
+          page-break-inside: auto !important;
         }
         
         .pdf-export table {
           border-collapse: collapse !important;
           width: 100% !important;
           margin: 1rem 0 !important;
+          table-layout: fixed !important;
+          page-break-inside: auto !important;
         }
         
         .pdf-export th,
         .pdf-export td {
-          border: 1px solid black !important;
-          padding: 8px !important;
+          border: 1px solid #333 !important;
+          padding: 6px !important;
           text-align: left !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+          font-size: 12px !important;
+          line-height: 1.3 !important;
         }
         
         .pdf-export th {
-          background-color: #f5f5f5 !important;
+          background-color: #ea580c !important;
+          color: white !important;
           font-weight: bold !important;
+          text-align: center !important;
+        }
+        
+        .pdf-export tbody tr {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
         }
         
         .pdf-export .footer-section {
-          margin-top: 2rem !important;
+          margin-top: 1rem !important;
           page-break-inside: avoid !important;
+          break-inside: avoid !important;
+          margin-bottom: 3mm !important;
+          position: relative !important;
+        }
+        
+        .pdf-export .mt-8 {
+          margin-top: 1rem !important;
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+        }
+        
+        .pdf-export .bg-gradient-to-r {
+          background: #dc2626 !important;
+          height: 3px !important;
+          width: 100% !important;
+        }
+        
+        .pdf-export .footer-section .text-center {
+          text-align: center !important;
+          font-size: 11px !important;
+          line-height: 1.3 !important;
+          margin: 0.5rem 0 !important;
+        }
+        
+        .pdf-export .footer-section .text-xs {
+          font-size: 10px !important;
+          line-height: 1.2 !important;
+        }
+        
+        .pdf-export .footer-section .font-bold {
+          font-weight: bold !important;
+        }
+        
+        .pdf-export .company-stamp {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+          margin-top: 0.5rem !important;
+          margin-bottom: 0.5rem !important;
+          text-align: center !important;
+          position: relative !important;
+        }
+        
+        .pdf-export .company-stamp img {
+          max-width: 100px !important;
+          height: auto !important;
+          display: block !important;
+          margin: 0 auto !important;
+          object-fit: contain !important;
+          filter: contrast(1.2) !important;
+        }
+        
+        .pdf-export .company-stamp .text-xs {
+          margin-top: 0.25rem !important;
+          text-align: center !important;
+          font-size: 9px !important;
+          font-weight: bold !important;
+          color: #666 !important;
+        }
+        
+        .pdf-export .terms-section {
+          page-break-inside: auto !important;
+          break-inside: auto !important;
+          margin-top: 4mm !important;
+          margin-bottom: 6mm !important;
+          padding-bottom: 3mm !important;
+        }
+        
+        .pdf-export .terms-section > div {
+          margin-bottom: 2px !important;
+          page-break-inside: auto !important;
+          break-inside: auto !important;
+          line-height: 1.1 !important;
+          font-size: 10px !important;
+        }
+        
+        .pdf-export .terms-section .text-sm {
+          font-size: 12px !important;
+          font-weight: bold !important;
+          margin-bottom: 6px !important;
+        }
+        
+        .pdf-export .terms-section .text-xs {
+          font-size: 9px !important;
+          line-height: 1.1 !important;
+        }
+        
+        .pdf-export .terms-section h3 {
+          page-break-after: avoid !important;
+          break-after: avoid !important;
+          margin-bottom: 6px !important;
+          margin-top: 0 !important;
+        }
+        
+        .pdf-export .terms-section p {
+          margin-top: 0 !important;
+          margin-bottom: 2px !important;
+          orphans: 1 !important;
+          widows: 1 !important;
         }
         
         .pdf-export h1,

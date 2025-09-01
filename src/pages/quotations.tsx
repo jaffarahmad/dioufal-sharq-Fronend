@@ -6,7 +6,7 @@ export default function Quotations() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+    <div className="bg-gray-50 p-6 flex items-center justify-center min-h-[calc(100vh-200px)]">
       <div className="text-center space-y-8 max-w-2xl">
         {/* Header */}
         <div>

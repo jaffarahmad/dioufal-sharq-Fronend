@@ -28,6 +28,7 @@ import {
   TrendingUp,
   Edit,
   Trash2,
+  Eye,
 } from "lucide-react";
 import StatsCard from "@/components/ui/stats-card";
 import InventoryForm from "@/components/forms/inventory-form";

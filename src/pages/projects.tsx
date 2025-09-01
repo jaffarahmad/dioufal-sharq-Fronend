@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import ProgressBar from "@/components/ui/progress-bar";
 import ProjectForm from "@/components/forms/project-form";
 import { useToast } from "@/hooks/use-toast";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, MoreVertical } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,12 +28,68 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import type { Project } from "@/lib/schema";
+
+// Edit form schema with validation
+const editProjectSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters").max(80, "Name must be at most 80 characters"),
+  client: z.string().min(1, "Client is required"),
+  status: z.enum(["Active", "On Hold", "Completed"]),
+  progress: z.coerce.number().min(0, "Progress must be at least 0").max(100, "Progress must be at most 100"),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().optional().refine((date, ctx) => {
+    if (!date) return true;
+    const startDate = ctx.parent.startDate;
+    if (startDate && date < startDate) {
+      return false;
+    }
+    return true;
+  }, "End date must be after start date"),
+  budget: z.coerce.number().min(0, "Budget must be at least 0").optional(),
+  description: z.string().max(2000, "Description must be at most 2000 characters").optional(),
+});
+
+type EditProjectFormData = z.infer<typeof editProjectSchema>;
 
 export default function Projects() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
   const notifications = useNotifications();
   const queryClient = useQueryClient();
@@ -61,15 +121,100 @@ export default function Projects() {
     },
     onSuccess: () => {
       console.log('✅ Frontend: Delete request successful');
-      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      queryClient.invalidateQueries({ queryKey: ["projects-records"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
-      notifications.success("Project Deleted", "Project deleted successfully");
+      toast({ title: "Success", description: "Project deleted successfully" });
     },
     onError: (error) => {
       console.error('❌ Frontend: Delete request failed:', error);
-      notifications.error("Delete Failed", "Failed to delete project");
+      toast({ title: "Error", description: "Failed to delete project", variant: "destructive" });
     },
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: EditProjectFormData }) => {
+      try {
+        const storedData = localStorage.getItem('projects-records');
+        const existingRecords = storedData ? JSON.parse(storedData) : [];
+        const updatedRecords = existingRecords.map((record: any) => 
+          record.id === id ? { 
+            ...record, 
+            name: data.name,
+            clientName: data.client,
+            status: data.status,
+            progress: data.progress,
+            startDate: data.startDate,
+            endDate: data.endDate || null,
+            budget: data.budget || 0,
+            description: data.description || '',
+            updatedAt: new Date().toISOString()
+          } : record
+        );
+        localStorage.setItem('projects-records', JSON.stringify(updatedRecords));
+        return { success: true };
+      } catch (error) {
+        throw new Error('Failed to update project in localStorage');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects-records"] });
+      toast({ title: "Success", description: "Project updated successfully" });
+      setIsEditDialogOpen(false);
+      setEditingProject(null);
+    },
+    onError: (error) => {
+      console.error('❌ Frontend: Update request failed:', error);
+      toast({ title: "Error", description: "Failed to update project", variant: "destructive" });
+    },
+  });
+
+  const editForm = useForm<EditProjectFormData>({
+    resolver: zodResolver(editProjectSchema),
+    defaultValues: {
+      name: '',
+      client: '',
+      status: 'Active',
+      progress: 0,
+      startDate: '',
+      endDate: '',
+      budget: 0,
+      description: '',
+    },
+  });
+
+  const handleEdit = (project: Project) => {
+    setEditingProject(project);
+    editForm.reset({
+      name: project.name,
+      client: project.clientName || '',
+      status: project.status === 'active' ? 'Active' : 
+              project.status === 'cancelled' ? 'On Hold' : 
+              project.status === 'completed' ? 'Completed' : 'Active',
+      progress: project.progress,
+      startDate: project.startDate ? new Date(project.startDate).toISOString().split('T')[0] : '',
+      endDate: project.endDate ? new Date(project.endDate).toISOString().split('T')[0] : '',
+      budget: project.budget || 0,
+      description: project.description || '',
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const onEditSubmit = (data: EditProjectFormData) => {
+    if (editingProject) {
+      updateMutation.mutate({ id: editingProject.id, data });
+    }
+  };
+
+  const formatCurrencyDisplay = (amount: number) => {
+    return new Intl.NumberFormat('en-SA', {
+      style: 'currency',
+      currency: 'SAR'
+    }).format(amount);
+  };
+
+  const formatDateDisplay = (dateString: string) => {
+    return new Intl.DateTimeFormat('en-US').format(new Date(dateString));
+  };
 
   const filteredProjects = projects?.filter(project => {
     const matchesSearch =
@@ -110,12 +255,11 @@ export default function Projects() {
   };
 
   const formatCurrency = (amount: string) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "SAR",
+    const numAmount = parseFloat(amount) || 0;
+    return `SAR ${new Intl.NumberFormat("en-US", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(parseFloat(amount));
+    }).format(numAmount)}`;
   };
 
   if (isLoading) {
@@ -182,7 +326,7 @@ export default function Projects() {
                   <SelectItem value="Active">Active</SelectItem>
                   <SelectItem value="Planning">Planning</SelectItem>
                   <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="On Hold">On Hold</SelectItem>
+                  <SelectItem value="cancelled">On Hold</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -227,6 +371,7 @@ export default function Projects() {
         {filteredProjects?.map(project => (
           <Card
             key={project.id}
+            id={`project-card-${project.id}`}
             className="overflow-hidden hover:shadow-lg transition-shadow"
           >
             <div className="aspect-video overflow-hidden">
@@ -239,7 +384,7 @@ export default function Projects() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <CardContent className="p-6">
+            <CardContent className="p-6 flex flex-col h-full min-h-[400px] relative">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-lg font-semibold text-gray-900 truncate">
                   {project.name}
@@ -253,7 +398,7 @@ export default function Projects() {
                 {project.description || "No description available"}
               </p>
 
-              <div className="space-y-3">
+              <div className="space-y-3 flex-grow">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Progress</span>
                   <span className="font-medium">{project.progress}%</span>
@@ -277,117 +422,122 @@ export default function Projects() {
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="w-full sm:flex-1"
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      View Details
+              <div className="mt-auto pt-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0 absolute top-2 right-2">
+                      <MoreVertical className="h-4 w-4" />
                     </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
-                    <DialogHeader>
-                      <DialogTitle>{project.name}</DialogTitle>
-                      <DialogDescription>
-                        Project details and information
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-6">
-                      <div className="aspect-video overflow-hidden rounded-lg">
-                        <img
-                          src={
-                            project.imageUrl ||
-                            "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200"
-                          }
-                          alt={project.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Project Type
-                          </label>
-                          <p className="text-sm text-gray-900">
-                            {project.type}
-                          </p>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <Eye className="mr-2 h-4 w-4" />
+                          View details
+                        </DropdownMenuItem>
+                      </SheetTrigger>
+                      <SheetContent className="w-[400px] sm:w-[540px]">
+                        <SheetHeader>
+                          <SheetTitle>{project.name}</SheetTitle>
+                          <SheetDescription>
+                            Complete project information and details
+                          </SheetDescription>
+                        </SheetHeader>
+                        <div className="mt-6 space-y-6">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Name</label>
+                              <p className="text-sm text-gray-900">{project.name}</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Client</label>
+                              <p className="text-sm text-gray-900">{project.clientName || 'Not specified'}</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Status</label>
+                              <Badge className={getStatusBadge(project.status)}>
+                                {getStatusDisplay(project.status)}
+                              </Badge>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Progress</label>
+                              <p className="text-sm text-gray-900">{project.progress}%</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Budget</label>
+                              <p className="text-sm text-gray-900">
+                                {formatCurrencyDisplay(project.budget || 0)}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-gray-500">Start Date</label>
+                              <p className="text-sm text-gray-900">
+                                {project.startDate ? formatDateDisplay(project.startDate) : 'Not set'}
+                              </p>
+                            </div>
+                            <div className="col-span-2">
+                              <label className="text-sm font-medium text-gray-500">End Date</label>
+                              <p className="text-sm text-gray-900">
+                                {project.endDate ? formatDateDisplay(project.endDate) : 'Not set'}
+                              </p>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Description</label>
+                            <p className="text-sm text-gray-900 mt-1">
+                              {project.description || 'No description available'}
+                            </p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-500">Activity</label>
+                            <div className="mt-2 space-y-2">
+                              <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                                • Project created on {project.createdAt ? formatDateDisplay(project.createdAt) : 'Unknown'}
+                              </div>
+                              <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                                • Last updated on {project.updatedAt ? formatDateDisplay(project.updatedAt) : 'Unknown'}
+                              </div>
+                              <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                                • Current progress: {project.progress}%
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Status
-                          </label>
-                          <Badge className={getStatusBadge(project.status)}>
-                            {getStatusDisplay(project.status)}
-                          </Badge>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Budget
-                          </label>
-                          <p className="text-sm text-gray-900">
-                            {formatCurrency(String(project.budget))}
-                          </p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Progress
-                          </label>
-                          <p className="text-sm text-gray-900">
-                            {project.progress}%
-                          </p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Start Date
-                          </label>
-                          <p className="text-sm text-gray-900">
-                            {project.startDate
-                              ? new Date(project.startDate).toLocaleDateString()
-                              : "Not set"}
-                          </p>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-500">
-                            Due Date
-                          </label>
-                          <p className="text-sm text-gray-900">
-                            {project.endDate
-                              ? new Date(project.endDate).toLocaleDateString()
-                              : "Not set"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="col-span-1 md:col-span-2">
-                        <label className="text-sm font-medium text-gray-500">
-                          Description
-                        </label>
-                        <p className="text-sm text-gray-900 mt-1">
-                          {project.description || "No description available"}
-                        </p>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                <ProjectForm project={project} />
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      console.log('🗑️ Frontend: Delete button clicked for project:', project.id, typeof project.id);
-                      if (window.confirm(`Are you sure you want to delete project "${project.name}"?`)) {
-                        deleteMutation.mutate(String(project.id));
-                      }
-                    }}
-                    disabled={deleteMutation.isPending}
-                    className="w-full sm:w-auto text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                  <Trash2 className="mr-2 h-4 w-4 sm:mr-0" />
-                  <span className="sm:hidden">Delete</span>
-                </Button>
+                      </SheetContent>
+                    </Sheet>
+                    <DropdownMenuItem onClick={() => handleEdit(project)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600">
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the project "{project.name}" and remove all associated data.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteMutation.mutate(String(project.id))}
+                            disabled={deleteMutation.isPending}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </CardContent>
           </Card>
@@ -402,6 +552,162 @@ export default function Projects() {
           <ProjectForm />
         </div>
       )}
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Project</DialogTitle>
+            <DialogDescription>
+              Update project information and details
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Name *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter project name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="client"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Client *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter client name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Active">Active</SelectItem>
+                          <SelectItem value="On Hold">On Hold</SelectItem>
+                          <SelectItem value="Completed">Completed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="progress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Progress (0-100) *</FormLabel>
+                      <FormControl>
+                        <Input type="number" min="0" max="100" placeholder="0" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date *</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={editForm.control}
+                name="budget"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Budget (SAR)</FormLabel>
+                    <FormControl>
+                      <Input type="number" min="0" step="0.01" placeholder="0.00" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Enter project description" 
+                        className="resize-none" 
+                        rows={3}
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  disabled={updateMutation.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? 'Updating...' : 'Update Project'}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

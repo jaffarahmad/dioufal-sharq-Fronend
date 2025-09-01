@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -41,12 +42,13 @@ import { z } from "zod";
 const inventoryFormSchema = z.object({
   name: z.string().min(1, "Item name is required"),
   description: z.string().optional(),
-  quantity: z.coerce.number().int().min(0, "Quantity must be 0 or greater"),
+  quantity: z.coerce.number().min(0, "Quantity must be non-negative"),
   unit: z.string().min(1, "Unit is required"),
-  unitPrice: z.coerce.number().min(0, "Unit price must be 0 or greater"),
+  unitPrice: z.coerce.number().min(0, "Unit price must be positive"),
   categoryId: z.coerce.number(),
   supplierId: z.coerce.number().optional(),
   minStock: z.coerce.number().min(0).default(0),
+  totalValue: z.coerce.number().min(0, "Total value must be non-negative"),
   status: z.enum(["available", "sold", "damaged", "reserved"]).default("available"),
 });
 
@@ -93,9 +95,19 @@ export default function InventoryForm({
       categoryId: inventory?.categoryId || (categories.length > 0 ? categories[0].id : undefined),
       supplierId: inventory?.supplierId || undefined,
       minStock: inventory?.minStock || 0,
+      totalValue: inventory?.totalValue || 0,
       status: inventory?.status || "available",
     },
   });
+
+  // Watch quantity and unitPrice to automatically calculate totalValue
+  const quantity = form.watch("quantity");
+  const unitPrice = form.watch("unitPrice");
+  
+  React.useEffect(() => {
+    const calculatedTotal = (quantity || 0) * (unitPrice || 0);
+    form.setValue("totalValue", calculatedTotal);
+  }, [quantity, unitPrice, form]);
 
   const createMutation = useMutation({
     mutationFn: (data: InsertInventory) => {
@@ -196,6 +208,7 @@ export default function InventoryForm({
         categoryId: 1,
         supplierId: undefined,
         minStock: 0,
+        totalValue: 0,
         status: "available",
       });
     }
@@ -313,12 +326,12 @@ export default function InventoryForm({
                 name="unitPrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unit Price (SAR) *</FormLabel>
+                    <FormLabel>Unit Price *</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        min="0"
                         step="0.01"
+                        min="0"
                         placeholder="0.00"
                         {...field}
                       />
@@ -327,10 +340,35 @@ export default function InventoryForm({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="totalValue"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total Value</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        {...field}
+                        readOnly
+                        className="bg-gray-50 cursor-not-allowed"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Automatically calculated (Quantity × Unit Price)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
-            {/* Category, Supplier and Stock Management */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Category and Supplier */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="categoryId"
@@ -338,9 +376,9 @@ export default function InventoryForm({
                   <FormItem>
                     <FormLabel>Category *</FormLabel>
                     <Select
-                      value={field.value?.toString()}
+                      value={field.value ? field.value.toString() : "none"}
                       onValueChange={value =>
-                        field.onChange(value ? parseInt(value) : undefined)
+                        field.onChange(value && value !== "none" ? parseInt(value) : undefined)
                       }
                     >
                       <FormControl>
@@ -382,7 +420,7 @@ export default function InventoryForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">No supplier</SelectItem>
+                        <SelectItem value="none">No supplier</SelectItem>
                         {suppliers.map((supplier: any) => (
                           <SelectItem
                             key={supplier.id}

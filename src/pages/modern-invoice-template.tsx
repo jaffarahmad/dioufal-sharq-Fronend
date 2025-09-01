@@ -147,18 +147,22 @@ export default function ModernInvoiceTemplate() {
     isLoading,
     error: invoiceError,
   } = useQuery<Invoice>({
-    queryKey: ["/api/invoices", invoiceId],
+    queryKey: ["invoices-records", invoiceId],
+    queryFn: () => {
+      const stored = localStorage.getItem("invoices-records");
+      const invoices = stored ? JSON.parse(stored) : [];
+      return invoices.find((inv: any) => inv.id === parseInt(invoiceId));
+    },
     enabled: !!invoiceId,
   });
 
   const { data: invoiceItems = [] } = useQuery<InvoiceItem[]>({
-    queryKey: ["/api/invoices", invoiceId, "items"],
-    queryFn: async () => {
-      const response = await fetch(`/api/invoices/${invoiceId}/items`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch invoice items");
-      }
-      return response.json();
+    queryKey: ["invoices-records", invoiceId, "items"],
+    queryFn: () => {
+      const stored = localStorage.getItem("invoices-records");
+      const invoices = stored ? JSON.parse(stored) : [];
+      const foundInvoice = invoices.find((inv: any) => inv.id === parseInt(invoiceId));
+      return foundInvoice?.items || [];
     },
     enabled: !!invoiceId,
   });
@@ -176,13 +180,22 @@ export default function ModernInvoiceTemplate() {
       vatAmount: string;
     };
   }>({
-    queryKey: ["/api/invoices", invoiceId, "qr"],
-    queryFn: async () => {
-      const response = await fetch(`/api/invoices/${invoiceId}/qr`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch QR code");
-      }
-      return response.json();
+    queryKey: ["invoices-records", invoiceId, "qr"],
+    queryFn: () => {
+      // Generate mock QR data for now since there's no backend
+      return {
+        qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+        invoiceUrl: window.location.href,
+        zatcaCompliant: true,
+        tlvData: "mock-tlv-data",
+        invoiceData: {
+          sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
+          vatRegistrationNumber: "310205801200003",
+          invoiceDateTime: new Date().toISOString(),
+          invoiceTotal: "0.00",
+          vatAmount: "0.00"
+        }
+      };
     },
     enabled: !!invoiceId,
   });
