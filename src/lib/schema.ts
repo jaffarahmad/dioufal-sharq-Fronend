@@ -140,6 +140,7 @@ export const insertPurchaseSchema = z.object({
   description: z.string().optional(),
   purchaseNumber: z.string().optional(),
   supplierId: z.union([z.number(), z.string()]).optional(),
+  notes: z.string().optional(),
 });
 
 export type InsertPurchase = z.infer<typeof insertPurchaseSchema>;

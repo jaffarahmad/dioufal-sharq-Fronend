@@ -70,16 +70,17 @@ const editProjectSchema = z.object({
   status: z.enum(["Active", "On Hold", "Completed"]),
   progress: z.coerce.number().min(0, "Progress must be at least 0").max(100, "Progress must be at most 100"),
   startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().optional().refine((date, ctx) => {
-    if (!date) return true;
-    const startDate = ctx.parent.startDate;
-    if (startDate && date < startDate) {
-      return false;
-    }
-    return true;
-  }, "End date must be after start date"),
+  endDate: z.string().optional(),
   budget: z.coerce.number().min(0, "Budget must be at least 0").optional(),
   description: z.string().max(2000, "Description must be at most 2000 characters").optional(),
+}).refine((data) => {
+  if (!data.endDate) return true;
+  const startDate = new Date(data.startDate);
+  const endDate = new Date(data.endDate);
+  return endDate > startDate;
+}, {
+  message: "End date must be after start date",
+  path: ["endDate"],
 });
 
 type EditProjectFormData = z.infer<typeof editProjectSchema>;

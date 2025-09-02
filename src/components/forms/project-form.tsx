@@ -164,8 +164,10 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
       try {
         // Wait longer for the UI to fully update and render
         await new Promise(resolve => setTimeout(resolve, 2000));
-        await captureProjectCard(response.id, `project-${response.name}-updated-screenshot.png`);
-        console.log("Screenshot captured successfully for updated project:", response.id);
+        if (response.id && response.name) {
+          await captureProjectCard(response.id, `project-${response.name}-updated-screenshot.png`);
+          console.log("Screenshot captured successfully for updated project:", response.id);
+        }
       } catch (error) {
         console.error("Failed to capture screenshot:", error);
         // Don't show error to user as screenshot is not critical
