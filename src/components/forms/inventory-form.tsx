@@ -219,7 +219,7 @@ export default function InventoryForm({
     <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button className="bg-primary hover:bg-primary/90" type="button">
+          <Button variant="primary" type="button">
             <Plus className="mr-2 h-4 w-4" />
             Add Item
           </Button>

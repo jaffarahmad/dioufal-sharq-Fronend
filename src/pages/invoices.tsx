@@ -86,8 +86,8 @@ const lineItemSchema = z.object({
 });
 
 const createInvoiceSchema = z.object({
-  billType: z.string().min(1, "Bill type is required"),
-  invoiceNumber: z.string().min(1, "Bill number is required"),
+  billType: z.string().min(1, "Invoice type is required"),
+  invoiceNumber: z.string().min(1, "Invoice number is required"),
   poNumber: z.string().optional(),
   clientName: z.string().min(1, "Client name is required"),
   clientEmail: z.string().optional(),
@@ -405,15 +405,15 @@ export default function InvoicesPage() {
     }
   };
 
-  if (isLoading) return <div>Loading bills...</div>;
+  if (isLoading) return <div>Loading invoices...</div>;
 
   return (
     <div className="container mx-auto p-4 lg:p-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold">Bill</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold">Invoices</h1>
           <p className="text-muted-foreground">
-            Manage your client bills and billing
+            Manage your client invoices and billing
           </p>
         </div>
         <Dialog
@@ -429,16 +429,16 @@ export default function InvoicesPage() {
           <DialogTrigger asChild>
             <Button className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
-              Create Bill
+              Create Invoice
             </Button>
           </DialogTrigger>
           <DialogContent className="w-[95vw] max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingInvoice ? "Edit Bill" : "Create New Bill"}
+                {editingInvoice ? "Edit Invoice" : "Create New Invoice"}
               </DialogTitle>
               <DialogDescription>
-                Create a new bill for your client with company branding
+                Create a new invoice for your client with company branding
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -446,13 +446,13 @@ export default function InvoicesPage() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
-                {/* Bill Type Selection */}
+                {/* Invoice Type Selection */}
                 <FormField
                   control={form.control}
                   name="billType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Bill Number Type</FormLabel>
+                      <FormLabel>Invoice Number Type</FormLabel>
                       <Select
                         onValueChange={value => {
                           field.onChange(value);
@@ -461,19 +461,19 @@ export default function InvoicesPage() {
                           if (value === "invoice") {
                             form.setValue("invoiceNumber", `INV-${timestamp}`);
                           } else if (value === "bill") {
-                            form.setValue("invoiceNumber", `BILL-${timestamp}`);
+                      form.setValue("invoiceNumber", `INV-${timestamp}`);
                           }
                         }}
                         value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select bill type" />
+                            <SelectValue placeholder="Select invoice type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="invoice">Invoice</SelectItem>
-                          <SelectItem value="bill">Bill Number</SelectItem>
+                          <SelectItem value="bill">Invoice Number</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -487,9 +487,9 @@ export default function InvoicesPage() {
                     name="invoiceNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Bill Number</FormLabel>
+                        <FormLabel>Invoice Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="BILL-2025-001" {...field} />
+                          <Input placeholder="INV-2025-001" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -887,18 +887,18 @@ export default function InvoicesPage() {
       {/* Invoices List */}
       <Card>
         <CardHeader>
-          <CardTitle>All Bills</CardTitle>
-          <CardDescription>View and manage all your bills</CardDescription>
+          <CardTitle>All Invoices</CardTitle>
+            <CardDescription>View and manage all your invoices</CardDescription>
         </CardHeader>
         <CardContent>
           {invoices.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No bills yet
+                No invoices yet
               </h3>
               <p className="text-gray-500">
-                Create your first bill to get started
+                Create your first invoice to get started
               </p>
             </div>
           ) : (
@@ -908,7 +908,7 @@ export default function InvoicesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Bill #</TableHead>
+                      <TableHead>Invoice #</TableHead>
                       <TableHead>Client</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
@@ -978,10 +978,10 @@ export default function InvoicesPage() {
                               <AlertDialogContent>
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>
-                                    Delete Bill
+                                    Delete Invoice
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Are you sure you want to delete bill{" "}
+                                    Are you sure you want to delete invoice{" "}
                                     {invoice.invoiceNumber}? This action cannot
                                     be undone.
                                   </AlertDialogDescription>
@@ -1058,7 +1058,7 @@ export default function InvoicesPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditInvoice(invoice)}
-                        title="Edit Bill"
+                        title="Edit Invoice"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>

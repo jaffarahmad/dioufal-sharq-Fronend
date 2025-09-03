@@ -145,11 +145,11 @@ export default function Financials() {
           Financial Management
         </h2>
         <div className="flex space-x-3">
-          <Button className="bg-green-600 hover:bg-green-700">
+          <Button variant="primary">
             <Plus className="mr-2 h-4 w-4" />
             New Invoice
           </Button>
-          <Button className="bg-primary hover:bg-primary/90">
+          <Button variant="primary">
             <FileText className="mr-2 h-4 w-4" />
             Generate Report
           </Button>

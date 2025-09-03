@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 type Theme = "light" | "dark" | "system";
 
@@ -34,7 +34,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         resolvedTheme = newTheme;
       }
 
-      setActualTheme(resolvedTheme);
+      // Only update actualTheme if it's different to prevent infinite loops
+      setActualTheme(prev => {
+        if (prev !== resolvedTheme) {
+          return resolvedTheme;
+        }
+        return prev;
+      });
 
       if (resolvedTheme === "dark") {
         root.classList.add("dark");
@@ -58,11 +64,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [theme]);
 
-  const value = {
+  const value = useMemo(() => ({
     theme,
     setTheme,
     actualTheme,
-  };
+  }), [theme, actualTheme]);
 
   return (
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

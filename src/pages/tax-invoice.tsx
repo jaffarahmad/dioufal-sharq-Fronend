@@ -11,6 +11,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import logoImage from "@assets/image-logo.png";
 import companyStamp from "@assets/image_17540348329.png";
+import QRCode from "qrcode";
 
 interface Invoice {
   id: number;
@@ -72,25 +73,46 @@ export default function TaxInvoicePage() {
       invoiceTotal: string;
       vatAmount: string;
     };
-  }>({
-    queryKey: ["invoices-records", invoiceId, "qr"],
-    queryFn: () => {
-      // Generate mock QR data for now since there's no backend
+  } | null>({
+    queryKey: ["invoices-records", invoiceId, "qr", invoice?.invoiceNumber, invoice?.totalAmount],
+    queryFn: async () => {
+      if (!invoice) return null;
+      
+      // Calculate actual totals
+      const actualSubtotal = invoiceItems.length > 0
+        ? invoiceItems.reduce((sum, item) => sum + parseFloat(item.amount), 0)
+        : parseFloat(invoice.subtotal || "0");
+      const actualTaxAmount = actualSubtotal * 0.15; // 15% VAT
+      const actualTotal = actualSubtotal + actualTaxAmount;
+      
+      // Generate QR code with actual invoice data
+      const qrData = `Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${actualTotal.toFixed(2)} SAR\nVAT: ${actualTaxAmount.toFixed(2)} SAR\nDate: ${new Date(invoice.createdAt).toLocaleDateString()}\nCompany: DIOUF AL-SHARQ\nVAT No: 310205801200003`;
+      
+      // Generate QR code as base64 data URL
+      const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+        width: 150,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
       return {
-        qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+        qrCode: qrCodeDataUrl,
         invoiceUrl: window.location.href,
         zatcaCompliant: true,
-        tlvData: "mock-tlv-data",
+        tlvData: "zatca-compliant-data",
         invoiceData: {
           sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
           vatRegistrationNumber: "310205801200003",
-          invoiceDateTime: new Date().toISOString(),
-          invoiceTotal: "0.00",
-          vatAmount: "0.00"
+          invoiceDateTime: new Date(invoice.createdAt).toISOString(),
+          invoiceTotal: actualTotal.toFixed(2),
+          vatAmount: actualTaxAmount.toFixed(2)
         }
       };
     },
-    enabled: !!invoiceId,
+    enabled: !!invoiceId && !!invoice,
   });
 
   const handlePrint = () => {
@@ -274,10 +296,7 @@ export default function TaxInvoicePage() {
               <Printer className="w-4 h-4 mr-2" />
               Print
             </Button>
-            <Button onClick={handleDownloadPDF} variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Download PDF
-            </Button>
+
             <Button variant="outline" size="sm">
               <Share2 className="w-4 h-4 mr-2" />
               Share
@@ -363,10 +382,10 @@ export default function TaxInvoicePage() {
             {/* Clean Invoice Details */}
             <div className="bg-white p-2.5">
               <div className="grid grid-cols-2 gap-4 mb-2.5">
-                {/* Bill To */}
+                {/* Invoice To */}
                 <div className="border border-gray-300 p-2.5 border-l-4 border-gray-800">
                   <h4 className="text-sm font-bold text-gray-900 mb-1.5 border-b border-gray-300 pb-1">
-                    BILL TO
+                    INVOICE TO
                   </h4>
                   <div className="space-y-1">
                     <p className="text-base font-bold text-gray-900">

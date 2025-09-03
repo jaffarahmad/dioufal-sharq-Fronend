@@ -58,7 +58,7 @@ const navigation = [
     icon: TrendingUp,
     children: [
       { name: "Quotations", href: "/quotations", icon: FileContract },
-      { name: "Bill", href: "/invoices", icon: Receipt },
+      { name: "Invoices", href: "/invoices", icon: Receipt },
       { name: "Fixed Assets", href: "/fixed-assets", icon: Building },
       { name: "Purchases", href: "/purchases", icon: ShoppingCart },
       { name: "Suppliers", href: "/suppliers", icon: Truck },

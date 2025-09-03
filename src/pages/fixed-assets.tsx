@@ -221,8 +221,8 @@ export default function FixedAssets() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gray-600 hover:bg-gray-700">
-              <Plus className="h-4 w-4 mr-2" />
+            <Button variant="primary">
+              <Plus className="h-4 w-4" />
               Add Asset
             </Button>
           </DialogTrigger>

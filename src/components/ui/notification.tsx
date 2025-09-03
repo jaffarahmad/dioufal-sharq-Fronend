@@ -18,7 +18,7 @@ export function Notification({
   type,
   title,
   message,
-  duration = 3000,
+  duration = 1000,
   onClose,
 }: NotificationProps) {
   const [isVisible, setIsVisible] = useState(false);
@@ -62,48 +62,30 @@ export function Notification({
   };
 
   const getTypeStyles = () => {
-    switch (type) {
-      case "success":
-        return "bg-green-50 border-green-200 text-green-800 dark:bg-green-900 dark:border-green-800 dark:text-green-300";
-      case "error":
-        return "bg-red-50 border-red-200 text-red-800 dark:bg-red-900 dark:border-red-800 dark:text-red-300";
-      case "warning":
-        return "bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:border-yellow-800 dark:text-yellow-300";
-      case "info":
-        return "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-300";
-      default:
-        return "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-300";
-    }
+    // All notifications now use the same green styling
+    return "bg-green-500 text-white";
   };
 
   const getIconColor = () => {
-    switch (type) {
-      case "success":
-        return "text-green-500";
-      case "error":
-        return "text-red-500";
-      case "warning":
-        return "text-yellow-500";
-      case "info":
-        return "text-blue-500";
-      default:
-        return "text-gray-500";
-    }
+    // All icons now use white color to match the text
+    return "text-white";
   };
 
   return (
     <div
       className={cn(
-        "fixed top-4 right-4 z-50 max-w-sm w-full transition-all duration-300 ease-in-out",
+        "fixed bottom-6 right-6 z-50 max-w-sm w-full transition-all duration-300 ease-in-out",
         isVisible && !isExiting
-          ? "opacity-100 translate-x-0"
-          : "opacity-0 translate-x-full",
-        isExiting && "opacity-0 translate-x-full"
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-4",
+        isExiting && "opacity-0 translate-y-4"
       )}
+      role="status"
+      aria-live="polite"
     >
       <div
         className={cn(
-          "border rounded-lg shadow-lg p-4 relative",
+          "rounded-xl shadow-xl ring-1 ring-black/5 p-4 relative",
           getTypeStyles()
         )}
       >
@@ -117,9 +99,10 @@ export function Notification({
           </div>
           <button
             onClick={handleClose}
-            className="flex-shrink-0 ml-2 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="flex-shrink-0 ml-2 p-1 rounded-md hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-green-500"
+            aria-label="Close notification"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 text-white" />
           </button>
         </div>
       </div>

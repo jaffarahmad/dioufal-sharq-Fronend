@@ -10,6 +10,7 @@ import {
   generateSimplePDF,
   testPDFGeneration,
 } from "@/utils/simple-pdf-generator";
+import QRCode from "qrcode";
 
 declare global {
   interface Window {
@@ -179,25 +180,46 @@ export default function ModernInvoiceTemplate() {
       invoiceTotal: string;
       vatAmount: string;
     };
-  }>({
-    queryKey: ["invoices-records", invoiceId, "qr"],
-    queryFn: () => {
-      // Generate mock QR data for now since there's no backend
+  } | null>({
+    queryKey: ["invoices-records", invoiceId, "qr", invoice?.invoiceNumber, invoice?.totalAmount],
+    queryFn: async () => {
+      if (!invoice) return null;
+      
+      // Calculate actual totals
+      const actualSubtotal = invoiceItems.length > 0
+        ? invoiceItems.reduce((sum, item) => sum + parseFloat(item.amount), 0)
+        : parseFloat(invoice.subtotal || "0");
+      const actualTaxAmount = actualSubtotal * 0.15; // 15% VAT
+      const actualTotal = actualSubtotal + actualTaxAmount;
+      
+      // Generate QR code with actual invoice data
+      const qrData = `Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${actualTotal.toFixed(2)} SAR\nVAT: ${actualTaxAmount.toFixed(2)} SAR\nDate: ${new Date(invoice.createdAt).toLocaleDateString()}\nCompany: DIOUF AL-SHARQ\nVAT No: 310205801200003`;
+      
+      // Generate QR code as base64 data URL
+      const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+        width: 150,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
       return {
-        qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+        qrCode: qrCodeDataUrl,
         invoiceUrl: window.location.href,
         zatcaCompliant: true,
-        tlvData: "mock-tlv-data",
+        tlvData: "zatca-compliant-data",
         invoiceData: {
           sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
           vatRegistrationNumber: "310205801200003",
-          invoiceDateTime: new Date().toISOString(),
-          invoiceTotal: "0.00",
-          vatAmount: "0.00"
+          invoiceDateTime: new Date(invoice.createdAt).toISOString(),
+          invoiceTotal: actualTotal.toFixed(2),
+          vatAmount: actualTaxAmount.toFixed(2)
         }
       };
     },
-    enabled: !!invoiceId,
+    enabled: !!invoiceId && !!invoice,
   });
 
   const handlePrint = () => {
@@ -322,7 +344,7 @@ export default function ModernInvoiceTemplate() {
               className="flex items-center gap-2 w-full sm:w-auto"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Back to Bills</span>
+              <span className="hidden sm:inline">Back to Invoices</span>
               <span className="sm:hidden">Back</span>
             </Button>
           </Link>
@@ -337,38 +359,11 @@ export default function ModernInvoiceTemplate() {
               <span className="hidden sm:inline">Print</span>
             </Button>
             <Button
-              onClick={handleDownloadPDF}
-              disabled={isGeneratingPDF}
-              className="flex items-center gap-2 flex-1 sm:flex-none"
-            >
-              {isGeneratingPDF ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  <span className="hidden sm:inline">Generating...</span>
-                  <span className="sm:hidden">Gen...</span>
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4" />
-                  <span className="hidden sm:inline">Download PDF</span>
-                  <span className="sm:hidden">PDF</span>
-                </>
-              )}
-            </Button>
-
-            <Button
-              variant="outline"
+              variant="primary"
               onClick={handleSimplePDF}
-              className="text-xs sm:text-sm bg-green-100 hover:bg-green-200 text-green-700"
+              className="text-xs sm:text-sm"
             >
               Simple PDF
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleTestPDF}
-              className="text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700"
-            >
-              Test PDF
             </Button>
           </div>
         </div>
@@ -464,11 +459,11 @@ export default function ModernInvoiceTemplate() {
 
               {/* Content Area with Minimal Padding */}
               <div style={{ padding: "0 8px" }}>
-                {/* Bill To and Invoice Info */}
+                {/* Invoice To and Invoice Info */}
                 <div className="flex justify-between mb-2">
                   <div style={{ width: "48%" }} className="text-left">
                     <h3 className="font-bold text-lg mb-2">
-                      <span className="text-black">BILL TO</span>
+                      <span className="text-black">INVOICE TO</span>
                       <br />
                       <span
                         className="text-sm font-medium text-gray-600"

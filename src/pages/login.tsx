@@ -179,7 +179,8 @@ export default function LoginPage() {
               <div className="space-y-2 sm:space-y-3">
                 <Button
                   type="submit"
-                  className="w-full h-10 sm:h-12 bg-gray-600 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700 text-sm sm:text-base"
+                  variant="secondary"
+                  className="w-full h-10 sm:h-12 text-sm sm:text-base"
                   disabled={isSendingReset}
                 >
                   {isSendingReset ? (
@@ -316,7 +317,8 @@ export default function LoginPage() {
             {/* Login Button */}
             <Button
               type="submit"
-              className="w-full h-10 sm:h-12 bg-gray-600 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700 text-sm sm:text-base"
+              variant="secondary"
+              className="w-full h-10 sm:h-12 text-sm sm:text-base"
               disabled={isLoading || authLoading}
             >
               {isLoading || authLoading ? (

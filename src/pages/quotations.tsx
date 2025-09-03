@@ -33,7 +33,8 @@ export default function Quotations() {
             <Button
               onClick={() => setLocation("/professional-quotation")}
               size="lg"
-              className="bg-pink-600 hover:bg-pink-700 text-white w-full"
+              variant="primary"
+              className="w-full"
             >
               <FileText className="h-5 w-5 mr-2" />
               Create Professional

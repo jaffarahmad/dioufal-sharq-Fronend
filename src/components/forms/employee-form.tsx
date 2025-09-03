@@ -150,7 +150,7 @@ export default function EmployeeForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-primary hover:bg-primary/90">
+        <Button variant="primary">
           <UserPlus className="mr-2 h-4 w-4" />
           {employee ? "Edit Employee" : "Add Employee"}
         </Button>
@@ -379,6 +379,7 @@ export default function EmployeeForm({
               </Button>
               <Button
                 type="submit"
+                variant="primary"
                 disabled={isLoading}
                 className="w-full sm:w-auto"
               >

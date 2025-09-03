@@ -203,16 +203,14 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          className={
-            project ? "w-full sm:flex-1" : "bg-primary hover:bg-primary/90"
-          }
-          variant={project ? "outline" : "default"}
+          className={project ? "w-full sm:flex-1" : "inline-flex items-center justify-center gap-2 rounded-full font-medium transition shadow-sm hover:shadow h-10 px-5 text-sm bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 disabled:opacity-50 disabled:pointer-events-none"}
+          variant={project ? "outline" : "primary"}
           size={project ? "sm" : "default"}
         >
           {project ? (
-            <Edit className="mr-2 h-4 w-4" />
+            <Edit className="h-4 w-4" />
           ) : (
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
           )}
           {project ? "Edit" : "New Project"}
         </Button>
@@ -252,7 +250,6 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           placeholder="Enter project name"
                           {...field}
                           value={field.value || ""}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </FormControl>
                       <FormMessage />
@@ -272,7 +269,6 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           placeholder="Enter project type"
                           {...field}
                           value={field.value || ""}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </FormControl>
                       <FormMessage />
@@ -296,7 +292,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                       placeholder="Enter project description"
                       {...field}
                       value={field.value || ""}
-                      className="min-h-[100px] resize-none border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="min-h-[100px] resize-none"
                     />
                   </FormControl>
                   <FormMessage />
@@ -329,7 +325,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                               e.target.value ? parseFloat(e.target.value) : 0
                             )
                           }
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+
                         />
                       </FormControl>
                       <FormMessage />
@@ -349,7 +345,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                          <SelectTrigger>
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                         </FormControl>
@@ -397,7 +393,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                               e.target.value || undefined
                             )
                           }
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+
                         />
                       </FormControl>
                       <FormMessage />
@@ -428,7 +424,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                               e.target.value || undefined
                             )
                           }
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+
                         />
                       </FormControl>
                       <FormMessage />
@@ -457,7 +453,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           placeholder="Enter client name"
                           {...field}
                           value={field.value || ""}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+
                         />
                       </FormControl>
                       <FormMessage />
@@ -477,7 +473,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           placeholder="Enter client contact"
                           {...field}
                           value={field.value || ""}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+
                         />
                       </FormControl>
                       <FormMessage />
@@ -498,7 +494,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           placeholder="Enter client email"
                           {...field}
                           value={field.value || ""}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+
                         />
                       </FormControl>
                       <FormMessage />
@@ -526,7 +522,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           {...field}
                           value={field.value || 0}
                           onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+
                         />
                       </FormControl>
                       <FormMessage />
@@ -546,7 +542,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                           placeholder="Enter image URL"
                           {...field}
                           value={field.value || ""}
-                          className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+
                         />
                       </FormControl>
                       <FormMessage />
@@ -562,14 +558,15 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                className="w-full sm:w-auto border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full sm:w-auto bg-gray-600 hover:bg-gray-700 text-white font-medium px-6 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                variant="primary"
+                className="w-full sm:w-auto"
               >
                 {isLoading ? (
                   <>

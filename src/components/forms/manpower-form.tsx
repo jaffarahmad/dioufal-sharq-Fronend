@@ -257,7 +257,8 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
       <DialogTrigger asChild>
         {trigger || (
           <Button
-            className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+            className="w-full sm:w-auto"
+            variant="primary"
             type="button"
           >
             <Plus className="mr-2 h-4 w-4" />
@@ -500,6 +501,7 @@ export default function ManpowerForm({ manpower, trigger }: ManpowerFormProps) {
                 type="submit"
                 disabled={isPending}
                 onClick={() => console.log("Assign Employee button clicked")}
+                variant="primary"
                 className="w-full sm:w-auto"
               >
                 {isPending

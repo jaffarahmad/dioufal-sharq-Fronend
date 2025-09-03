@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,7 +58,6 @@ import {
   X,
   Upload,
   FileDown,
-  RefreshCw,
   Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -92,6 +91,19 @@ export default function MonthlyPaymentsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Reset form when month/year changes
+  useEffect(() => {
+    form.reset({
+      iqamaNo: "",
+      name: "",
+      companyNo: "",
+      phone: "",
+      month: `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`,
+      amount: 0,
+      status: "not_paid",
+    });
+  }, [selectedMonth, selectedYear]);
+
   // React Hook Form setup for Add Payment
   const form = useForm<InsertPayment>({
     resolver: zodResolver(insertPaymentSchema),
@@ -100,6 +112,7 @@ export default function MonthlyPaymentsPage() {
       name: "",
       companyNo: "",
       phone: "",
+      month: `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`,
       amount: 0,
       status: "not_paid",
     },
@@ -225,76 +238,7 @@ export default function MonthlyPaymentsPage() {
     },
   });
 
-  // Generate monthly payments mutation
-  const generatePaymentsMutation = useMutation({
-    mutationFn: async (month: string) => {
-      console.log("Generating payments for month:", month);
-      // Simulate payment generation from localStorage employees data
-      const employees = JSON.parse(localStorage.getItem("employees-records") || "[]");
-      const existingPayments = JSON.parse(localStorage.getItem("payments-records") || "[]");
-      
-      let created = 0;
-      let skipped = 0;
-      const newPayments = [];
-      
-      for (const employee of employees) {
-        const existingPayment = existingPayments.find((p: PaymentRecord) => 
-          p.iqamaNo === employee.id?.toString() && p.month === month
-        );
-        
-        if (!existingPayment) {
-          const newPayment = {
-            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-            iqamaNo: employee.id?.toString() || "",
-            name: employee.name || "",
-            companyNo: "",
-            phone: employee.phone || "",
-            month: month,
-            amount: employee.salary || 0,
-            status: "not_paid" as const,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-          newPayments.push(newPayment);
-          created++;
-        } else {
-          skipped++;
-        }
-      }
-      
-      if (newPayments.length > 0) {
-        const updatedPayments = [...existingPayments, ...newPayments];
-        localStorage.setItem("payments-records", JSON.stringify(updatedPayments));
-      }
-      
-      return { created, skipped, errors: [] };
-    },
-    onSuccess: data => {
-      console.log("Payment generation successful:", data);
-      queryClient.invalidateQueries({ queryKey: ["payments"] });
-      toast({
-        title: "Success",
-        description: `Generated ${data.created} payment records. ${data.skipped} already existed.`,
-        variant: "success",
-      });
-      if (data.errors && data.errors.length > 0) {
-        console.warn("Generation errors:", data.errors);
-        toast({
-          title: "Warning",
-          description: `Some payments had errors: ${data.errors.length} issues`,
-          variant: "destructive",
-        });
-      }
-    },
-    onError: (error: any) => {
-      console.error("Payment generation error:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to generate payment records",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   // Filter payments based on status
   const filteredPayments = (payments || []).filter((payment: any) => {
@@ -373,16 +317,7 @@ export default function MonthlyPaymentsPage() {
     setEditFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
-  const handleGeneratePayments = () => {
-    const currentMonth = `${selectedYear}-${selectedMonth.toString().padStart(2, "0")}`;
-    if (
-      confirm(
-        `Generate payment records for ${new Date(selectedYear, selectedMonth - 1).toLocaleDateString("en-US", { month: "long", year: "numeric" })} based on previous month's data?`
-      )
-    ) {
-      generatePaymentsMutation.mutate(currentMonth);
-    }
-  };
+
 
   // Calculate statistics
   const totalPayments = filteredPayments.length;
@@ -551,19 +486,6 @@ export default function MonthlyPaymentsPage() {
         </div>
         <div className="flex items-center gap-2">
           <Button
-            onClick={handleGeneratePayments}
-            variant="outline"
-            className="flex items-center gap-2"
-            disabled={generatePaymentsMutation.isPending}
-          >
-            <RefreshCw
-              className={`h-4 w-4 ${generatePaymentsMutation.isPending ? "animate-spin" : ""}`}
-            />
-            {generatePaymentsMutation.isPending
-              ? "Generating..."
-              : "Generate from Previous Month"}
-          </Button>
-          <Button
             onClick={() => exportToCSV()}
             variant="outline"
             className="flex items-center gap-2"
@@ -730,16 +652,16 @@ export default function MonthlyPaymentsPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleAddPayment)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="iqamaNo"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Iqama No *</FormLabel>
+                        <FormLabel>Iqama Number *</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter Iqama number"
+                            placeholder="e.g., 1234567890"
                             {...field}
                           />
                         </FormControl>
@@ -752,10 +674,10 @@ export default function MonthlyPaymentsPage() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name *</FormLabel>
+                        <FormLabel>Employee Name *</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter employee name"
+                            placeholder="Enter full name"
                             {...field}
                           />
                         </FormControl>
@@ -768,10 +690,10 @@ export default function MonthlyPaymentsPage() {
                     name="companyNo"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Company No</FormLabel>
+                        <FormLabel>Company Number</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter company number"
+                            placeholder="Enter company ID (optional)"
                             {...field}
                             value={field.value || ""}
                           />
@@ -785,10 +707,10 @@ export default function MonthlyPaymentsPage() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone</FormLabel>
+                        <FormLabel>Phone Number</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter phone number"
+                            placeholder="e.g., +966 50 123 4567"
                             {...field}
                             value={field.value || ""}
                           />
@@ -802,16 +724,19 @@ export default function MonthlyPaymentsPage() {
                     name="amount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Amount *</FormLabel>
+                        <FormLabel>Amount (SAR) *</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             min="0.01"
                             step="0.01"
-                            placeholder="Enter amount (SAR)"
+                            placeholder="Enter amount in SAR"
                             {...field}
-                            onChange={e => field.onChange(parseFloat(e.target.value) || 0)}
-                            value={field.value || ""}
+                            onChange={e => {
+                              const value = e.target.value;
+                              field.onChange(value === "" ? 0 : parseFloat(value) || 0);
+                            }}
+                            value={field.value === 0 ? "" : field.value}
                           />
                         </FormControl>
                         <FormMessage />
@@ -823,16 +748,16 @@ export default function MonthlyPaymentsPage() {
                     name="status"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormLabel>Payment Status</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
+                              <SelectValue placeholder="Select payment status" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="paid">Paid</SelectItem>
                             <SelectItem value="not_paid">Not Paid</SelectItem>
+                            <SelectItem value="paid">Paid</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

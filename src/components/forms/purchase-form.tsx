@@ -626,7 +626,8 @@ export default function PurchaseForm({
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto order-1 sm:order-2 bg-gray-600 hover:bg-gray-700"
+            variant="primary"
+            className="w-full sm:w-auto order-1 sm:order-2"
           >
             {isLoading
               ? "Saving..."

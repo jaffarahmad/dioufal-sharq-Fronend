@@ -28,7 +28,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
+import { useNotifications } from "@/hooks/use-notifications";
 import {
   insertAttendanceSchema,
   type InsertAttendance,
@@ -66,7 +66,7 @@ export default function AttendanceForm({
   trigger,
 }: AttendanceFormProps) {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
+  const notifications = useNotifications();
   const queryClient = useQueryClient();
 
   // Fetch employees and projects for dropdowns
@@ -135,21 +135,12 @@ export default function AttendanceForm({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
-      const { dismiss } = toast({
-        title: "Success",
-        description: "Attendance recorded successfully",
-      });
+      notifications.success("Success", "Attendance recorded successfully");
       setOpen(false);
       form.reset();
-      setTimeout(() => dismiss(), 3000);
     },
     onError: (error: any) => {
-      const { dismiss } = toast({
-        title: "Error",
-        description: error.message || "Failed to record attendance",
-        variant: "destructive",
-      });
-      setTimeout(() => dismiss(), 5000);
+      notifications.error("Error", error.message || "Failed to record attendance");
     },
   });
 
@@ -175,20 +166,11 @@ export default function AttendanceForm({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
-      const { dismiss } = toast({
-        title: "Success",
-        description: "Attendance updated successfully",
-      });
+      notifications.success("Success", "Attendance updated successfully");
       setOpen(false);
-      setTimeout(() => dismiss(), 3000);
     },
     onError: (error: any) => {
-      const { dismiss } = toast({
-        title: "Error",
-        description: error.message || "Failed to update attendance",
-        variant: "destructive",
-      });
-      setTimeout(() => dismiss(), 5000);
+      notifications.error("Error", error.message || "Failed to update attendance");
     },
   });
 
@@ -245,7 +227,8 @@ export default function AttendanceForm({
       <DialogTrigger asChild>
         {trigger || (
           <Button
-            className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+            variant="primary"
+            className="w-full sm:w-auto"
             type="button"
           >
             <Plus className="mr-2 h-4 w-4" />

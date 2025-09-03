@@ -294,7 +294,7 @@ export default function ProfessionalTemplate({
           {/* Right Column - Client Info */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
-              {type === "quotation" ? "Client Information" : "Bill To"}
+              {type === "quotation" ? "Client Information" : "Invoice To"}
             </h3>
             <div className="space-y-3">
               <div>

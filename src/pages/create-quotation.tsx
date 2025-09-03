@@ -180,7 +180,7 @@ export default function CreateQuotation() {
             </Button>
             <Button
               onClick={handlePreview}
-              className="bg-gray-600 hover:bg-gray-700"
+              variant="secondary"
             >
               <FileText className="h-4 w-4 mr-2" />
               Preview

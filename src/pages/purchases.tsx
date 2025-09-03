@@ -207,7 +207,7 @@ export default function Purchases() {
 
   const handleUpdatePurchase = (data: any) => {
     if (editingPurchase) {
-      let supplierId = suppliers.find(s => s.name === data.supplierName)?.id;
+      const supplierId = suppliers.find(s => s.name === data.supplierName)?.id;
 
       const formattedData = {
         supplierId: supplierId || editingPurchase.supplierId,
@@ -307,8 +307,8 @@ export default function Purchases() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gray-600 hover:bg-gray-700 w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
+            <Button variant="primary">
+              <Plus className="h-4 w-4" />
               Create Purchase Order
             </Button>
           </DialogTrigger>

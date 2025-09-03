@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Printer } from "lucide-react";
 import { Link } from "wouter";
 import logoPath from "@assets/image-otherlogo.png.png";
+import QRCode from "qrcode";
 
 import {
   generateSimplePDF,
@@ -80,21 +81,42 @@ export default function ViewInvoicePage() {
       invoiceTotal: string;
       vatAmount: string;
     };
-  }>({
-    queryKey: ["invoices-records", invoiceId, "qr"],
-    queryFn: () => {
-      // Generate mock QR data for now since there's no backend
+  } | null>({
+    queryKey: ["invoices-records", invoiceId, "qr", invoice?.invoiceNumber, invoice?.totalAmount],
+    queryFn: async () => {
+      if (!invoice) return null;
+      
+      // Calculate actual totals
+      const actualSubtotal = invoiceItems.length > 0
+        ? invoiceItems.reduce((sum, item) => sum + parseFloat(item.amount), 0)
+        : parseFloat(invoice.subtotal || "0");
+      const actualTaxAmount = actualSubtotal * 0.15; // 15% VAT
+      const actualTotal = actualSubtotal + actualTaxAmount;
+      
+      // Generate QR code with actual invoice data
+      const qrData = `Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${actualTotal.toFixed(2)} SAR\nVAT: ${actualTaxAmount.toFixed(2)} SAR\nDate: ${new Date(invoice.createdAt).toLocaleDateString()}\nCompany: DIOUF AL-SHARQ\nVAT No: 310205801200003`;
+      
+      // Generate QR code as base64 data URL
+      const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+        width: 150,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
       return {
-        qrCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+        qrCode: qrCodeDataUrl,
         invoiceUrl: window.location.href,
         zatcaCompliant: true,
-        tlvData: "mock-tlv-data",
+        tlvData: "zatca-compliant-data",
         invoiceData: {
           sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
           vatRegistrationNumber: "310205801200003",
-          invoiceDateTime: new Date().toISOString(),
-          invoiceTotal: "0.00",
-          vatAmount: "0.00"
+          invoiceDateTime: new Date(invoice.createdAt).toISOString(),
+          invoiceTotal: actualTotal.toFixed(2),
+          vatAmount: actualTaxAmount.toFixed(2)
         }
       };
     },
@@ -286,17 +308,10 @@ export default function ViewInvoicePage() {
           <Link href="/invoices">
             <Button variant="outline" className="text-xs sm:text-sm">
               <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              Back to Bills
+              Back to Invoices
             </Button>
           </Link>
           <div className="flex gap-2 sm:gap-3">
-            <Button
-              onClick={handleDownloadPDF}
-              className="text-xs sm:text-sm bg-gray-600 hover:bg-gray-700"
-            >
-              <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Download</span> PDF
-            </Button>
             <Button
               variant="outline"
               onClick={handlePrint}
@@ -312,13 +327,7 @@ export default function ViewInvoicePage() {
             >
               Simple PDF
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleTestPDF}
-              className="text-xs sm:text-sm bg-gray-100 hover:bg-gray-200 text-gray-700"
-            >
-              Test PDF
-            </Button>
+
           </div>
         </div>
       </div>
@@ -408,11 +417,11 @@ export default function ViewInvoicePage() {
               </div>
             </div>
 
-            {/* Bill To and Invoice Info */}
+            {/* Invoice To and Invoice Info */}
             <div className="flex justify-between mb-2">
               <div style={{ width: "48%" }} className="text-left">
                 <h3 className="font-bold text-lg mb-2">
-                  <span className="text-black">BILL TO</span>
+                  <span className="text-black">INVOICE TO</span>
                   <br />
                   <span className="text-sm font-medium text-gray-600" dir="rtl">
                     إرسال الفاتورة إلى

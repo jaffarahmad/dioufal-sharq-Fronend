@@ -68,7 +68,7 @@ export default function InvoicePreviewPage({
       invoiceTotal: string;
       vatAmount: string;
     };
-  }>({
+  } | null>({
     queryKey: ["invoices-records", invoiceId, "qr", invoice?.invoiceNumber, invoice?.totalAmount],
     queryFn: async () => {
       // Generate QR code with invoice data
@@ -320,10 +320,7 @@ export default function InvoicePreviewPage({
                 <Printer className="h-4 w-4 mr-2" />
                 Print
               </Button>
-              <Button onClick={handleDownloadPDF} className="w-full sm:w-auto">
-                <Download className="h-4 w-4 mr-2" />
-                Download PDF
-              </Button>
+
             </div>
           </div>
         </div>
@@ -414,7 +411,7 @@ export default function InvoicePreviewPage({
               {/* Left Column - Client Info */}
               <div>
                 <h3 className="invoice-heading text-xl font-bold text-gray-900 dark:text-gray-900 mb-4 text-left tracking-wide">
-                  BILL TO
+                  INVOICE TO
                 </h3>
                 <div className="p-3">
                   <div className="space-y-2">

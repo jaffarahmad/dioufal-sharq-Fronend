@@ -599,11 +599,10 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             <Button
-              className="w-full justify-start"
-              variant="outline"
+              variant="primary"
               onClick={() => setLocation("/projects")}
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4" />
               Add New Project
             </Button>
             <Button

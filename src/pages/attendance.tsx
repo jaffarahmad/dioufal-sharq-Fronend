@@ -28,7 +28,7 @@ import {
   Edit,
   Trash2,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useNotifications } from "@/hooks/use-notifications";
 import { type Attendance, type Employee, type Project } from "@/lib/schema";
 import AttendanceForm from "@/components/forms/attendance-form";
 import StatsCard from "@/components/ui/stats-card";
@@ -37,7 +37,7 @@ export default function AttendancePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
-  const { toast } = useToast();
+  const notifications = useNotifications();
   const queryClient = useQueryClient();
 
   const {
@@ -78,19 +78,10 @@ export default function AttendancePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attendance-records"] });
-      const { dismiss } = toast({
-        title: "Success",
-        description: "Attendance record deleted successfully",
-      });
-      setTimeout(() => dismiss(), 3000);
+      notifications.success("Success", "Attendance record deleted successfully");
     },
     onError: (error: any) => {
-      const { dismiss } = toast({
-        title: "Error",
-        description: error.message || "Failed to delete attendance record",
-        variant: "destructive",
-      });
-      setTimeout(() => dismiss(), 5000);
+      notifications.error("Error", error.message || "Failed to delete attendance record");
     },
   });
 

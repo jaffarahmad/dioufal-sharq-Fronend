@@ -223,8 +223,8 @@ export default function WagesPage() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gray-600 hover:bg-gray-700 w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
+            <Button variant="primary">
+              <Plus className="h-4 w-4" />
               Add Wage Entry
             </Button>
           </DialogTrigger>
@@ -473,8 +473,8 @@ export default function WagesPage() {
                       <Button
                         onClick={() => handleDeleteWage(wage)}
                         size="sm"
-                        variant="outline"
-                        className="w-full sm:w-auto text-xs sm:text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
+                        variant="destructive"
+                        className="w-full sm:w-auto text-xs sm:text-sm"
                       >
                         <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                         Delete
@@ -483,7 +483,8 @@ export default function WagesPage() {
                         onClick={() => handleMarkAsPaid(wage)}
                         disabled={updateWageStatusMutation.isPending}
                         size="sm"
-                        className="bg-green-600 hover:bg-green-700 w-full sm:w-auto text-xs sm:text-sm"
+                        variant="primary"
+                        className="w-full sm:w-auto text-xs sm:text-sm"
                       >
                           <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           <span className="hidden sm:inline">Mark as </span>Paid

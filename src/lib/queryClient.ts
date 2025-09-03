@@ -35,7 +35,6 @@ export async function apiRequest(
   });
 
   const res = await fetch(fullUrl, {
-    credentials: "include",
     ...options,
     headers,
   });

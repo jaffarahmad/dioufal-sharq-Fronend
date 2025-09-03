@@ -187,8 +187,8 @@ export default function Suppliers() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gray-600 hover:bg-gray-700 w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
+            <Button variant="primary">
+              <Plus className="h-4 w-4" />
               Add New Supplier
             </Button>
           </DialogTrigger>

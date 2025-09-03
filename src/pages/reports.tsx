@@ -820,9 +820,9 @@ export default function Reports() {
           <Button
             onClick={handleExportReport}
             disabled={isExporting}
-            className="bg-gray-600 hover:bg-gray-700 w-full sm:w-auto"
+            variant="primary"
           >
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4" />
             {isExporting ? "Generating..." : "Export Report"}
           </Button>
         </div>
