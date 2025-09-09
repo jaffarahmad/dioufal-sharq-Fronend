@@ -215,16 +215,16 @@ export default function ProfessionalTemplate({
           {/* Company Info */}
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-wide">
-              DIOUF AL-SHARQ
+              AMANI MUHAMMAD AL OTAIBI CON.COM
             </h1>
             <p className="text-lg text-gray-800 font-semibold tracking-wider mb-1">
-              GENERAL CONTRACTING COMPANY
+              CONTRACTING COMPANY
             </p>
             <p className="text-sm text-gray-600 mb-1">
-              شركة ضيوف الشرق للمقاولات العامة
+              شركة أماني محمد العتيبي للمقاولات
             </p>
             <p className="text-sm text-gray-600">
-              C.R: 4030313386 | Tel: +966 632 428 200
+              C.R: 7050857452 | VAT: 312169201500003 | Tel: +966 632 428 200
             </p>
           </div>
 
@@ -522,8 +522,8 @@ export default function ProfessionalTemplate({
               Mushrifa, Jeddah, Kingdom of Saudi Arabia
             </p>
             <p className="text-sm text-gray-600 tracking-wider">
-              Tel: +966 632 428 200 | Email: info@diouf-alsharq.com |
-              www.diouf-alsharq.sa
+              Tel: +966 632 428 200 | Email: info@amani-alotaibi.com |
+              www.amani-alotaibi.com
             </p>
           </div>
         </div>

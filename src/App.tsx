@@ -22,6 +22,7 @@ import Quotations from "@/pages/quotations";
 import ExactQuotation from "@/pages/exact-quotation";
 import CreateQuotation from "@/pages/create-quotation";
 import ProfessionalQuotation from "@/pages/professional-quotation";
+import AmaniQuotation from "@/pages/amani-quotation";
 
 import ProfessionalTemplateQuotation from "@/pages/professional-template-quotation";
 import QuotationPreview from "@/pages/quotation-preview";
@@ -109,6 +110,10 @@ function AuthenticatedApp() {
                 <Route
                   path="/professional-quotation"
                   component={ProfessionalQuotation}
+                />
+                <Route
+                  path="/amani-quotation"
+                  component={AmaniQuotation}
                 />
 
                 <Route path="/quotation-preview" component={QuotationPreview} />

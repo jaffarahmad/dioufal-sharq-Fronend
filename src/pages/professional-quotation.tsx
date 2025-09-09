@@ -326,7 +326,7 @@ export default function ProfessionalQuotation() {
                 <div className="text-lg font-bold mb-1">
                   DIOUF AL SHARQ GENERAL
                 </div>
-                <div className="text-sm mb-1">Contracting Company</div>
+                <div className="text-sm mb-1">CONTRACTING COMPANY</div>
                 <div className="text-xs mb-2">C.R 4030313386 / 700509451</div>
                 {/* 3 red lines below company name */}
                 <div className="flex flex-col space-y-1">
@@ -352,7 +352,7 @@ export default function ProfessionalQuotation() {
               <div className="text-black text-right flex-1" dir="rtl">
                 <div className="text-lg font-bold mb-1">شركة ضيوف الشرق</div>
                 <div className="text-sm mb-1">للمقاولات العامة</div>
-                <div className="text-xs mb-2">ست ٤٠٣٠٣١۳۳۸۱ / ٧٠٠٥٠٩٤٥١٦</div>
+                <div className="text-xs mb-2">س.ت ٤٠٣٠٣١٣٣٨٦ / ٧٠٠٥٠٩٤٥١٦</div>
                 {/* 3 red lines below Arabic company name */}
                 <div className="flex flex-col items-start space-y-1">
                   <div className="w-40 h-1 bg-gradient-to-l from-red-600 to-red-500 rounded-sm shadow-sm"></div>

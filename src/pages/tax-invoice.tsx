@@ -9,7 +9,7 @@ import { Printer, Download, Share2, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import logoImage from "@assets/image-logo.png";
+import logoImage from "@assets/image-otherlogo.png.png";
 import companyStamp from "@assets/image_17540348329.png";
 import QRCode from "qrcode";
 
@@ -104,8 +104,8 @@ export default function TaxInvoicePage() {
         zatcaCompliant: true,
         tlvData: "zatca-compliant-data",
         invoiceData: {
-          sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
-          vatRegistrationNumber: "310205801200003",
+          sellerName: "AMANI MUHAMMAD AL OTAIBI CON.COM",
+          vatRegistrationNumber: "312169201500003",
           invoiceDateTime: new Date(invoice.createdAt).toISOString(),
           invoiceTotal: actualTotal.toFixed(2),
           vatAmount: actualTaxAmount.toFixed(2)
@@ -326,7 +326,7 @@ export default function TaxInvoicePage() {
               {/* Company Name at Top Center */}
               <div className="text-center py-2 border-b border-gray-300">
                 <h1 className="text-xl font-bold leading-tight tracking-wide text-gray-900">
-                  DIOUF AL-SHARQ GENERAL CONTRACTING
+                  AMANI MUHAMMAD AL OTAIBI CON.COM
                 </h1>
               </div>
 
@@ -337,8 +337,12 @@ export default function TaxInvoicePage() {
                     <div className="flex-1">
                       <div className="text-xs text-gray-600 space-y-0.5 leading-tight">
                         <div>
+                          <span className="font-medium">CR:</span>{" "}
+                          7050857452
+                        </div>
+                        <div>
                           <span className="font-medium">VAT:</span>{" "}
-                          310205801200003
+                          312169201500003
                         </div>
                         <div>
                           <span className="font-medium">Address:</span> Gharnath
@@ -352,7 +356,7 @@ export default function TaxInvoicePage() {
                         className="text-sm font-semibold text-gray-700 leading-tight text-right"
                         dir="rtl"
                       >
-                        شركة ضيوف الشرق للمقاولات العامة شركة شخص واحد
+                        شركة أماني محمد العتيبي للمقاولات
                       </h2>
                     </div>
                   </div>

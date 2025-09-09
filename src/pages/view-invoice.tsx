@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Printer } from "lucide-react";
 import { Link } from "wouter";
-import logoPath from "@assets/image-otherlogo.png.png";
+import logoPath from "@assets/logo.view-invoice.png";
 import QRCode from "qrcode";
 
 import {
@@ -94,7 +94,7 @@ export default function ViewInvoicePage() {
       const actualTotal = actualSubtotal + actualTaxAmount;
       
       // Generate QR code with actual invoice data
-      const qrData = `Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${actualTotal.toFixed(2)} SAR\nVAT: ${actualTaxAmount.toFixed(2)} SAR\nDate: ${new Date(invoice.createdAt).toLocaleDateString()}\nCompany: DIOUF AL-SHARQ\nVAT No: 310205801200003`;
+      const qrData = `Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${actualTotal.toFixed(2)} SAR\nVAT: ${actualTaxAmount.toFixed(2)} SAR\nDate: ${new Date(invoice.createdAt).toLocaleDateString()}\nCompany: AMANI MUHAMMAD AL OTAIBI CONTRACTING COMPANY\nCR No: 7050857452\nVAT No: 312169201500003`;
       
       // Generate QR code as base64 data URL
       const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
@@ -112,8 +112,8 @@ export default function ViewInvoicePage() {
         zatcaCompliant: true,
         tlvData: "zatca-compliant-data",
         invoiceData: {
-          sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
-          vatRegistrationNumber: "310205801200003",
+          sellerName: "AMANI MUHAMMAD AL OTAIBI CONTRACTING COMPANY",
+          vatRegistrationNumber: "312169201500003",
           invoiceDateTime: new Date(invoice.createdAt).toISOString(),
           invoiceTotal: actualTotal.toFixed(2),
           vatAmount: actualTaxAmount.toFixed(2)
@@ -356,16 +356,16 @@ export default function ViewInvoicePage() {
                 <div className="text-left flex-1">
                   <h1
                     className="text-xl font-extrabold"
-                    style={{ color: "#10b981" }}
+                    style={{ color: "#0ea5e9" }}
                   >
-                    Masarat Al Bawadi Co.
+                    AMANI MUHAMMAD AL OTAIBI
                   </h1>
                   <p className="text-sm font-semibold text-gray-600">
-                    For Contracting (One Person)
+                    CONTRACTING COMPANY
                   </p>
                   <div className="text-sm font-medium text-gray-600 mt-2 space-y-1">
-                    <div>C.R. 4030536506/7037600215</div>
-                    <div>VAT No. 311967528900003</div>
+                    <div>C.R. 7050857452</div>
+                    <div>VAT No. 312169201500003</div>
                   </div>
                 </div>
 
@@ -398,20 +398,20 @@ export default function ViewInvoicePage() {
                 <div className="text-right flex-1">
                   <h2
                     className="text-xl font-extrabold"
-                    style={{ color: "#10b981" }}
+                    style={{ color: "#0ea5e9" }}
                     dir="rtl"
                   >
-                    شركة ضيوف الشرق للمقاولات العامة
+                    شركة أماني محمد العتيبي للمقاولات
                   </h2>
                   <p className="text-sm font-semibold text-gray-600" dir="rtl">
-                    للمقاولات (شخص واحد)
+                    للمقاولات
                   </p>
                   <div
                     className="text-sm font-medium text-gray-600 mt-2 space-y-1"
                     dir="rtl"
                   >
-                    <div>س.ت: ٤٠٣٠٥٣٦٥٠٦/٧٠٣٧٦٠٠٢١٥</div>
-                    <div>الرقم الضريبي: ٣١١٩٦٧٥٢٨٩٠٠٠٠٣</div>
+                    <div>س.ت: ٧٠٥٠٨٥٧٤٥٢</div>
+                    <div>الرقم الضريبي: ٣١٢١٦٩٢٠١٥٠٠٠٠٣</div>
                   </div>
                 </div>
               </div>
@@ -713,13 +713,13 @@ export default function ViewInvoicePage() {
                 </h4>
                 <div className="text-sm space-y-0">
                   <div>
-                    <strong>Bank:</strong> Riyad Bank
+                    <strong>Bank:</strong> Al Rajhi Bank
                   </div>
                   <div>
-                    <strong>Account Number:</strong> 176331013994
+                    <strong>Account Number:</strong> 993608010099371
                   </div>
                   <div>
-                    <strong>IBAN:</strong> SA5720000001763310139940
+                    <strong>IBAN:</strong> SA93 8000 0993 6080 1009 9371
                   </div>
                 </div>
               </div>
@@ -738,16 +738,20 @@ export default function ViewInvoicePage() {
 
             {/* Company Contact Information */}
             <div className="text-center mt-1">
-              <div className="text-xs text-gray-600 space-y-0">
-                <div>
-                  Gharnath Street, opposite Saudi Aramco complex, Mushrifa,
-                  Jeddah KSA
+              <div className="text-xs text-gray-600 space-y-1">
+                <div className="flex items-center justify-center gap-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  <span>جدة العزيزية لشارع سبعين</span>
                 </div>
-                <div>
-                  شارع غرناطة، مقابل مجمع أرامكو السعودية، المشرفة، جدة المملكة
-                  العربية السعودية
+                <div className="flex items-center justify-center gap-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                  </svg>
+                  <span>joodinternationalinfo@gmail.com</span>
                 </div>
-                <div>E-mail :Info@massarat.com</div>
               </div>
             </div>
           </CardContent>

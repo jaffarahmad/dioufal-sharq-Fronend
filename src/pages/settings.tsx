@@ -56,6 +56,7 @@ interface CompanyInfo {
   companyName: string;
   logo?: string;
   registrationId: string;
+  vatNumber: string;
   email: string;
   phone: string;
   website: string;
@@ -291,11 +292,12 @@ export default function Settings() {
   });
 
   const [company, setCompany] = useState<CompanyInfo>({
-    companyName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
-    registrationId: "",
-    email: "info@diouf-alsharq.com",
+    companyName: "AMANI MUHAMMAD AL OTAIBI CON.COM",
+    registrationId: "7050857452",
+    vatNumber: "312169201500003",
+    email: "info@amani-alotaibi.com",
     phone: "+966 11 234 5678",
-    website: "www.diouf-alsharq.com",
+    website: "www.amani-alotaibi.com",
     address: {
       street: "",
       city: "Riyadh",

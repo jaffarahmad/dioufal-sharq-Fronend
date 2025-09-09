@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { ArrowLeft, Download, Printer, Share } from "lucide-react";
 import { type Invoice } from "@/lib/schema";
-import logoPath from "@assets/image_17540348329.png";
+import logoPath from "@assets/image-otherlogo.png.png";
 import { generateEnhancedPDF } from "@/utils/enhanced-pdf-generator";
 import QRCode from "qrcode";
 
@@ -72,7 +72,7 @@ export default function InvoicePreviewPage({
     queryKey: ["invoices-records", invoiceId, "qr", invoice?.invoiceNumber, invoice?.totalAmount],
     queryFn: async () => {
       // Generate QR code with invoice data
-       const qrData = `Invoice: ${invoice?.invoiceNumber || invoiceId}\nClient: ${invoice?.clientName || 'N/A'}\nAmount: ${(invoice?.totalAmount || 0).toLocaleString()} SAR\nVAT: ${((invoice?.totalAmount || 0) * 0.15).toLocaleString()} SAR\nDate: ${new Date(invoice?.createdAt || new Date()).toLocaleDateString()}\nCompany: DIOUF AL-SHARQ\nVAT No: 310205801200003`;
+       const qrData = `Invoice: ${invoice?.invoiceNumber || invoiceId}\nClient: ${invoice?.clientName || 'N/A'}\nAmount: ${(invoice?.totalAmount || 0).toLocaleString()} SAR\nVAT: ${((invoice?.totalAmount || 0) * 0.15).toLocaleString()} SAR\nDate: ${new Date(invoice?.createdAt || new Date()).toLocaleDateString()}\nCompany: AMANI MUHAMMAD AL OTAIBI CON.COM\nVAT No: 312169201500003`;
        
        // Generate QR code as base64 data URL
        const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
@@ -90,8 +90,8 @@ export default function InvoicePreviewPage({
          zatcaCompliant: true,
          tlvData: "mock-tlv-data",
          invoiceData: {
-           sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
-           vatRegistrationNumber: "310205801200003",
+           sellerName: "AMANI MUHAMMAD AL OTAIBI CON.COM",
+           vatRegistrationNumber: "312169201500003",
            invoiceDateTime: new Date().toISOString(),
            invoiceTotal: (invoice?.totalAmount || 0).toString(),
            vatAmount: ((invoice?.totalAmount || 0) * 0.15).toString()
@@ -336,16 +336,19 @@ export default function InvoicePreviewPage({
               <div className="flex-1">
                 <div className="mb-6">
                   <h1 className="invoice-company text-xl lg:text-2xl font-bold text-blue-900 dark:text-blue-900 mb-3 tracking-tight">
-                    Diouf Al Sharq General Contracting Company
+                    DIOUF AL SHARQ GENERAL CONTRACTING COMPANY
                   </h1>
                   <h2
                     className="invoice-company text-lg lg:text-xl font-semibold text-blue-800 dark:text-blue-800 leading-tight mb-4 text-left"
                     dir="rtl"
                   >
-                    شركة ضيوف الشرق للمقاولات العامة شركة شخص واحد
+                    شركة ضيوف الشرق للمقاولات العامة
                   </h2>
                 </div>
                 <div className="invoice-body text-sm text-gray-700 dark:text-gray-500 space-y-2 leading-relaxed">
+                  <p className="font-medium">
+                    CR: <span className="font-mono">4030313386 / 700509451</span>
+                  </p>
                   <p className="font-medium">
                     VAT: <span className="font-mono">310205801200003</span>
                   </p>
@@ -368,7 +371,7 @@ export default function InvoicePreviewPage({
               <div className="flex flex-col items-center space-y-3">
                 <img
                   src={logoPath}
-                  alt="Diouf Al-Sharq Logo"
+                  alt="DIOUF AL SHARQ GENERAL CONTRACTING COMPANY Logo"
                   className="object-contain"
                   style={{ height: "108px" }}
                 />

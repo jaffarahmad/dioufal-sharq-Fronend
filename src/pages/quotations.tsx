@@ -19,7 +19,7 @@ export default function Quotations() {
         </div>
 
         {/* Quotation Options */}
-        <div className="flex justify-center max-w-4xl mx-auto">
+        <div className="flex justify-center gap-6 max-w-4xl mx-auto">
           {/* Professional Quotation */}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700 max-w-md">
             <FileText className="h-16 w-16 text-pink-600 mx-auto mb-4" />
@@ -38,6 +38,26 @@ export default function Quotations() {
             >
               <FileText className="h-5 w-5 mr-2" />
               Create Professional
+            </Button>
+          </div>
+
+          {/* AMANI MUHAMMAD Template */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700 max-w-md">
+            <Award className="h-16 w-16 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+              AMANI MUHAMMAD
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Professional template customized for AMANI MUHAMMAD AL OTAIBI company branding
+            </p>
+            <Button
+              onClick={() => setLocation("/amani-quotation")}
+              size="lg"
+              variant="primary"
+              className="w-full"
+            >
+              <Award className="h-5 w-5 mr-2" />
+              Create AMANI MUHAMMAD
             </Button>
           </div>
         </div>

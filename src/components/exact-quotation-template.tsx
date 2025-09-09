@@ -213,10 +213,10 @@ export default function ExactQuotationTemplate({
           {/* Right: Arabic Company Name */}
           <div className="absolute right-0 top-0 text-right" dir="rtl">
             <h1 className="text-lg font-bold text-purple-800 mb-1">
-              شركة ضيوف الشرق
+              شركة أماني محمد العتيبي للمقاولات
             </h1>
             <p className="text-sm text-gray-700 font-medium">
-              للمقاولات العامة
+              للمقاولات
             </p>
             <p className="text-xs text-gray-600 mt-1">
               س.ت ٤٠٣٠٣١٣٣٨٦ / ٧٠٠٥٠٩٤٥١٦
@@ -477,7 +477,7 @@ export default function ExactQuotationTemplate({
               KSA
             </p>
             <p className="text-sm text-gray-600 mt-1">
-              info@diouf-alsharq.com | www.diouf-alsharq.sa
+              info@amani-alotaibi.com | www.amani-alotaibi.com
             </p>
           </div>
         </div>

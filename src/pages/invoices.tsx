@@ -86,12 +86,10 @@ const lineItemSchema = z.object({
 });
 
 const createInvoiceSchema = z.object({
-  billType: z.string().min(1, "Invoice type is required"),
   invoiceNumber: z.string().min(1, "Invoice number is required"),
   poNumber: z.string().optional(),
   clientName: z.string().min(1, "Client name is required"),
   clientEmail: z.string().optional(),
-  clientPhone: z.string().optional(),
   clientAddress: z.string().optional(),
   description: z.string().optional(),
   status: z.string().default("Draft"),
@@ -133,12 +131,10 @@ export default function InvoicesPage() {
   const form = useForm<CreateInvoiceForm>({
     resolver: zodResolver(createInvoiceSchema),
     defaultValues: {
-      billType: "invoice",
       invoiceNumber: `INV-${Date.now()}`,
       poNumber: "",
       clientName: "",
       clientEmail: "",
-      clientPhone: "",
       clientAddress: "",
       description: "",
       status: "Draft",
@@ -188,7 +184,6 @@ export default function InvoicesPage() {
         poNumber: data.poNumber || undefined,
         clientName: data.clientName,
         clientEmail: data.clientEmail || undefined,
-        clientPhone: data.clientPhone || undefined,
         clientAddress: data.clientAddress || undefined,
         description: data.description || undefined,
         subtotal: calculatedSubtotal,
@@ -262,7 +257,6 @@ export default function InvoicesPage() {
         poNumber: data.poNumber || undefined,
         clientName: data.clientName,
         clientEmail: data.clientEmail || undefined,
-        clientPhone: data.clientPhone || undefined,
         clientAddress: data.clientAddress || undefined,
         description: data.description || undefined,
         subtotal: calculatedSubtotal,
@@ -355,12 +349,10 @@ export default function InvoicesPage() {
 
       // Reset form with invoice data
       form.reset({
-        billType: "invoice", // Default to invoice for editing
         invoiceNumber: invoice.invoiceNumber,
         poNumber: invoice.poNumber || "",
         clientName: invoice.clientName,
         clientEmail: invoice.clientEmail || "",
-        clientPhone: invoice.clientPhone || "",
         clientAddress: invoice.clientAddress || "",
         description: invoice.description || "",
         status: invoice.status,
@@ -446,40 +438,7 @@ export default function InvoicesPage() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
-                {/* Invoice Type Selection */}
-                <FormField
-                  control={form.control}
-                  name="billType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Invoice Number Type</FormLabel>
-                      <Select
-                        onValueChange={value => {
-                          field.onChange(value);
-                          // Auto-generate number based on type
-                          const timestamp = Date.now();
-                          if (value === "invoice") {
-                            form.setValue("invoiceNumber", `INV-${timestamp}`);
-                          } else if (value === "bill") {
-                      form.setValue("invoiceNumber", `INV-${timestamp}`);
-                          }
-                        }}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select invoice type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="invoice">Invoice</SelectItem>
-                          <SelectItem value="bill">Invoice Number</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
@@ -587,19 +546,7 @@ export default function InvoicesPage() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="clientPhone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Client Phone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="+966 50 123 4567" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
                 </div>
 
                 <FormField
