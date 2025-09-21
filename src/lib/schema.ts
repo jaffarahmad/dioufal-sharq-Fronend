@@ -350,12 +350,13 @@ export interface PaymentRecord extends InsertPayment {
 
 // Ali Al Yamny schemas
 export const insertAliAlYamnySchema = z.object({
-  date: z.string(),
-  description: z.string().min(1, "Description is required"),
-  amount: z.number(),
-  type: z.enum(["income", "expense"]),
-  category: z.string().optional(),
-  reference: z.string().optional(),
+  name: z.string().min(1, "Name is required"),
+  iqmasNo: z.string().min(1, "Iqama number is required"),
+  companyName: z.string().min(1, "Company name is required"),
+  contact: z.string().min(1, "Contact is required"),
+  agreement: z.string().min(1, "Agreement is required"),
+  aliAlYamny: z.string().min(1, "Ali Al Yamny information is required"),
+  expireDate: z.string().optional(),
 });
 
 export type InsertAliAlYamny = z.infer<typeof insertAliAlYamnySchema>;
@@ -364,10 +365,4 @@ export interface AliAlYamny extends InsertAliAlYamny {
   id: number;
   createdAt: string;
   updatedAt: string;
-  iqmasNo?: string;
-  companyName?: string;
-  contact?: string;
-  agreement?: string;
-  aliAlYamny?: string;
-  expireDate?: string;
 }

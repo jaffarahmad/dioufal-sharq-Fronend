@@ -65,7 +65,7 @@ function AliAlYamnyForm({ record, trigger }: AliAlYamnyFormProps) {
   const form = useForm<AliAlYamnyFormData>({
     resolver: zodResolver(aliAlYamnyFormSchema),
     defaultValues: {
-      name: record?.aliAlYamny || "",
+      name: record?.name || "",
       iqmasNo: record?.iqmasNo || "",
       companyName: record?.companyName || "",
       contact: record?.contact || "",
@@ -399,7 +399,7 @@ export default function AliAlYamny() {
       headers.join(","),
       ...filteredRecords.map((record: AliAlYamnyRecord) =>
         [
-          `"${record.aliAlYamny || 'N/A'}"`,
+          `"${record.name || 'N/A'}"`,
           `"${record.iqmasNo || 'N/A'}"`,
           `"${record.companyName || 'N/A'}"`,
           `"${record.contact || 'N/A'}"`,
@@ -570,7 +570,7 @@ export default function AliAlYamny() {
                   filteredRecords.map((record: AliAlYamnyRecord) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">
-                        {record.aliAlYamny || 'N/A'}
+                        {record.name || 'N/A'}
                       </TableCell>
                       <TableCell>{record.iqmasNo || 'N/A'}</TableCell>
                       <TableCell>{record.companyName || 'N/A'}</TableCell>
