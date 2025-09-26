@@ -463,51 +463,16 @@ export default function ProfessionalQuotation() {
               </div>
               <div className="text-xs space-y-1 text-gray-800 leading-relaxed terms-compact">
                 <div>
-                  <span className="font-bold">1. Advance Payment:</span> The
-                  client must pay 40% of the contract amount upfront. The rest
-                  will be paid monthly based on the work's progress.
+                  Rates are exclusive of VAT (if applicable).
                 </div>
                 <div>
-                  <span className="font-bold">2. VAT (Value Added Tax):</span> A
-                  15% VAT will be added to the quoted price.
+                  Quotation is valid for 30 days from the issue date.
                 </div>
                 <div>
-                  <span className="font-bold">3. Payment Deductions:</span> The
-                  client cannot withhold or deduct any payments for goods and
-                  services, even if they have a counterclaim or set-off.
+                  Work will be executed as per site conditions and approved specifications.
                 </div>
                 <div>
-                  <span className="font-bold">
-                    4. Advice and Services Liability:
-                  </span>{" "}
-                  Any advice or service provided by the contractor, Diouf
-                  AL-Sharq, is given in good faith, and the contractor is not
-                  liable for any resulting loss or damage.
-                </div>
-                <div>
-                  <span className="font-bold">5. Site Access and Permits:</span>{" "}
-                  The client is responsible for providing site access and
-                  obtaining all necessary permits for the work to begin. All
-                  quantities are based on the Purchase Order (P.O.), and any
-                  changes must be in writing.
-                </div>
-                <div>
-                  <span className="font-bold">
-                    6. Delays and Responsibility:
-                  </span>{" "}
-                  The client is responsible for any delays caused by the site
-                  not being ready or due to access issues.
-                </div>
-                <div>
-                  <span className="font-bold">7. Fixed Project Scope:</span> The
-                  project scope is fixed. Any additional work must be agreed
-                  upon and charged separately.
-                </div>
-                <div>
-                  <span className="font-bold">8. Termination of Project:</span>{" "}
-                  If the project is terminated by either party, the client must
-                  immediately pay for all work completed up to the termination
-                  date.
+                  Payment terms to be agreed upon before commencement of work.
                 </div>
               </div>
             </div>
@@ -520,16 +485,8 @@ export default function ProfessionalQuotation() {
               <div className="text-sm">Thanks, and Best Regards</div>
             </div>
 
-            {/* Signature */}
-            <div className="flex justify-between items-end footer-section no-page-break">
-              <div>
-                <div className="text-sm font-bold mb-2">
-                  Muhammad Hafeez Khan
-                </div>
-                <div className="text-sm mb-1">Executive Director</div>
-                <div className="text-sm mb-1">Diouf al Sharq</div>
-                <div className="text-sm">Cell: 00966632428200</div>
-              </div>
+            {/* Company Stamp Only */}
+            <div className="flex justify-end items-end footer-section no-page-break">
               <div className="text-center company-stamp">
                 <div className="w-32 h-20 mb-2 flex items-center justify-center">
                   <img
