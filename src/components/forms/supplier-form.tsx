@@ -90,7 +90,7 @@ export default function SupplierForm({
       <Star
         key={i}
         className={`h-4 w-4 ${
-          i < rating ? "text-yellow-400 fill-current" : "text-gray-300"
+          i < rating ? "text-yellow-400 fill-current" : "text-muted-foreground/50"
         }`}
       />
     ));

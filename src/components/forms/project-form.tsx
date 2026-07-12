@@ -215,7 +215,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
           {project ? "Edit" : "New Project"}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full bg-white border shadow-xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full bg-card border shadow-xl">
         <DialogHeader>
           <DialogTitle>
             {project ? "Edit Project" : "Create New Project"}
@@ -233,7 +233,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
           >
             {/* Basic Information Section */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              <h3 className="text-lg font-semibold text-foreground border-b pb-2">
                 Basic Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -242,7 +242,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Project Name
                       </FormLabel>
                       <FormControl>
@@ -261,7 +261,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Project Type
                       </FormLabel>
                       <FormControl>
@@ -284,7 +284,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-gray-700">
+                  <FormLabel className="text-sm font-medium text-foreground">
                     Description
                   </FormLabel>
                   <FormControl>
@@ -302,7 +302,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
 
             {/* Budget & Status Section */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              <h3 className="text-lg font-semibold text-foreground border-b pb-2">
                 Budget & Status
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-blue-50/50 p-4 rounded-lg border">
@@ -311,7 +311,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="budget"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Budget (SAR)
                       </FormLabel>
                       <FormControl>
@@ -337,7 +337,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Status
                       </FormLabel>
                       <Select
@@ -365,7 +365,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
 
             {/* Timeline Section */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              <h3 className="text-lg font-semibold text-foreground border-b pb-2">
                 Project Timeline
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-purple-50/30 p-4 rounded-lg border border-purple-200">
@@ -374,7 +374,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="startDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Start Date
                       </FormLabel>
                       <FormControl>
@@ -405,7 +405,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="endDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         End Date
                       </FormLabel>
                       <FormControl>
@@ -436,7 +436,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
 
             {/* Client Information Section */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
+              <h3 className="text-lg font-semibold text-foreground border-b pb-2">
                 Client Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-emerald-50/30 p-4 rounded-lg border border-emerald-200">
@@ -445,7 +445,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="clientName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Client Name
                       </FormLabel>
                       <FormControl>
@@ -465,7 +465,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="clientContact"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Client Contact
                       </FormLabel>
                       <FormControl>
@@ -485,7 +485,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="clientEmail"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Client Email
                       </FormLabel>
                       <FormControl>
@@ -510,7 +510,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="progress"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Progress (%)
                       </FormLabel>
                       <FormControl>
@@ -534,7 +534,7 @@ export default function ProjectForm({ onSuccess, project }: ProjectFormProps) {
                   name="imageUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
+                      <FormLabel className="text-sm font-medium text-foreground">
                         Image URL
                       </FormLabel>
                       <FormControl>

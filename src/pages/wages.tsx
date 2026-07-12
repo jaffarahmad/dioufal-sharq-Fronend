@@ -213,10 +213,10 @@ export default function WagesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-foreground">
             Wages Management
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-muted-foreground mt-1">
             Manage employee wages and payroll
           </p>
         </div>
@@ -285,7 +285,7 @@ export default function WagesPage() {
                 currency: "SAR",
               })}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-muted-foreground">
               0 entries
             </p>
           </CardContent>
@@ -303,7 +303,7 @@ export default function WagesPage() {
                 currency: "SAR",
               })}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-muted-foreground">
               {wages.length} entries
             </p>
           </CardContent>
@@ -321,7 +321,7 @@ export default function WagesPage() {
                 currency: "SAR",
               })}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-xs text-muted-foreground">
               {wages.length} total entries
             </p>
           </CardContent>
@@ -339,11 +339,11 @@ export default function WagesPage() {
         <CardContent>
           {wages.length === 0 ? (
             <div className="text-center py-8">
-              <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">
+              <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">
                 No wage entries found
               </p>
-              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Create your first wage entry to get started
               </p>
             </div>
@@ -352,12 +352,12 @@ export default function WagesPage() {
               {wages.map(wage => (
                 <div
                   key={wage.id}
-                  className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="border rounded-lg p-4 hover:bg-muted/60 transition-colors"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-3">
-                        <User className="h-4 w-4 text-gray-500" />
+                        <User className="h-4 w-4 text-muted-foreground" />
                         <span className="font-medium">
                           {getEmployeeName(wage.employeeId)}
                         </span>
@@ -368,26 +368,26 @@ export default function WagesPage() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-sm">
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400">
+                          <span className="text-muted-foreground">
                             Period:
                           </span>
                           <p className="font-medium">{wage.period}</p>
                         </div>
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400">
+                          <span className="text-muted-foreground">
                             Period:
                           </span>
                           <p className="font-medium">
                             {wage.period}
                             {wage.notes && wage.notes.includes('Start:') && wage.notes.includes('End:') && (
-                              <span className="text-sm text-gray-500 block">
+                              <span className="text-sm text-muted-foreground block">
                                 {wage.notes.split(', Start: ')[1]?.split(', End:')[0]} - {wage.notes.split(', End: ')[1]}
                               </span>
                             )}
                           </p>
                         </div>
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400">
+                          <span className="text-muted-foreground">
                             Base Amount:
                           </span>
                           <p className="font-medium">
@@ -398,7 +398,7 @@ export default function WagesPage() {
                           </p>
                         </div>
                         <div>
-                          <span className="text-gray-500 dark:text-gray-400">
+                          <span className="text-muted-foreground">
                             Total Amount:
                           </span>
                           <p className="font-medium text-green-600">
@@ -416,7 +416,7 @@ export default function WagesPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-xs pt-2 border-t">
                           {wage.overtime && wage.overtime > 0 && (
                               <div>
-                                <span className="text-gray-500">Overtime:</span>
+                                <span className="text-muted-foreground">Overtime:</span>
                                 <p className="text-blue-600">
                                   +
                                   {wage.overtime.toLocaleString(
@@ -428,7 +428,7 @@ export default function WagesPage() {
                             )}
                           {wage.bonuses && wage.bonuses > 0 && (
                             <div>
-                              <span className="text-gray-500">Bonuses:</span>
+                              <span className="text-muted-foreground">Bonuses:</span>
                               <p className="text-green-600">
                                 +
                                 {wage.bonuses.toLocaleString(
@@ -440,7 +440,7 @@ export default function WagesPage() {
                           )}
                           {wage.deductions && wage.deductions > 0 && (
                               <div>
-                                <span className="text-gray-500">
+                                <span className="text-muted-foreground">
                                   Deductions:
                                 </span>
                                 <p className="text-red-600">
@@ -455,7 +455,7 @@ export default function WagesPage() {
                         </div>
                       ) : null}
 
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         Payment Date: {format(new Date(wage.paymentDate), "MMM dd, yyyy")}
                       </div>
                     </div>

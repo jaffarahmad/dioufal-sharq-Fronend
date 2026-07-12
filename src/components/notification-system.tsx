@@ -54,7 +54,7 @@ const getNotificationIcon = (type: string, category: string) => {
     case "project":
       return <Building className="h-4 w-4 text-orange-500" />;
     case "system":
-      return <FileText className="h-4 w-4 text-gray-500" />;
+      return <FileText className="h-4 w-4 text-muted-foreground" />;
     default:
       return <Info className="h-4 w-4 text-blue-500" />;
   }
@@ -112,7 +112,7 @@ export function NotificationSystem({
       <CardContent className="p-0">
         <ScrollArea className="h-96">
           {notifications.length === 0 ? (
-            <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+            <div className="p-6 text-center text-muted-foreground">
               <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p>No notifications</p>
               <p className="text-sm">You're all caught up!</p>
@@ -122,9 +122,9 @@ export function NotificationSystem({
               {notifications.map((notification, index) => (
                 <div key={notification.id}>
                   <div
-                    className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
+                    className={`p-4 hover:bg-muted/60 transition-colors ${
                       !notification.read
-                        ? "bg-gray-50 dark:bg-gray-900 border-l-4 border-l-gray-500"
+                        ? "bg-muted/50 border-l-4 border-l-gray-500"
                         : ""
                     } ${notification.urgent ? "bg-red-50 dark:bg-red-900" : ""}`}
                   >
@@ -140,7 +140,7 @@ export function NotificationSystem({
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <h4
-                                className={`text-sm font-medium ${!notification.read ? "text-gray-900 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}
+                                className={`text-sm font-medium ${!notification.read ? "text-foreground" : "text-foreground"}`}
                               >
                                 {notification.title}
                               </h4>
@@ -161,12 +161,12 @@ export function NotificationSystem({
                                 {notification.type}
                               </Badge>
                             </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                            <p className="text-sm text-muted-foreground line-clamp-2">
                               {notification.message}
                             </p>
                             <div className="flex items-center gap-2 mt-2">
-                              <Clock className="h-3 w-3 text-gray-400" />
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                              <Clock className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-xs text-muted-foreground">
                                 {formatDistanceToNow(notification.timestamp, {
                                   addSuffix: true,
                                 })}

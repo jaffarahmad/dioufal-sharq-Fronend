@@ -143,15 +143,15 @@ export default function AttendancePage() {
       present: "bg-green-100 text-green-800",
       absent: "bg-red-100 text-red-800",
       late: "bg-yellow-100 text-yellow-800",
-      "half-day": "bg-gray-100 text-gray-800",
+      "half-day": "bg-gray-100 text-foreground",
       // Keep capitalized versions for backward compatibility
       Present: "bg-green-100 text-green-800",
       Absent: "bg-red-100 text-red-800",
       Late: "bg-yellow-100 text-yellow-800",
-      "Half-Day": "bg-gray-100 text-gray-800",
+      "Half-Day": "bg-gray-100 text-foreground",
     };
     return (
-      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
+      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-foreground"
     );
   };
 
@@ -191,7 +191,7 @@ export default function AttendancePage() {
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-foreground">
           Employee Attendance
         </h2>
         <AttendanceForm />
@@ -225,7 +225,7 @@ export default function AttendancePage() {
           value={totalRecords}
           icon={Clock}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
       </div>
 
@@ -236,7 +236,7 @@ export default function AttendancePage() {
             <CardTitle>Attendance Records</CardTitle>
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <div className="relative flex-1 sm:flex-none">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search attendance..."
                   value={searchQuery}
@@ -290,7 +290,7 @@ export default function AttendancePage() {
                 {filteredAttendance.map(record => (
                   <TableRow key={record.id}>
                     <TableCell>
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-foreground">
                         {getEmployeeName(record.employeeId)}
                       </div>
                     </TableCell>
@@ -299,16 +299,16 @@ export default function AttendancePage() {
                         {getProjectName(record.projectId)}
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {new Date(record.date).toLocaleDateString()}
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {formatTime(record.checkIn)}
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {formatTime(record.checkOut)}
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {record.hoursWorked ? `${record.hoursWorked}h` : "-"}
                     </TableCell>
                     <TableCell>
@@ -351,10 +351,10 @@ export default function AttendancePage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <div className="font-semibold text-gray-900">
+                      <div className="font-semibold text-foreground">
                         {getEmployeeName(record.employeeId)}
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-muted-foreground">
                         {getProjectName(record.projectId)}
                       </div>
                     </div>
@@ -365,25 +365,25 @@ export default function AttendancePage() {
 
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <span className="text-gray-500">Date:</span>
+                      <span className="text-muted-foreground">Date:</span>
                       <div className="font-medium">
                         {new Date(record.date).toLocaleDateString()}
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-500">Hours:</span>
+                      <span className="text-muted-foreground">Hours:</span>
                       <div className="font-medium">
                         {record.hoursWorked ? `${record.hoursWorked}h` : "-"}
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-500">Check-In:</span>
+                      <span className="text-muted-foreground">Check-In:</span>
                       <div className="font-medium">
                         {formatTime(record.checkIn)}
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-500">Check-Out:</span>
+                      <span className="text-muted-foreground">Check-Out:</span>
                       <div className="font-medium">
                         {formatTime(record.checkOut)}
                       </div>
@@ -392,7 +392,7 @@ export default function AttendancePage() {
 
                   {record.notes && (
                     <div className="text-sm">
-                      <span className="text-gray-500">Notes:</span>
+                      <span className="text-muted-foreground">Notes:</span>
                       <div className="font-medium">{record.notes}</div>
                     </div>
                   )}
@@ -424,8 +424,8 @@ export default function AttendancePage() {
 
           {filteredAttendance.length === 0 && (
             <div className="text-center py-8">
-              <Clock className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="text-gray-500 mb-4">
+              <Clock className="mx-auto h-12 w-12 text-muted-foreground" />
+              <div className="text-muted-foreground mb-4">
                 No attendance records found
               </div>
               <AttendanceForm />

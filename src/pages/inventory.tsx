@@ -122,7 +122,7 @@ export default function Inventory() {
     if (status === "sold") {
       return {
         status: "Sold",
-        color: "bg-transparent text-gray-400 border border-gray-300",
+        color: "bg-transparent text-muted-foreground border border-border",
       };
     }
 
@@ -151,7 +151,7 @@ export default function Inventory() {
   return (
     <div className="p-6">
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-foreground">
           Inventory Management
         </h2>
         <InventoryForm />
@@ -183,13 +183,13 @@ export default function Inventory() {
           <div className="flex justify-between items-center">
             <div>
               <CardTitle>Inventory Items</CardTitle>
-              <div className="text-sm text-gray-500 mt-1">
+              <div className="text-sm text-muted-foreground mt-1">
                 Total: {filteredInventory.length} items
               </div>
             </div>
             <div className="flex space-x-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search items, supplier, location..."
                   value={searchQuery}
@@ -257,7 +257,7 @@ export default function Inventory() {
                       <TableRow
                         key={item.id}
                         className={
-                          item.status === "sold" ? "opacity-50 bg-gray-50" : ""
+                          item.status === "sold" ? "opacity-50 bg-muted/50" : ""
                         }
                       >
                         <TableCell className="font-medium">
@@ -308,8 +308,8 @@ export default function Inventory() {
 
           {filteredInventory.length === 0 && (
             <div className="text-center py-8">
-              <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="text-gray-500 mb-4">No inventory items found</div>
+              <Package className="mx-auto h-12 w-12 text-muted-foreground" />
+              <div className="text-muted-foreground mb-4">No inventory items found</div>
               <InventoryForm />
             </div>
           )}

@@ -330,9 +330,9 @@ export default function ProfessionalQuotation() {
                 <div className="text-xs mb-2">C.R 4030313386 / 700509451</div>
                 {/* 3 red lines below company name */}
                 <div className="flex flex-col space-y-1">
-                  <div className="w-40 h-1 bg-gradient-to-r from-red-600 to-red-500 rounded-sm shadow-sm"></div>
-                  <div className="w-40 h-1 bg-gradient-to-r from-red-600 to-red-500 rounded-sm shadow-sm"></div>
-                  <div className="w-40 h-1 bg-gradient-to-r from-red-600 to-red-500 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-red-600 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-red-600 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-red-600 rounded-sm shadow-sm"></div>
                 </div>
               </div>
 
@@ -355,9 +355,9 @@ export default function ProfessionalQuotation() {
                 <div className="text-xs mb-2">س.ت ٤٠٣٠٣١٣٣٨٦ / ٧٠٠٥٠٩٤٥١٦</div>
                 {/* 3 red lines below Arabic company name */}
                 <div className="flex flex-col items-start space-y-1">
-                  <div className="w-40 h-1 bg-gradient-to-l from-red-600 to-red-500 rounded-sm shadow-sm"></div>
-                  <div className="w-40 h-1 bg-gradient-to-l from-red-600 to-red-500 rounded-sm shadow-sm"></div>
-                  <div className="w-40 h-1 bg-gradient-to-l from-red-600 to-red-500 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-red-600 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-red-600 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-red-600 rounded-sm shadow-sm"></div>
                 </div>
               </div>
             </div>
@@ -507,7 +507,7 @@ export default function ProfessionalQuotation() {
           {/* Footer */}
           <div className="mt-8">
             {/* Thick Red Line */}
-            <div className="w-full h-1 bg-gradient-to-r from-red-600 via-red-500 to-red-600 mb-2 shadow-sm"></div>
+            <div className="w-full h-1 bg-red-600 mb-2 shadow-sm"></div>
             <div className="bg-white text-black text-center py-2 border-t border-gray-200">
               <div className="text-xs font-medium">
                 Gharnath Street , opposite Saudi Aramco complex , mushrita

@@ -6,14 +6,14 @@ export default function Quotations() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="bg-gray-50 p-6 flex items-center justify-center min-h-[calc(100vh-200px)]">
+    <div className="bg-muted/50 p-6 flex items-center justify-center min-h-[calc(100vh-200px)]">
       <div className="text-center space-y-8 max-w-2xl">
         {/* Header */}
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             Quotations
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-muted-foreground text-lg">
             Professional quotation template for DIOUF AL-SHARQ
           </p>
         </div>
@@ -21,12 +21,12 @@ export default function Quotations() {
         {/* Quotation Options */}
         <div className="flex justify-center gap-6 max-w-4xl mx-auto">
           {/* Professional Quotation */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700 max-w-md">
+          <div className="bg-card rounded-xl shadow-lg p-8 border border-border max-w-md">
             <FileText className="h-16 w-16 text-pink-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               Professional Template
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-muted-foreground mb-6">
               Use our professional template with company branding and official
               layout
             </p>
@@ -42,12 +42,12 @@ export default function Quotations() {
           </div>
 
           {/* AMANI MUHAMMAD Template */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700 max-w-md">
+          <div className="bg-card rounded-xl shadow-lg p-8 border border-border max-w-md">
             <Award className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+            <h2 className="text-xl font-semibold text-foreground mb-3">
               AMANI MUHAMMAD
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-muted-foreground mb-6">
               Professional template customized for AMANI MUHAMMAD AL OTAIBI company branding
             </p>
             <Button

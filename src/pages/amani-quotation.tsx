@@ -333,9 +333,9 @@ export default function AmaniQuotation() {
                 </div>
                 {/* 3 sky blue lines below company name */}
                 <div className="flex flex-col space-y-1">
-                  <div className="w-40 h-1 bg-gradient-to-r from-sky-500 to-sky-400 rounded-sm shadow-sm"></div>
-                  <div className="w-40 h-1 bg-gradient-to-r from-sky-500 to-sky-400 rounded-sm shadow-sm"></div>
-                  <div className="w-40 h-1 bg-gradient-to-r from-sky-500 to-sky-400 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-sky-500 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-sky-500 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-sky-500 rounded-sm shadow-sm"></div>
                 </div>
               </div>
 
@@ -361,9 +361,9 @@ export default function AmaniQuotation() {
                 </div>
                 {/* 3 sky blue lines below Arabic company name */}
                 <div className="flex flex-col items-start space-y-1">
-                  <div className="w-40 h-1 bg-gradient-to-l from-sky-500 to-sky-400 rounded-sm shadow-sm"></div>
-                  <div className="w-40 h-1 bg-gradient-to-l from-sky-500 to-sky-400 rounded-sm shadow-sm"></div>
-                  <div className="w-40 h-1 bg-gradient-to-l from-sky-500 to-sky-400 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-sky-500 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-sky-500 rounded-sm shadow-sm"></div>
+                  <div className="w-40 h-1 bg-sky-500 rounded-sm shadow-sm"></div>
                 </div>
               </div>
             </div>

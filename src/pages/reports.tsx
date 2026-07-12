@@ -447,13 +447,13 @@ export default function Reports() {
   const getReportColor = (type: string) => {
     switch (type) {
       case "Project":
-        return "bg-gray-50 text-gray-700 hover:bg-gray-100";
+        return "bg-muted/50 text-foreground hover:bg-gray-100";
       case "Financial":
         return "bg-green-50 text-green-700 hover:bg-green-100";
       case "Workforce":
         return "bg-orange-50 text-orange-700 hover:bg-orange-100";
       default:
-        return "bg-gray-50 text-gray-700 hover:bg-gray-100";
+        return "bg-muted/50 text-foreground hover:bg-gray-100";
     }
   };
 
@@ -784,10 +784,10 @@ export default function Reports() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             Reports & Analytics
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Comprehensive business insights and performance metrics
           </p>
         </div>
@@ -834,7 +834,7 @@ export default function Reports() {
           <CardContent className="p-3 sm:p-4 h-full">
             <div className="flex items-center justify-between h-full">
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-xs font-medium text-muted-foreground mb-1">
                   Total Revenue
                 </p>
                 <p className="text-sm sm:text-lg font-bold text-green-600 break-words">
@@ -852,7 +852,7 @@ export default function Reports() {
           <CardContent className="p-3 sm:p-4 h-full">
             <div className="flex items-center justify-between h-full">
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-xs font-medium text-muted-foreground mb-1">
                   Net Profit
                 </p>
                 <p
@@ -876,14 +876,14 @@ export default function Reports() {
           <CardContent className="p-3 sm:p-4 h-full">
             <div className="flex items-center justify-between h-full">
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-xs font-medium text-muted-foreground mb-1">
                   Active Projects
                 </p>
                 <p className="text-sm sm:text-lg font-bold text-blue-600">
                   {activeProjects}
                 </p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-900/20 p-2 rounded-full flex-shrink-0 ml-2">
+              <div className="bg-muted/50/20 p-2 rounded-full flex-shrink-0 ml-2">
                 <Construction className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
               </div>
             </div>
@@ -894,7 +894,7 @@ export default function Reports() {
           <CardContent className="p-3 sm:p-4 h-full">
             <div className="flex items-center justify-between h-full">
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <p className="text-xs font-medium text-muted-foreground mb-1">
                   Completed Projects
                 </p>
                 <p className="text-sm sm:text-lg font-bold text-emerald-600">
@@ -986,19 +986,19 @@ export default function Reports() {
             <CardContent className="p-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="text-center p-3 bg-green-50 rounded-lg">
-                  <p className="text-xs text-gray-600 mb-1">Total Income</p>
+                  <p className="text-xs text-muted-foreground mb-1">Total Income</p>
                   <p className="text-lg font-bold text-green-600">
                     {formatCurrency(totalRevenue)}
                   </p>
                 </div>
                 <div className="text-center p-3 bg-red-50 rounded-lg">
-                  <p className="text-xs text-gray-600 mb-1">Total Expenses</p>
+                  <p className="text-xs text-muted-foreground mb-1">Total Expenses</p>
                   <p className="text-lg font-bold text-red-600">
                     {formatCurrency(totalExpenses)}
                   </p>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600 mb-1">Purchase Orders</p>
+                <div className="text-center p-3 bg-muted/50 rounded-lg">
+                  <p className="text-xs text-muted-foreground mb-1">Purchase Orders</p>
                   <p className="text-lg font-bold text-blue-600">
                     {formatCurrency(totalPurchaseValue)}
                   </p>
@@ -1027,7 +1027,7 @@ export default function Reports() {
               </CardHeader>
               <CardContent className="p-4">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                  <div className="flex justify-between items-center p-2 bg-muted/50 rounded-lg">
                     <span className="text-sm font-medium">Total Projects</span>
                     <Badge variant="secondary" className="text-xs">
                       {projects.length}
@@ -1045,7 +1045,7 @@ export default function Reports() {
                       {activeProjects}
                     </Badge>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                  <div className="flex justify-between items-center p-2 bg-muted/50 rounded-lg">
                     <span className="text-sm font-medium">Success Rate</span>
                     <Badge variant="outline" className="text-xs">
                       {projects.length > 0
@@ -1081,7 +1081,7 @@ export default function Reports() {
               </CardHeader>
               <CardContent className="p-4">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                  <div className="flex justify-between items-center p-2 bg-muted/50 rounded-lg">
                     <span className="text-sm font-medium">Total Employees</span>
                     <Badge variant="secondary" className="text-xs">
                       {employees.length}
@@ -1093,7 +1093,7 @@ export default function Reports() {
                       {employees.length}
                     </Badge>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                  <div className="flex justify-between items-center p-2 bg-muted/50 rounded-lg">
                     <span className="text-sm font-medium">Departments</span>
                     <Badge variant="outline" className="text-xs">
                       {Object.keys(departmentData).length}
@@ -1112,7 +1112,7 @@ export default function Reports() {
                 <User className="h-5 w-5 mr-2" />
                 Manager Profile Information
               </CardTitle>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 This information will be included in exported reports
               </p>
             </CardHeader>
@@ -1120,13 +1120,13 @@ export default function Reports() {
               {user ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-900/20 rounded-lg">
+                    <div className="flex items-center space-x-3 p-3 bg-muted/50/20 rounded-lg">
                       <User className="h-5 w-5 text-blue-600" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <p className="text-sm font-medium text-muted-foreground">
                           Full Name
                         </p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
+                        <p className="font-semibold text-foreground">
                           {user.firstName} {user.lastName}
                         </p>
                       </div>
@@ -1135,10 +1135,10 @@ export default function Reports() {
                     <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                       <Mail className="h-5 w-5 text-green-600" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <p className="text-sm font-medium text-muted-foreground">
                           Email Address
                         </p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
+                        <p className="font-semibold text-foreground">
                           {user.email}
                         </p>
                       </div>
@@ -1149,10 +1149,10 @@ export default function Reports() {
                     <div className="flex items-center space-x-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                       <Shield className="h-5 w-5 text-purple-600" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <p className="text-sm font-medium text-muted-foreground">
                           Role
                         </p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
+                        <p className="font-semibold text-foreground">
                           {user.role || "Manager"}
                         </p>
                       </div>
@@ -1161,10 +1161,10 @@ export default function Reports() {
                     <div className="flex items-center space-x-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
                       <User className="h-5 w-5 text-amber-600" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <p className="text-sm font-medium text-muted-foreground">
                           Username
                         </p>
-                        <p className="font-semibold text-gray-900 dark:text-white">
+                        <p className="font-semibold text-foreground">
                           {user.username}
                         </p>
                       </div>
@@ -1172,11 +1172,11 @@ export default function Reports() {
                   </div>
 
                   <div className="md:col-span-2 mt-6">
-                    <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                      <h4 className="font-medium text-foreground mb-2">
                         Export Information
                       </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-muted-foreground">
                         When you export reports, this personal information will
                         be included to identify the report author. This helps
                         maintain accountability and provides contact information
@@ -1188,8 +1188,8 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
                     No user information available
                   </p>
                 </div>

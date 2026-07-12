@@ -255,13 +255,13 @@ export default function Purchases() {
   const getStatusBadge = (status: string) => {
     const statusMap = {
       Pending: "bg-yellow-100 text-yellow-800",
-      Approved: "bg-gray-100 text-gray-800",
+      Approved: "bg-gray-100 text-foreground",
       Ordered: "bg-purple-100 text-purple-800",
       Delivered: "bg-green-100 text-green-800",
       Cancelled: "bg-red-100 text-red-800",
     };
     return (
-      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
+      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-foreground"
     );
   };
 
@@ -297,10 +297,10 @@ export default function Purchases() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             Purchases
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Manage purchase orders and supplier procurement
           </p>
         </div>
@@ -338,7 +338,7 @@ export default function Purchases() {
           value={totalPurchases}
           icon={ShoppingCart}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
         <StatsCard
           title="Pending Approval"
@@ -372,13 +372,13 @@ export default function Purchases() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <CardTitle>Purchase Orders</CardTitle>
-              <div className="text-sm text-gray-500 mt-1">
+              <div className="text-sm text-muted-foreground mt-1">
                 Total: {filteredPurchases.length} orders
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search purchases..."
                   value={searchQuery}
@@ -420,10 +420,10 @@ export default function Purchases() {
                 {filteredPurchases.map(purchase => (
                   <TableRow key={purchase.id}>
                     <TableCell>
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-foreground">
                         # {purchase.purchaseNumber}
                       </div>
-                      <div className="text-sm text-gray-500 line-clamp-2">
+                      <div className="text-sm text-muted-foreground line-clamp-2">
                         {purchase.description || "No description"}
                       </div>
                     </TableCell>
@@ -437,7 +437,7 @@ export default function Purchases() {
                             <div className="font-medium">
                               {supplier?.name || "Unknown Supplier"}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted-foreground">
                               {supplier?.phone || "N/A"}
                             </div>
                           </div>
@@ -459,7 +459,7 @@ export default function Purchases() {
                       {purchase.expectedDelivery ? (
                         new Date(purchase.expectedDelivery).toLocaleDateString()
                       ) : (
-                        <span className="text-gray-400">Not specified</span>
+                        <span className="text-muted-foreground">Not specified</span>
                       )}
                     </TableCell>
                     <TableCell>
@@ -504,8 +504,8 @@ export default function Purchases() {
 
           {filteredPurchases.length === 0 && (
             <div className="text-center py-8">
-              <ShoppingCart className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="text-gray-500 mb-4">No purchase orders found</div>
+              <ShoppingCart className="mx-auto h-12 w-12 text-muted-foreground" />
+              <div className="text-muted-foreground mb-4">No purchase orders found</div>
               <Button onClick={() => setIsCreateDialogOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create First Purchase Order

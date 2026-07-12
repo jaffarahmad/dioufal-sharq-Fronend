@@ -167,20 +167,20 @@ export default function FixedAssets() {
       Maintenance: "bg-yellow-100 text-yellow-800",
     };
     return (
-      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
+      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-foreground"
     );
   };
 
   const getConditionBadge = (condition: string) => {
     const conditionMap = {
       Excellent: "bg-green-100 text-green-800",
-      Good: "bg-gray-100 text-gray-800",
+      Good: "bg-gray-100 text-foreground",
       Fair: "bg-yellow-100 text-yellow-800",
       Poor: "bg-red-100 text-red-800",
     };
     return (
       conditionMap[condition as keyof typeof conditionMap] ||
-      "bg-gray-100 text-gray-800"
+      "bg-gray-100 text-foreground"
     );
   };
 
@@ -211,10 +211,10 @@ export default function FixedAssets() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-foreground">
             Fixed Assets
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-muted-foreground mt-1">
             Manage company equipment, machinery, and valuable assets
           </p>
         </div>
@@ -251,7 +251,7 @@ export default function FixedAssets() {
           value={totalAssets}
           icon={Package}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
         <StatsCard
           title="Active Assets"
@@ -289,7 +289,7 @@ export default function FixedAssets() {
             <CardTitle>Fixed Assets</CardTitle>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search assets..."
                   value={searchQuery}
@@ -345,10 +345,10 @@ export default function FixedAssets() {
                 {filteredAssets.map(asset => (
                   <TableRow key={asset.id}>
                     <TableCell>
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-foreground">
                         {asset.name}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-muted-foreground">
                         {asset.purchaseDate
                           ? new Date(asset.purchaseDate).toLocaleDateString()
                           : "No date"}
@@ -411,8 +411,8 @@ export default function FixedAssets() {
 
           {filteredAssets.length === 0 && (
             <div className="text-center py-8">
-              <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="text-gray-500 mb-4">No fixed assets found</div>
+              <Package className="mx-auto h-12 w-12 text-muted-foreground" />
+              <div className="text-muted-foreground mb-4">No fixed assets found</div>
               <Button onClick={() => setIsCreateDialogOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add First Asset

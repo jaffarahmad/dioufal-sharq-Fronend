@@ -95,13 +95,13 @@ export default function Categories() {
   const getTypeColor = (type: string) => {
     switch (type) {
       case "Inventory":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-foreground";
       case "Project":
         return "bg-green-100 text-green-800";
       case "Financial":
         return "bg-yellow-100 text-yellow-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-foreground";
     }
   };
 
@@ -116,7 +116,7 @@ export default function Categories() {
   return (
     <div className="p-6">
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-foreground">
           Category Management
         </h2>
         <CategoryForm />
@@ -129,7 +129,7 @@ export default function Categories() {
           value={totalCategories}
           icon={Tag}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
         <StatsCard
           title="Inventory Categories"
@@ -159,7 +159,7 @@ export default function Categories() {
         <CardContent className="p-4">
           <div className="flex items-center space-x-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search categories..."
                 className="pl-10"
@@ -195,7 +195,7 @@ export default function Categories() {
                 {filteredCategories.map(category => (
                   <TableRow key={category.id}>
                     <TableCell>
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-foreground">
                         {category.name}
                       </div>
                     </TableCell>
@@ -205,11 +205,11 @@ export default function Categories() {
                       </Badge>
                     </TableCell>
                     <TableCell className="max-w-xs">
-                      <div className="text-sm text-gray-600 truncate">
+                      <div className="text-sm text-muted-foreground truncate">
                         {category.description || "No description"}
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-500">
+                    <TableCell className="text-sm text-muted-foreground">
                       {category.createdAt
                         ? new Date(category.createdAt).toLocaleDateString()
                         : "N/A"}
@@ -244,8 +244,8 @@ export default function Categories() {
 
           {filteredCategories.length === 0 && (
             <div className="text-center py-8">
-              <Tag className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="text-gray-500 mb-4">No categories found</div>
+              <Tag className="mx-auto h-12 w-12 text-muted-foreground" />
+              <div className="text-muted-foreground mb-4">No categories found</div>
               <CategoryForm />
             </div>
           )}

@@ -233,15 +233,15 @@ export default function Projects() {
       active: "bg-green-100 text-green-800",
       planning: "bg-yellow-100 text-yellow-800",
       cancelled: "bg-red-100 text-red-800",
-      completed: "bg-gray-100 text-gray-800",
+      completed: "bg-gray-100 text-foreground",
       // Legacy support for capitalized values
       Active: "bg-green-100 text-green-800",
       Planning: "bg-yellow-100 text-yellow-800",
       "On Hold": "bg-red-100 text-red-800",
-      Completed: "bg-gray-100 text-gray-800",
+      Completed: "bg-gray-100 text-foreground",
     };
     return (
-      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
+      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-foreground"
     );
   };
 
@@ -267,7 +267,7 @@ export default function Projects() {
     return (
       <div className="p-6">
         <div className="mb-6 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-foreground">
             Project Management
           </h2>
         </div>
@@ -275,7 +275,7 @@ export default function Projects() {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse"
+              className="bg-card rounded-lg shadow-md overflow-hidden animate-pulse"
             >
               <div className="w-full h-48 bg-gray-200"></div>
               <div className="p-6">
@@ -296,7 +296,7 @@ export default function Projects() {
   return (
     <div className="p-6">
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Project Management</h2>
+        <h2 className="text-2xl font-bold text-foreground">Project Management</h2>
         <ProjectForm />
       </div>
 
@@ -305,7 +305,7 @@ export default function Projects() {
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Search Projects
               </label>
               <Input
@@ -315,7 +315,7 @@ export default function Projects() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -332,7 +332,7 @@ export default function Projects() {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 Project Type
               </label>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -387,7 +387,7 @@ export default function Projects() {
             </div>
             <CardContent className="p-6 flex flex-col h-full min-h-[400px] relative">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold text-gray-900 truncate">
+                <h3 className="text-lg font-semibold text-foreground truncate">
                   {project.name}
                 </h3>
                 <Badge className={getStatusBadge(project.status)}>
@@ -395,26 +395,26 @@ export default function Projects() {
                 </Badge>
               </div>
 
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+              <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                 {project.description || "No description available"}
               </p>
 
               <div className="space-y-3 flex-grow">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Progress</span>
+                  <span className="text-muted-foreground">Progress</span>
                   <span className="font-medium">{project.progress}%</span>
                 </div>
                 <ProgressBar value={project.progress} />
 
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Budget</span>
+                  <span className="text-muted-foreground">Budget</span>
                   <span className="font-medium">
                     {formatCurrency(String(project.budget))}
                   </span>
                 </div>
 
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">Due Date</span>
+                  <span className="text-muted-foreground">Due Date</span>
                   <span className="font-medium">
                     {project.endDate
                       ? new Date(project.endDate).toLocaleDateString()
@@ -448,58 +448,58 @@ export default function Projects() {
                         <div className="mt-6 space-y-6">
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="text-sm font-medium text-gray-500">Name</label>
-                              <p className="text-sm text-gray-900">{project.name}</p>
+                              <label className="text-sm font-medium text-muted-foreground">Name</label>
+                              <p className="text-sm text-foreground">{project.name}</p>
                             </div>
                             <div>
-                              <label className="text-sm font-medium text-gray-500">Client</label>
-                              <p className="text-sm text-gray-900">{project.clientName || 'Not specified'}</p>
+                              <label className="text-sm font-medium text-muted-foreground">Client</label>
+                              <p className="text-sm text-foreground">{project.clientName || 'Not specified'}</p>
                             </div>
                             <div>
-                              <label className="text-sm font-medium text-gray-500">Status</label>
+                              <label className="text-sm font-medium text-muted-foreground">Status</label>
                               <Badge className={getStatusBadge(project.status)}>
                                 {getStatusDisplay(project.status)}
                               </Badge>
                             </div>
                             <div>
-                              <label className="text-sm font-medium text-gray-500">Progress</label>
-                              <p className="text-sm text-gray-900">{project.progress}%</p>
+                              <label className="text-sm font-medium text-muted-foreground">Progress</label>
+                              <p className="text-sm text-foreground">{project.progress}%</p>
                             </div>
                             <div>
-                              <label className="text-sm font-medium text-gray-500">Budget</label>
-                              <p className="text-sm text-gray-900">
+                              <label className="text-sm font-medium text-muted-foreground">Budget</label>
+                              <p className="text-sm text-foreground">
                                 {formatCurrencyDisplay(project.budget || 0)}
                               </p>
                             </div>
                             <div>
-                              <label className="text-sm font-medium text-gray-500">Start Date</label>
-                              <p className="text-sm text-gray-900">
+                              <label className="text-sm font-medium text-muted-foreground">Start Date</label>
+                              <p className="text-sm text-foreground">
                                 {project.startDate ? formatDateDisplay(project.startDate) : 'Not set'}
                               </p>
                             </div>
                             <div className="col-span-2">
-                              <label className="text-sm font-medium text-gray-500">End Date</label>
-                              <p className="text-sm text-gray-900">
+                              <label className="text-sm font-medium text-muted-foreground">End Date</label>
+                              <p className="text-sm text-foreground">
                                 {project.endDate ? formatDateDisplay(project.endDate) : 'Not set'}
                               </p>
                             </div>
                           </div>
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Description</label>
-                            <p className="text-sm text-gray-900 mt-1">
+                            <label className="text-sm font-medium text-muted-foreground">Description</label>
+                            <p className="text-sm text-foreground mt-1">
                               {project.description || 'No description available'}
                             </p>
                           </div>
                           <div>
-                            <label className="text-sm font-medium text-gray-500">Activity</label>
+                            <label className="text-sm font-medium text-muted-foreground">Activity</label>
                             <div className="mt-2 space-y-2">
-                              <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                              <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
                                 • Project created on {project.createdAt ? formatDateDisplay(project.createdAt) : 'Unknown'}
                               </div>
-                              <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                              <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
                                 • Last updated on {project.updatedAt ? formatDateDisplay(project.updatedAt) : 'Unknown'}
                               </div>
-                              <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+                              <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
                                 • Current progress: {project.progress}%
                               </div>
                             </div>
@@ -547,7 +547,7 @@ export default function Projects() {
 
       {filteredProjects?.length === 0 && (
         <div className="text-center py-12">
-          <div className="text-gray-500 mb-4">
+          <div className="text-muted-foreground mb-4">
             No projects found matching your criteria
           </div>
           <ProjectForm />

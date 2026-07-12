@@ -355,7 +355,7 @@ export default function InventoryForm({
                         placeholder="0.00"
                         {...field}
                         readOnly
-                        className="bg-gray-50 cursor-not-allowed"
+                        className="bg-muted/50 cursor-not-allowed"
                       />
                     </FormControl>
                     <FormDescription>

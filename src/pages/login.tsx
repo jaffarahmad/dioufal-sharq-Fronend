@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import {
   Eye,
@@ -14,8 +12,6 @@ import {
   User,
   Lock,
   ArrowRight,
-  Building2,
-  AlertCircle,
   Mail,
 } from "lucide-react";
 import logoPath from "@assets/image-logo.png";
@@ -127,8 +123,8 @@ export default function LoginPage() {
 
   if (showForgotPassword) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-2 sm:p-4 md:p-6">
-        <Card className="w-full max-w-sm sm:max-w-md shadow-xl border-0 bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-background flex items-center justify-center p-2 sm:p-4 md:p-6">
+        <Card className="w-full max-w-sm sm:max-w-md border border-border bg-card shadow-overlay">
           <CardHeader className="text-center space-y-3 sm:space-y-4 pb-4 sm:pb-6 px-4 sm:px-6 pt-4 sm:pt-6">
             {/* Company Logo */}
             <div className="flex flex-col items-center space-y-2">
@@ -138,15 +134,15 @@ export default function LoginPage() {
                 className="h-35 w-auto object-contain drop-shadow-lg"
                 style={{ height: "140px" }}
               />
-              <h2 className="text-lg sm:text-xl font-bold text-purple-600">
+              <h2 className="text-lg sm:text-xl font-bold text-primary dark:text-primary">
                 Diouf Al-Sharq
               </h2>
             </div>
             <div>
-              <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+              <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
                 Forgot Password?
               </CardTitle>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
+              <p className="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2">
                 Enter your email address and we'll send you instructions to
                 reset your password.
               </p>
@@ -163,7 +159,7 @@ export default function LoginPage() {
                   Email Address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="reset-email"
                     type="email"
@@ -218,8 +214,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-2 sm:p-4 md:p-6">
-      <Card className="w-full max-w-sm sm:max-w-md shadow-xl border-0 bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-background flex items-center justify-center p-2 sm:p-4 md:p-6">
+      <Card className="w-full max-w-sm sm:max-w-md border border-border bg-card shadow-overlay">
         <CardHeader className="text-center space-y-3 sm:space-y-4 pb-4 sm:pb-6 px-4 sm:px-6 pt-4 sm:pt-6">
           {/* Company Logo and Branding */}
           <div className="flex flex-col items-center space-y-2 sm:space-y-3">
@@ -240,10 +236,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+            <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
               Welcome Back
             </CardTitle>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2">
               Sign in to your account to continue
             </p>
           </div>
@@ -257,7 +253,7 @@ export default function LoginPage() {
                 Username
               </Label>
               <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="username"
                   type="text"
@@ -276,7 +272,7 @@ export default function LoginPage() {
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -294,9 +290,9 @@ export default function LoginPage() {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-400" />
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
                   ) : (
-                    <Eye className="h-4 w-4 text-gray-400" />
+                    <Eye className="h-4 w-4 text-muted-foreground" />
                   )}
                 </Button>
               </div>

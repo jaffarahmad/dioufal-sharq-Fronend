@@ -153,11 +153,11 @@ export default function Manpower() {
   const getStatusBadge = (status: string) => {
     const statusMap = {
       active: "bg-green-100 text-green-800",
-      completed: "bg-gray-100 text-gray-800",
+      completed: "bg-gray-100 text-foreground",
       terminated: "bg-yellow-100 text-yellow-800",
     };
     return (
-      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
+      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-foreground"
     );
   };
 
@@ -186,7 +186,7 @@ export default function Manpower() {
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-foreground">
           Manpower Allocation
         </h2>
         <ManpowerForm />
@@ -199,7 +199,7 @@ export default function Manpower() {
           value={totalAssignments}
           icon={Users}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
         <StatsCard
           title="Active Assignments"
@@ -213,7 +213,7 @@ export default function Manpower() {
           value={completedAssignments}
           icon={Calendar}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
         <StatsCard
           title="Terminated"
@@ -231,7 +231,7 @@ export default function Manpower() {
             <CardTitle>Manpower Assignments</CardTitle>
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <div className="relative flex-1 sm:flex-none">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search assignments..."
                   value={searchQuery}
@@ -272,7 +272,7 @@ export default function Manpower() {
                 {filteredManpower.map(item => (
                   <TableRow key={item.id}>
                     <TableCell>
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-foreground">
                         {getEmployeeName(item.employeeId)}
                       </div>
                     </TableCell>
@@ -281,13 +281,13 @@ export default function Manpower() {
                         {getProjectName(item.projectId)}
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-500">{item.role}</TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">{item.role}</TableCell>
+                    <TableCell className="text-muted-foreground">
                       {item.assignedDate
                         ? new Date(item.assignedDate).toLocaleDateString()
                         : "N/A"}
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {item.endDate
                         ? new Date(item.endDate).toLocaleDateString()
                         : "Ongoing"}
@@ -332,10 +332,10 @@ export default function Manpower() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <div className="font-semibold text-gray-900">
+                      <div className="font-semibold text-foreground">
                         {getEmployeeName(item.employeeId)}
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-muted-foreground">
                         {getProjectName(item.projectId)}
                       </div>
                     </div>
@@ -346,11 +346,11 @@ export default function Manpower() {
 
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <span className="text-gray-500">Role:</span>
+                      <span className="text-muted-foreground">Role:</span>
                       <div className="font-medium">{item.role}</div>
                     </div>
                     <div>
-                      <span className="text-gray-500">Assigned:</span>
+                      <span className="text-muted-foreground">Assigned:</span>
                       <div className="font-medium">
                         {item.assignedDate
                           ? new Date(item.assignedDate).toLocaleDateString()
@@ -358,7 +358,7 @@ export default function Manpower() {
                       </div>
                     </div>
                     <div className="col-span-2">
-                      <span className="text-gray-500">End Date:</span>
+                      <span className="text-muted-foreground">End Date:</span>
                       <div className="font-medium">
                         {item.endDate
                           ? new Date(item.endDate).toLocaleDateString()
@@ -394,8 +394,8 @@ export default function Manpower() {
 
           {filteredManpower.length === 0 && (
             <div className="text-center py-8">
-              <UserCheck className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="text-gray-500 mb-4">
+              <UserCheck className="mx-auto h-12 w-12 text-muted-foreground" />
+              <div className="text-muted-foreground mb-4">
                 No manpower assignments found
               </div>
               <ManpowerForm />

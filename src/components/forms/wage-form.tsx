@@ -353,7 +353,7 @@ export default function WageForm({
               })}
             </span>
           </div>
-          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-1">
+          <div className="text-xs sm:text-sm text-muted-foreground mt-2 space-y-1">
             <div className="flex justify-between items-center">
               <span>Basic Salary:</span>
               <span className="font-mono text-xs sm:text-sm">

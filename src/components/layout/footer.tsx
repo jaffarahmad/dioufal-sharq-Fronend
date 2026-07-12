@@ -1,8 +1,14 @@
 export default function Footer() {
   return (
-    <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto shrink-0">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        {/* Footer content removed */}
+    <footer className="mt-auto shrink-0 border-t border-border bg-card">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <p className="text-xs text-muted-foreground">
+          © {new Date().getFullYear()} Diouf Al-Sharq Construction. All rights
+          reserved.
+        </p>
+        <p className="hidden text-xs text-muted-foreground sm:block">
+          Construction Management System
+        </p>
       </div>
     </footer>
   );

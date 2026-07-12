@@ -113,7 +113,7 @@ export default function FinancialReports() {
   return (
     <div className="p-6">
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Financial Reports</h2>
+        <h2 className="text-2xl font-bold text-foreground">Financial Reports</h2>
         <div className="flex gap-4">
           <Select value={reportType} onValueChange={setReportType}>
             <SelectTrigger className="w-48">
@@ -221,7 +221,7 @@ export default function FinancialReports() {
                 >
                   <div>
                     <p className="font-medium text-sm">{invoice.clientName}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {format(new Date(invoice.createdAt), "MMM dd, yyyy")}
                     </p>
                   </div>

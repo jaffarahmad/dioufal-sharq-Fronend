@@ -89,7 +89,7 @@ function Workforce() {
       Absent: "bg-red-100 text-red-800",
     };
     return (
-      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
+      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-foreground"
     );
   };
 
@@ -106,7 +106,7 @@ function Workforce() {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="bg-white rounded-lg shadow p-6 animate-pulse"
+              className="bg-card rounded-lg shadow p-6 animate-pulse"
             >
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
@@ -125,7 +125,7 @@ function Workforce() {
   return (
     <div className="p-6">
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-foreground">
           WorkForce Management
         </h2>
         <EmployeeForm />
@@ -138,7 +138,7 @@ function Workforce() {
           value={stats?.employees?.total || employees?.length || 0}
           icon={Users}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
         <StatsCard
           title="Active"
@@ -221,10 +221,10 @@ function Workforce() {
                           <Users className="h-5 w-5 text-blue-600" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900">
+                          <h3 className="font-semibold text-foreground">
                             {employee.name}
                           </h3>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-muted-foreground">
                             {employee.position}
                           </p>
                         </div>
@@ -237,20 +237,20 @@ function Workforce() {
                     </div>
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Department:</span>
+                        <span className="text-muted-foreground">Department:</span>
                         <span className="font-medium">
                           {employee.position}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Project:</span>
+                        <span className="text-muted-foreground">Project:</span>
                         <span className="font-medium">
                           {getProjectName(employee.projectId || null)}
                         </span>
                       </div>
                       {employee.salary && (
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Salary:</span>
+                          <span className="text-muted-foreground">Salary:</span>
                           <span className="font-medium">
                             ${employee.salary.toLocaleString()}
                           </span>
@@ -271,7 +271,7 @@ function Workforce() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleEditEmployee(employee)}
-                        className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                        className="text-muted-foreground hover:text-foreground hover:bg-muted/50"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -290,11 +290,11 @@ function Workforce() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
                 No employees found
               </h3>
-              <p className="text-gray-500 mb-4">
+              <p className="text-muted-foreground mb-4">
                 {searchQuery || departmentFilter !== "all"
                   ? "Try adjusting your search or filter criteria."
                   : "Get started by adding your first employee."}
@@ -307,7 +307,7 @@ function Workforce() {
 
       {/* Total Count */}
       {filteredEmployees && filteredEmployees.length > 0 && (
-        <div className="text-center text-sm text-gray-500">
+        <div className="text-center text-sm text-muted-foreground">
           Showing {filteredEmployees.length} of {employees?.length || 0}{" "}
           employees
         </div>
@@ -344,31 +344,31 @@ function Workforce() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Name
                   </label>
                   <p className="text-sm">{viewingEmployee.name}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Position
                   </label>
                   <p className="text-sm">{viewingEmployee.position}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Email
                   </label>
                   <p className="text-sm">{viewingEmployee.email || "N/A"}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Phone
                   </label>
                   <p className="text-sm">{viewingEmployee.phone || "N/A"}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Salary
                   </label>
                   <p className="text-sm">
@@ -376,7 +376,7 @@ function Workforce() {
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Status
                   </label>
                   <p className="text-sm capitalize">
@@ -384,7 +384,7 @@ function Workforce() {
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Nationality
                   </label>
                   <p className="text-sm">
@@ -392,13 +392,13 @@ function Workforce() {
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     ID Number
                   </label>
                   <p className="text-sm">{"N/A"}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Hire Date
                   </label>
                   <p className="text-sm">
@@ -408,7 +408,7 @@ function Workforce() {
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">
+                  <label className="text-sm font-medium text-muted-foreground">
                     Project
                   </label>
                   <p className="text-sm">

@@ -5,7 +5,6 @@ import {
   Users,
   TrendingUp,
   FileText,
-  HardHat,
   Package,
   Tag,
   UserCheck,
@@ -17,20 +16,22 @@ import {
   ShoppingCart,
   Truck,
   Settings,
-  UserCog,
   User,
   ChevronDown,
-  ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
   Calendar,
+  HardHat,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, type ComponentType } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import logoImage from "@assets/image_17540348329.png";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -86,6 +87,58 @@ interface SidebarProps {
   onToggleCollapse?: () => void;
 }
 
+function NavLeaf({
+  href,
+  icon: Icon,
+  name,
+  active,
+  onItemClick,
+  isCollapsed,
+  nested,
+}: {
+  href: string;
+  icon: ComponentType<{ className?: string }>;
+  name: string;
+  active: boolean;
+  onItemClick?: () => void;
+  isCollapsed?: boolean;
+  nested?: boolean;
+}) {
+  return (
+    <Link href={href}>
+      <div
+        onClick={onItemClick}
+        title={isCollapsed ? name : undefined}
+        className={cn(
+          "group relative flex cursor-pointer items-center rounded-lg text-sm transition-colors duration-150",
+          isCollapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2",
+          nested && !isCollapsed && "py-1.5",
+          active
+            ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
+            : "font-medium text-sidebar-muted hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+        )}
+      >
+        {/* Active indicator bar */}
+        <span
+          className={cn(
+            "absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-sidebar-primary transition-opacity",
+            active ? "opacity-100" : "opacity-0"
+          )}
+        />
+        <Icon
+          className={cn(
+            "h-[18px] w-[18px] flex-shrink-0 transition-colors",
+            active
+              ? "text-sidebar-primary"
+              : "text-sidebar-muted group-hover:text-sidebar-foreground"
+          )}
+        />
+        {!isCollapsed && <span className="truncate">{name}</span>}
+      </div>
+    </Link>
+  );
+}
+
 function SidebarContent({
   onItemClick,
   isCollapsed,
@@ -111,43 +164,54 @@ function SidebarContent({
     );
   };
 
+  const isActive = (href?: string) =>
+    !!href &&
+    (location === href || (location === "/" && href === "/dashboard"));
+
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-gray-900">
-      {/* Logo/Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between">
-          <div
-            className={cn(
-              "flex items-center",
-              isCollapsed ? "justify-center" : "justify-center w-full"
-            )}
-          >
+    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+      {/* Brand */}
+      <div className="border-b border-sidebar-border px-4 py-4">
+        <div
+          className={cn(
+            "flex items-center",
+            isCollapsed ? "justify-center" : "justify-between gap-2"
+          )}
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-sm">
+              <HardHat className="h-5 w-5" />
+            </div>
             {!isCollapsed && (
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-                Diouf Al-Sharq
-              </h1>
-            )}
-            {isCollapsed && (
-              <h1 className="text-sm font-bold text-gray-900 dark:text-white">
-                D
-              </h1>
+              <div className="min-w-0 leading-tight">
+                <p className="truncate text-sm font-bold tracking-tight text-white">
+                  Diouf Al-Sharq
+                </p>
+                <p className="truncate text-[11px] font-medium uppercase tracking-widest text-sidebar-muted">
+                  Construction
+                </p>
+              </div>
             )}
           </div>
-          {onToggleCollapse && (
-            <Button
-              variant="ghost"
-              size="sm"
+          {onToggleCollapse && !isCollapsed && (
+            <button
               onClick={onToggleCollapse}
-              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+              title="Collapse sidebar"
             >
-              {isCollapsed ? (
-                <PanelLeftOpen className="h-4 w-4" />
-              ) : (
-                <PanelLeftClose className="h-4 w-4" />
-              )}
-            </Button>
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
           )}
         </div>
+        {onToggleCollapse && isCollapsed && (
+          <button
+            onClick={onToggleCollapse}
+            className="mt-3 flex h-8 w-full items-center justify-center rounded-lg text-sidebar-muted transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+            title="Expand sidebar"
+          >
+            <PanelLeftOpen className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -156,80 +220,86 @@ function SidebarContent({
           {navigation.map(item => (
             <div key={item.name}>
               {item.children ? (
-                <div>
-                  <button
-                    onClick={() => !isCollapsed && toggleExpanded(item.name)}
-                    className={cn(
-                      "w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                      "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
-                      isCollapsed ? "justify-center" : "justify-between"
-                    )}
-                    title={isCollapsed ? item.name : undefined}
-                  >
-                    <div
-                      className={cn(
-                        "flex items-center min-w-0",
-                        isCollapsed ? "justify-center" : "space-x-3"
-                      )}
-                    >
-                      <item.icon className="w-5 h-5 flex-shrink-0" />
-                      {!isCollapsed && (
-                        <span className="truncate">{item.name}</span>
-                      )}
-                    </div>
-                    {!isCollapsed &&
-                      (expandedItems.includes(item.name) ? (
-                        <ChevronDown className="w-4 h-4 flex-shrink-0" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                      ))}
-                  </button>
-                  {!isCollapsed && expandedItems.includes(item.name) && (
-                    <div className="ml-6 mt-1 space-y-1">
+                <div className={cn(!isCollapsed && "pb-1")}>
+                  {isCollapsed ? (
+                    // Collapsed: show children as flat icons under a divider
+                    <div className="my-2 space-y-1 border-t border-sidebar-border pt-2">
                       {item.children.map(child => (
-                        <Link key={child.href} href={child.href}>
-                          <div
-                            onClick={onItemClick}
-                            className={cn(
-                              "flex items-center space-x-3 px-3 py-2 text-sm rounded-lg transition-colors cursor-pointer",
-                              location === child.href
-                                ? "bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300"
-                                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                            )}
-                          >
-                            <child.icon className="w-4 h-4 flex-shrink-0" />
-                            <span className="truncate">{child.name}</span>
-                          </div>
-                        </Link>
+                        <NavLeaf
+                          key={child.href}
+                          href={child.href}
+                          icon={child.icon}
+                          name={child.name}
+                          active={isActive(child.href)}
+                          onItemClick={onItemClick}
+                          isCollapsed
+                        />
                       ))}
                     </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => toggleExpanded(item.name)}
+                        className="flex w-full items-center justify-between rounded-lg px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-widest text-sidebar-muted transition-colors hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                      >
+                        <span className="truncate">{item.name}</span>
+                        <ChevronDown
+                          className={cn(
+                            "h-3.5 w-3.5 flex-shrink-0 transition-transform duration-200",
+                            expandedItems.includes(item.name)
+                              ? "rotate-0"
+                              : "-rotate-90"
+                          )}
+                        />
+                      </button>
+                      <div
+                        className={cn(
+                          "grid transition-[grid-template-rows] duration-200 ease-out",
+                          expandedItems.includes(item.name)
+                            ? "grid-rows-[1fr]"
+                            : "grid-rows-[0fr]"
+                        )}
+                      >
+                        <div className="min-h-0 space-y-0.5 overflow-hidden">
+                          {item.children.map(child => (
+                            <NavLeaf
+                              key={child.href}
+                              href={child.href}
+                              icon={child.icon}
+                              name={child.name}
+                              active={isActive(child.href)}
+                              onItemClick={onItemClick}
+                              nested
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </>
                   )}
                 </div>
               ) : (
-                <Link href={item.href}>
-                  <div
-                    onClick={onItemClick}
-                    className={cn(
-                      "flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer",
-                      isCollapsed ? "justify-center" : "space-x-3",
-                      location === item.href ||
-                        (location === "/" && item.href === "/dashboard")
-                        ? "bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                    )}
-                    title={isCollapsed ? item.name : undefined}
-                  >
-                    <item.icon className="w-5 h-5 flex-shrink-0" />
-                    {!isCollapsed && (
-                      <span className="truncate">{item.name}</span>
-                    )}
-                  </div>
-                </Link>
+                <NavLeaf
+                  href={item.href!}
+                  icon={item.icon}
+                  name={item.name}
+                  active={isActive(item.href)}
+                  onItemClick={onItemClick}
+                  isCollapsed={isCollapsed}
+                />
               )}
             </div>
           ))}
         </nav>
       </ScrollArea>
+
+      {/* Footer strip */}
+      {!isCollapsed && (
+        <div className="border-t border-sidebar-border px-4 py-3">
+          <p className="text-[11px] font-medium text-sidebar-muted">
+            Diouf Al-Sharq CMS · v1.0
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -242,21 +312,11 @@ export default function Sidebar({
 }: SidebarProps) {
   return (
     <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-gray-800 md:hidden"
-          onClick={onClose}
-        />
-      )}
-
       {/* Desktop & Tablet Sidebar */}
       <aside
         className={cn(
-          "hidden md:flex bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 transition-all duration-300",
-          isCollapsed
-            ? "w-16" // Collapsed: icon only
-            : "w-64 lg:w-72" // Responsive: 64 on tablet, 72 on desktop
+          "hidden flex-shrink-0 border-r border-sidebar-border bg-sidebar transition-[width] duration-300 ease-out md:flex",
+          isCollapsed ? "w-16" : "w-64 lg:w-72"
         )}
       >
         <SidebarContent
@@ -269,7 +329,7 @@ export default function Sidebar({
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent
           side="left"
-          className="w-72 sm:w-80 p-0 bg-white dark:bg-gray-900"
+          className="w-72 border-r border-sidebar-border bg-sidebar p-0 sm:w-80"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>

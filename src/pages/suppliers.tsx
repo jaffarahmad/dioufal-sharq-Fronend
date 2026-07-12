@@ -177,10 +177,10 @@ export default function Suppliers() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             Suppliers
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Manage vendor relationships and supplier information
           </p>
         </div>
@@ -215,7 +215,7 @@ export default function Suppliers() {
           value={totalSuppliers}
           icon={Building2}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
         <StatsCard
           title="Active Suppliers"
@@ -246,13 +246,13 @@ export default function Suppliers() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <CardTitle>Supplier Directory</CardTitle>
-              <div className="text-sm text-gray-500 mt-1">
+              <div className="text-sm text-muted-foreground mt-1">
                 Total: {filteredSuppliers.length} suppliers
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search suppliers..."
                   value={searchQuery}
@@ -305,11 +305,11 @@ export default function Suppliers() {
                   <TableRow key={supplier.id}>
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="font-medium text-gray-900">
+                        <div className="font-medium text-foreground">
                           {supplier.name}
                         </div>
                         {supplier.contactPerson && (
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-muted-foreground">
                             Contact: {supplier.contactPerson}
                           </div>
                         )}
@@ -318,19 +318,19 @@ export default function Suppliers() {
                     <TableCell>
                       <div className="space-y-1">
                         {supplier.phone && (
-                          <div className="flex items-center text-sm text-gray-600">
+                          <div className="flex items-center text-sm text-muted-foreground">
                             <Phone className="h-3 w-3 mr-1" />
                             {supplier.phone}
                           </div>
                         )}
                         {supplier.email && (
-                          <div className="flex items-center text-sm text-gray-600">
+                          <div className="flex items-center text-sm text-muted-foreground">
                             <Mail className="h-3 w-3 mr-1" />
                             {supplier.email}
                           </div>
                         )}
                         {supplier.address && (
-                          <div className="flex items-start text-sm text-gray-600">
+                          <div className="flex items-start text-sm text-muted-foreground">
                             <MapPin className="h-3 w-3 mr-1 mt-0.5 flex-shrink-0" />
                             <span className="line-clamp-2">
                               {supplier.address}
@@ -346,7 +346,7 @@ export default function Suppliers() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-muted-foreground">
                           No rating
                         </span>
                       </div>
@@ -393,8 +393,8 @@ export default function Suppliers() {
 
           {filteredSuppliers.length === 0 && (
             <div className="text-center py-8">
-              <Building2 className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="text-gray-500 mb-4">No suppliers found</div>
+              <Building2 className="mx-auto h-12 w-12 text-muted-foreground" />
+              <div className="text-muted-foreground mb-4">No suppliers found</div>
               <Button onClick={() => setIsCreateDialogOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add First Supplier

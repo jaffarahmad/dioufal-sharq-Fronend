@@ -2,78 +2,198 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Responsive utilities for CMS */
-@layer utilities {
-  /* Mobile-first responsive grid */
-  .responsive-grid {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6;
-  }
+/* ============================================================
+   DESIGN TOKENS — Diouf Al-Sharq CMS enterprise design system
+   Values are raw HSL triplets consumed as hsl(var(--token))
+   in tailwind.config.ts. (Storing full hsl() values here was
+   the root cause of app-wide transparent backgrounds.)
+   ============================================================ */
 
-  .responsive-card-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6;
-  }
+:root {
+  /* Canvas & surfaces */
+  --background: 216 25% 96%;
+  --foreground: 222 44% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 44% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 44% 12%;
 
-  /* Responsive table utilities */
-  .responsive-table {
-    @apply overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700;
-  }
+  /* Neutrals */
+  --muted: 216 22% 93%;
+  --muted-foreground: 215 15% 42%;
+  --border: 215 18% 86%;
+  --input: 215 18% 82%;
 
-  .mobile-table-item {
-    @apply block sm:hidden p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0;
-  }
+  /* Brand — deep steel navy with safety-amber accent */
+  --primary: 218 60% 24%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 216 22% 93%;
+  --secondary-foreground: 222 44% 14%;
+  --accent: 35 92% 50%;
+  --accent-foreground: 27 60% 12%;
 
-  .desktop-table {
-    @apply hidden sm:table w-full;
-  }
+  /* Semantic status */
+  --destructive: 0 68% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 152 55% 30%;
+  --success-foreground: 0 0% 100%;
+  --warning: 33 92% 44%;
+  --warning-foreground: 0 0% 100%;
+  --info: 210 88% 42%;
+  --info-foreground: 0 0% 100%;
 
-  /* Responsive padding and margins */
-  .responsive-container {
-    @apply p-4 sm:p-6 lg:p-8;
-  }
+  --ring: 218 70% 40%;
+  --radius: 0.625rem;
 
-  .responsive-spacing {
-    @apply space-y-4 sm:space-y-6 lg:space-y-8;
-  }
+  /* Sidebar — dark steel panel in both themes */
+  --sidebar-background: 220 42% 12%;
+  --sidebar-foreground: 215 25% 86%;
+  --sidebar-muted: 217 18% 62%;
+  --sidebar-primary: 35 92% 55%;
+  --sidebar-primary-foreground: 27 60% 12%;
+  --sidebar-accent: 219 34% 18%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 219 30% 19%;
+  --sidebar-ring: 35 92% 55%;
 
-  /* Mobile-optimized buttons */
-  .mobile-button {
-    @apply w-full sm:w-auto min-h-[44px] touch-manipulation;
-  }
-
-  /* Responsive text sizes */
-  .responsive-heading {
-    @apply text-xl sm:text-2xl lg:text-3xl font-bold;
-  }
-
-  .responsive-subheading {
-    @apply text-lg sm:text-xl lg:text-2xl font-semibold;
-  }
-
-  /* Touch-friendly interactive elements */
-  .touch-target {
-    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
-  }
+  /* Legacy construction theme aliases (kept for existing pages) */
+  --construction-orange: hsl(35, 92%, 50%);
+  --construction-orange-light: hsl(40, 96%, 92%);
+  --construction-orange-dark: hsl(27, 88%, 38%);
+  --construction-blue: hsl(218, 60%, 24%);
+  --construction-gray: hsl(216, 25%, 96%);
 }
 
-/* Professional Typography with Arabic Support */
+.dark {
+  --background: 222 40% 8%;
+  --foreground: 213 30% 95%;
+  --card: 222 36% 11%;
+  --card-foreground: 213 30% 95%;
+  --popover: 222 36% 11%;
+  --popover-foreground: 213 30% 95%;
+
+  --muted: 219 30% 16%;
+  --muted-foreground: 216 16% 68%;
+  --border: 219 26% 20%;
+  --input: 219 26% 24%;
+
+  --primary: 213 85% 62%;
+  --primary-foreground: 222 47% 10%;
+  --secondary: 219 30% 16%;
+  --secondary-foreground: 213 30% 95%;
+  --accent: 35 92% 55%;
+  --accent-foreground: 27 60% 12%;
+
+  --destructive: 0 72% 56%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 152 52% 42%;
+  --success-foreground: 152 60% 8%;
+  --warning: 35 92% 55%;
+  --warning-foreground: 27 60% 12%;
+  --info: 210 90% 60%;
+  --info-foreground: 222 47% 10%;
+
+  --ring: 213 85% 62%;
+
+  --sidebar-background: 222 45% 7%;
+  --sidebar-foreground: 215 25% 86%;
+  --sidebar-muted: 217 16% 58%;
+  --sidebar-primary: 35 92% 55%;
+  --sidebar-primary-foreground: 27 60% 12%;
+  --sidebar-accent: 220 32% 15%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-border: 220 30% 15%;
+  --sidebar-ring: 35 92% 55%;
+
+  --construction-orange: hsl(35, 92%, 55%);
+  --construction-orange-light: hsl(31, 45%, 20%);
+  --construction-orange-dark: hsl(27, 88%, 42%);
+  --construction-blue: hsl(213, 85%, 62%);
+  --construction-gray: hsl(219, 30%, 16%);
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
 @layer base {
   * {
-    font-family:
-      "Inter",
-      "Poppins",
-      system-ui,
-      -apple-system,
-      sans-serif;
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    background-color: hsl(var(--background));
+    scroll-behavior: smooth;
   }
 
   body {
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      sans-serif;
     font-feature-settings:
       "kern" 1,
       "liga" 1,
-      "calt" 1;
+      "calt" 1,
+      "cv11" 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: inherit;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Solid, subtle custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.35);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.55);
+    background-clip: content-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   /* Arabic Text Support */
@@ -93,7 +213,6 @@
     -moz-osx-font-smoothing: grayscale !important;
   }
 
-  /* Arabic text styling classes */
   .arabic-text {
     font-family:
       "Cairo", "Amiri", "Noto Naskh Arabic", Arial, sans-serif !important;
@@ -114,46 +233,190 @@
 
   /* Invoice specific typography */
   .invoice-title {
-    font-family: "Poppins", "Inter", sans-serif;
     font-weight: 700;
     letter-spacing: -0.025em;
     line-height: 1.2;
   }
 
   .invoice-company {
-    font-family: "Poppins", "Inter", sans-serif;
     font-weight: 600;
     letter-spacing: -0.01em;
     line-height: 1.3;
   }
 
   .invoice-heading {
-    font-family: "Inter", sans-serif;
     font-weight: 600;
     letter-spacing: -0.01em;
     line-height: 1.4;
   }
 
   .invoice-body {
-    font-family: "Inter", sans-serif;
     font-weight: 400;
     line-height: 1.5;
   }
 
   .invoice-table {
-    font-family: "Inter", sans-serif;
     font-weight: 400;
     line-height: 1.4;
   }
 
   .invoice-amount {
-    font-family: "Inter", monospace;
     font-weight: 500;
     letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Print styles for invoices with Arabic support */
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+
+@layer utilities {
+  /* Responsive helpers used across pages */
+  .responsive-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6;
+  }
+
+  .responsive-card-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6;
+  }
+
+  .responsive-table {
+    @apply overflow-x-auto rounded-xl border border-border bg-card;
+  }
+
+  .mobile-table-item {
+    @apply block sm:hidden p-4 border-b border-border last:border-b-0;
+  }
+
+  .desktop-table {
+    @apply hidden sm:table w-full;
+  }
+
+  .responsive-container {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+
+  .responsive-spacing {
+    @apply space-y-4 sm:space-y-6 lg:space-y-8;
+  }
+
+  .mobile-button {
+    @apply w-full sm:w-auto min-h-[44px] touch-manipulation;
+  }
+
+  .responsive-heading {
+    @apply text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight;
+  }
+
+  .responsive-subheading {
+    @apply text-lg sm:text-xl lg:text-2xl font-semibold tracking-tight;
+  }
+
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Legacy construction color utilities */
+  .construction-orange {
+    color: var(--construction-orange);
+  }
+  .bg-construction-orange {
+    background-color: var(--construction-orange);
+  }
+  .border-construction-orange {
+    border-color: var(--construction-orange);
+  }
+  .construction-orange-light {
+    color: var(--construction-orange-light);
+  }
+  .bg-construction-orange-light {
+    background-color: var(--construction-orange-light);
+  }
+  .construction-gray {
+    background-color: var(--construction-gray);
+  }
+
+  /* Page scaffolding */
+  .page-shell {
+    @apply min-h-full space-y-6 rounded-2xl border border-border bg-card p-4 shadow-card sm:p-6 lg:space-y-8 lg:p-8;
+  }
+
+  .page-header {
+    @apply flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-center lg:justify-between;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold tracking-tight text-foreground sm:text-3xl;
+  }
+
+  .page-description {
+    @apply max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base;
+  }
+
+  .surface-panel {
+    @apply rounded-xl border border-border bg-card shadow-card;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-foreground;
+  }
+
+  .section-description {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .enterprise-form-grid {
+    @apply grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .empty-state {
+    @apply flex min-h-[240px] flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/60 px-6 py-12 text-center;
+  }
+
+  .dashboard-stat-grid {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .subtle-ring {
+    box-shadow:
+      0 0 0 1px hsl(var(--border)),
+      0 1px 2px 0 hsl(222 44% 12% / 0.04);
+  }
+
+  /* Numbers align in tables and KPI cards */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Skeleton shimmer for loading states */
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-muted;
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--foreground) / 0.06),
+      transparent
+    );
+    animation: skeleton-shimmer 1.6s infinite;
+  }
+  @keyframes skeleton-shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+/* ============================================================
+   PRINT — invoices/quotations (A4, Arabic supported)
+   ============================================================ */
+
 @media print {
   body {
     font-size: 12px;
@@ -163,24 +426,7 @@
     padding: 0;
   }
 
-  /* Arabic text support in print */
-  [dir="rtl"] {
-    font-family:
-      "Cairo", "Amiri", "Noto Naskh Arabic", Arial, sans-serif !important;
-    direction: rtl !important;
-    text-align: right !important;
-    unicode-bidi: bidi-override !important;
-    font-variant-ligatures: common-ligatures !important;
-    font-feature-settings:
-      "liga" 1,
-      "calt" 1,
-      "kern" 1 !important;
-    text-rendering: optimizeLegibility !important;
-    -webkit-print-color-adjust: exact !important;
-    color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
+  [dir="rtl"],
   .arabic-text {
     font-family:
       "Cairo", "Amiri", "Noto Naskh Arabic", Arial, sans-serif !important;
@@ -206,15 +452,15 @@
     display: block !important;
   }
 
-  /* Remove shadows and borders for print */
   .shadow-sm,
   .shadow,
   .shadow-md,
-  .shadow-lg {
+  .shadow-lg,
+  .shadow-card,
+  .shadow-card-hover {
     box-shadow: none !important;
   }
 
-  /* Ensure proper page breaks */
   .print\\:break-before {
     page-break-before: always;
   }
@@ -223,21 +469,18 @@
     page-break-after: always;
   }
 
-  /* Optimize spacing for print */
   .container {
     max-width: none !important;
     padding: 0 !important;
     margin: 0 !important;
   }
 
-  /* Hide unnecessary elements */
   .bg-gray-50,
   .bg-gray-100,
   .bg-gray-900 {
     background: white !important;
   }
 
-  /* Invoice specific print styles - unified for all templates */
   #tax-invoice-content,
   #view-invoice-content,
   [id^="invoice-template-"] {
@@ -253,9 +496,10 @@
     overflow: visible !important;
     box-sizing: border-box !important;
     position: relative !important;
+    page-break-inside: avoid !important;
+    display: block !important;
   }
 
-  /* Optimized spacing for consistent PDF layout */
   .print\:preserve-layout,
   #tax-invoice-content *,
   #view-invoice-content *,
@@ -264,7 +508,6 @@
     box-sizing: border-box !important;
   }
 
-  /* Preserve original spacing for better layout matching */
   .p-2,
   .p-3,
   .p-4,
@@ -281,7 +524,6 @@
     margin-bottom: inherit !important;
   }
 
-  /* Compact table print optimization */
   table {
     border-collapse: collapse !important;
     width: 100% !important;
@@ -295,69 +537,43 @@
     line-height: 1.2 !important;
   }
 
-  /* Compact text sizes for print */
   .text-xs {
     font-size: 9px !important;
   }
-
   .text-sm {
     font-size: 10px !important;
   }
-
   .text-base {
     font-size: 11px !important;
   }
-
   .text-lg {
     font-size: 12px !important;
   }
-
   .text-xl {
     font-size: 14px !important;
   }
-
   .text-2xl {
     font-size: 16px !important;
   }
 
-  /* Force A4 page size */
   @page {
     size: A4;
     margin: 0;
   }
 
-  body {
-    margin: 0;
-    padding: 0;
-  }
-
-  /* Ensure content fits A4 exactly - unified for all templates */
-  #tax-invoice-content,
-  #view-invoice-content,
-  [id^="invoice-template-"] {
-    box-sizing: border-box !important;
-    page-break-inside: avoid !important;
-    display: block !important;
-    overflow: visible !important;
-    position: relative !important;
-  }
-
-  /* Prevent layout shifts during PDF generation */
   .pdf-generating {
     transform: none !important;
     transition: none !important;
     animation: none !important;
   }
 
-  /* Print optimization for gradients */
   .bg-gradient-to-r,
   .bg-gradient-to-br,
   .bg-gradient-to-l {
-    background: var(--primary) !important;
+    background: hsl(var(--primary)) !important;
     color: white !important;
   }
 
-  /* Ensure colored borders print properly */
   .border-blue-600,
   .border-blue-200,
   .border-green-200,
@@ -366,143 +582,17 @@
     border-color: #2563eb !important;
   }
 
-  /* Print color optimization */
   .text-blue-600,
   .text-orange-600,
   .text-green-600,
   .text-purple-600 {
     color: #1d4ed8 !important;
   }
-}
 
-:root {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(20, 14.3%, 4.1%);
-  --muted: hsl(60, 4.8%, 95.9%);
-  --muted-foreground: hsl(25, 5.3%, 44.7%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(20, 14.3%, 4.1%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(20, 14.3%, 4.1%);
-  --border: hsl(20, 5.9%, 90%);
-  --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(60, 4.8%, 95.9%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(20, 14.3%, 4.1%);
-  --radius: 0.5rem;
-
-  /* Construction theme colors */
-  --construction-orange: hsl(22, 96%, 53%);
-  --construction-orange-light: hsl(21, 96%, 83%);
-  --construction-orange-dark: hsl(20, 84%, 43%);
-  --construction-blue: hsl(207, 90%, 54%);
-  --construction-gray: hsl(210, 11%, 96%);
-
-  /* Sidebar variables */
-  --sidebar-background: hsl(0, 0%, 98%);
-  --sidebar-foreground: hsl(240, 5.3%, 26.1%);
-  --sidebar-primary: hsl(240, 5.9%, 10%);
-  --sidebar-primary-foreground: hsl(0, 0%, 98%);
-  --sidebar-accent: hsl(240, 4.8%, 95.9%);
-  --sidebar-accent-foreground: hsl(240, 5.9%, 10%);
-  --sidebar-border: hsl(220, 13%, 91%);
-  --sidebar-ring: hsl(217.2, 32.6%, 17.5%);
-}
-
-.dark {
-  --background: hsl(240, 10%, 3.9%);
-  --foreground: hsl(0, 0%, 98%);
-  --muted: hsl(240, 3.7%, 15.9%);
-  --muted-foreground: hsl(240, 5%, 64.9%);
-  --popover: hsl(240, 10%, 3.9%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --card: hsl(240, 10%, 3.9%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 3.7%, 15.9%);
-  --input: hsl(240, 3.7%, 15.9%);
-  --primary: hsl(207, 90%, 54%);
-  --primary-foreground: hsl(211, 100%, 99%);
-  --secondary: hsl(240, 3.7%, 15.9%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --accent: hsl(240, 3.7%, 15.9%);
-  --accent-foreground: hsl(0, 0%, 98%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(0, 0%, 98%);
-  --ring: hsl(240, 4.9%, 83.9%);
-  --radius: 0.5rem;
-
-  /* Construction theme colors for dark mode */
-  --construction-orange: hsl(22, 96%, 53%);
-  --construction-orange-light: hsl(21, 30%, 25%);
-  --construction-orange-dark: hsl(20, 84%, 43%);
-  --construction-blue: hsl(207, 90%, 54%);
-  --construction-gray: hsl(240, 3.7%, 15.9%);
-
-  /* Sidebar variables for dark mode */
-  --sidebar-background: hsl(240, 5.9%, 10%);
-  --sidebar-foreground: hsl(240, 4.8%, 95.9%);
-  --sidebar-primary: hsl(0, 0%, 98%);
-  --sidebar-primary-foreground: hsl(240, 5.9%, 10%);
-  --sidebar-accent: hsl(240, 3.7%, 15.9%);
-  --sidebar-accent-foreground: hsl(0, 0%, 98%);
-  --sidebar-border: hsl(240, 3.7%, 15.9%);
-  --sidebar-ring: hsl(240, 4.9%, 83.9%);
-}
-
-@layer base {
-  * {
-    border-color: var(--border);
-  }
-
-  body {
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: var(--background);
-    color: var(--foreground);
-  }
-}
-
-@layer utilities {
-  .construction-orange {
-    color: var(--construction-orange);
-  }
-
-  .bg-construction-orange {
-    background-color: var(--construction-orange);
-  }
-
-  .border-construction-orange {
-    border-color: var(--construction-orange);
-  }
-
-  .construction-orange-light {
-    color: var(--construction-orange-light);
-  }
-
-  .bg-construction-orange-light {
-    background-color: var(--construction-orange-light);
-  }
-
-  .construction-gray {
-    background-color: var(--construction-gray);
-  }
-}
-
-/* Print styles for A4 page format */
-@media print {
-  @page {
-    size: A4;
-    margin: 0.5in;
-  }
-
-  .no-print {
+  .no-print,
+  button,
+  .sidebar,
+  .navigation {
     display: none !important;
   }
 
@@ -514,23 +604,11 @@
     box-shadow: none;
     border: none;
     background: white;
+    page-break-inside: avoid;
   }
 
   #invoice-content * {
     color: black !important;
     background: white !important;
-  }
-
-  /* Ensure proper page breaks */
-  #invoice-content {
-    page-break-inside: avoid;
-  }
-
-  /* Hide elements that shouldn't print */
-  button,
-  .sidebar,
-  .navigation,
-  .no-print {
-    display: none !important;
   }
 }

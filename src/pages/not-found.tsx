@@ -1,23 +1,33 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Compass, LayoutDashboard } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md mx-4">
-        <CardContent className="pt-6">
-          <div className="flex mb-4 gap-2">
-            <AlertCircle className="h-8 w-8 text-red-500" />
-            <h1 className="text-2xl font-bold text-gray-900">
-              404 Page Not Found
-            </h1>
-          </div>
-
-          <p className="mt-4 text-sm text-gray-600">
-            Did you forget to add the page to the router?
-          </p>
-        </CardContent>
-      </Card>
+    <div className="flex min-h-[70vh] w-full items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-card">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+          <Compass className="h-7 w-7 text-muted-foreground" />
+        </div>
+        <p className="mt-6 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Error 404
+        </p>
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-foreground">
+          Page not found
+        </h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          The page you're looking for doesn't exist or may have been moved.
+          Check the address, or head back to the dashboard.
+        </p>
+        <div className="mt-6 flex justify-center">
+          <Link href="/dashboard">
+            <Button variant="primary">
+              <LayoutDashboard className="h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

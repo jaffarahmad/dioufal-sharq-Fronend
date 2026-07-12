@@ -83,7 +83,7 @@ export default function Financials() {
       Overdue: "bg-red-100 text-red-800",
     };
     return (
-      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
+      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-foreground"
     );
   };
 
@@ -122,7 +122,7 @@ export default function Financials() {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="bg-white rounded-lg shadow p-6 animate-pulse"
+              className="bg-card rounded-lg shadow p-6 animate-pulse"
             >
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
@@ -141,7 +141,7 @@ export default function Financials() {
   return (
     <div className="p-6">
       <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-foreground">
           Financial Management
         </h2>
         <div className="flex space-x-3">
@@ -177,7 +177,7 @@ export default function Financials() {
           value={formatCurrency(netProfit)}
           icon={TrendingUp}
           iconColor="text-blue-600"
-          iconBgColor="bg-gray-50"
+          iconBgColor="bg-muted/50"
         />
         <StatsCard
           title="Pending Invoices"
@@ -195,11 +195,11 @@ export default function Financials() {
             <CardTitle>Revenue vs Expenses</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="h-64 bg-muted/50 rounded-lg flex items-center justify-center">
               <div className="text-center">
-                <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500">Revenue vs Expenses Chart</p>
-                <p className="text-sm text-gray-400">
+                <BarChart3 className="h-12 w-12 text-muted-foreground/50 mx-auto mb-2" />
+                <p className="text-muted-foreground">Revenue vs Expenses Chart</p>
+                <p className="text-sm text-muted-foreground">
                   Chart integration coming soon
                 </p>
               </div>
@@ -212,11 +212,11 @@ export default function Financials() {
             <CardTitle>Project Budget Allocation</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="h-64 bg-muted/50 rounded-lg flex items-center justify-center">
               <div className="text-center">
-                <PieChart className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-500">Budget Allocation Chart</p>
-                <p className="text-sm text-gray-400">
+                <PieChart className="h-12 w-12 text-muted-foreground/50 mx-auto mb-2" />
+                <p className="text-muted-foreground">Budget Allocation Chart</p>
+                <p className="text-sm text-muted-foreground">
                   Chart integration coming soon
                 </p>
               </div>
@@ -230,7 +230,7 @@ export default function Financials() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>All Transactions</CardTitle>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               Total: {transactions?.length || 0} transactions
             </div>
           </div>
@@ -257,10 +257,10 @@ export default function Financials() {
                         : "N/A"}
                     </TableCell>
                     <TableCell>{transaction.description}</TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {getProjectName(transaction.projectId || null)}
                     </TableCell>
-                    <TableCell className="text-gray-500">
+                    <TableCell className="text-muted-foreground">
                       {transaction.category}
                     </TableCell>
                     <TableCell
@@ -287,7 +287,7 @@ export default function Financials() {
 
           {transactions?.length === 0 && (
             <div className="text-center py-8">
-              <div className="text-gray-500 mb-4">No transactions found</div>
+              <div className="text-muted-foreground mb-4">No transactions found</div>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Transaction

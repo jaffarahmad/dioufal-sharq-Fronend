@@ -10,14 +10,11 @@ import {
   DollarSign,
   AlertTriangle,
   BarChart3,
-  CheckCircle,
   Eye,
   PieChart,
   TrendingUp,
   ShoppingCart,
-  Calendar,
   FileText,
-  Wrench,
   Plus,
 } from "lucide-react";
 import {
@@ -32,7 +29,7 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
-import { Bar, Line, Pie, Doughnut } from "react-chartjs-2";
+import { Bar, Pie, Doughnut } from "react-chartjs-2";
 import type {
   Project,
   Transaction,
@@ -40,6 +37,8 @@ import type {
   Purchase,
   Supplier,
   Manpower,
+  Invoice,
+  Inventory,
 } from "@/lib/schema";
 
 // Register Chart.js components with error handling
@@ -59,22 +58,6 @@ try {
   console.warn('Failed to register Chart.js components:', error);
 }
 
-interface DashboardStats {
-  projects: { active: number; total: number; completed: number };
-  employees: { total: number; active: number; onLeave: number; absent: number };
-  financial: {
-    totalRevenue: number;
-    totalExpenses: number;
-    netProfit: number;
-    pendingInvoices: number;
-  };
-  recentActivities: Array<{
-    id: number;
-    description: string;
-    userName: string;
-    timestamp: string;
-  }>;
-}
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -157,6 +140,32 @@ export default function Dashboard() {
     },
   });
 
+  const { data: invoices = [] } = useQuery<Invoice[]>({
+    queryKey: ["invoices-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("invoices-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching invoices from localStorage:", error);
+        return [];
+      }
+    },
+  });
+
+  const { data: inventory = [] } = useQuery<Inventory[]>({
+    queryKey: ["inventory-records"],
+    queryFn: () => {
+      try {
+        const stored = localStorage.getItem("inventory-records");
+        return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+        console.error("Error fetching inventory from localStorage:", error);
+        return [];
+      }
+    },
+  });
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -170,21 +179,33 @@ export default function Dashboard() {
 
   if (projectsLoading) {
     return (
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[...Array(4)].map((_, i) => (
+      <div className="space-y-6 p-4 sm:p-6">
+        <div className="space-y-2">
+          <div className="skeleton h-8 w-56" />
+          <div className="skeleton h-4 w-80" />
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="bg-white rounded-lg shadow p-6 animate-pulse"
+              className="rounded-xl border border-border bg-card p-5 shadow-card"
             >
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
-                <div className="ml-4">
-                  <div className="h-4 bg-gray-200 rounded w-20 mb-2"></div>
-                  <div className="h-6 bg-gray-200 rounded w-16"></div>
+              <div className="flex items-start justify-between">
+                <div className="flex-1 space-y-3">
+                  <div className="skeleton h-3 w-24" />
+                  <div className="skeleton h-7 w-32" />
                 </div>
+                <div className="skeleton h-11 w-11 rounded-lg" />
               </div>
             </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {[...Array(2)].map((_, i) => (
+            <div
+              key={i}
+              className="skeleton h-72 rounded-xl border border-border"
+            />
           ))}
         </div>
       </div>
@@ -197,10 +218,39 @@ export default function Dashboard() {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top" as const,
+        position: "bottom" as const,
+        labels: {
+          usePointStyle: true,
+          pointStyle: "circle",
+          boxWidth: 8,
+          padding: 16,
+          font: { family: "Inter, system-ui, sans-serif", size: 12 },
+        },
       },
-      title: {
-        display: false,
+      title: { display: false },
+      tooltip: {
+        backgroundColor: "#16233f",
+        titleFont: { family: "Inter, system-ui, sans-serif", weight: 600 },
+        bodyFont: { family: "Inter, system-ui, sans-serif" },
+        padding: 10,
+        cornerRadius: 8,
+        displayColors: true,
+        boxPadding: 4,
+      },
+    },
+  };
+
+  const barChartOptions = {
+    ...chartOptions,
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { family: "Inter, system-ui, sans-serif", size: 11 } },
+      },
+      y: {
+        grid: { color: "rgba(148, 163, 184, 0.15)" },
+        border: { display: false },
+        ticks: { font: { family: "Inter, system-ui, sans-serif", size: 11 } },
       },
     },
   };
@@ -262,16 +312,16 @@ export default function Dashboard() {
       {
         label: "Income",
         data: monthlyIncome,
-        backgroundColor: "#10b981",
-        borderColor: "#059669",
-        borderWidth: 2,
+        backgroundColor: "#059669",
+        borderRadius: 6,
+        maxBarThickness: 36,
       },
       {
         label: "Expenses",
         data: monthlyExpenses,
-        backgroundColor: "#ef4444",
-        borderColor: "#dc2626",
-        borderWidth: 2,
+        backgroundColor: "#dc2626",
+        borderRadius: 6,
+        maxBarThickness: 36,
       },
     ],
   };
@@ -328,32 +378,7 @@ export default function Dashboard() {
     ],
   };
 
-  // Purchase Status Distribution
-  const purchaseStatusData = purchases.reduce(
-    (acc, purchase) => {
-      const status = purchase.status || "Unknown";
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
 
-  const purchaseChartData = {
-    labels: Object.keys(purchaseStatusData),
-    datasets: [
-      {
-        data: Object.values(purchaseStatusData),
-        backgroundColor: [
-          "#8B5CF6",
-          "#06B6D4",
-          "#10B981",
-          "#F59E0B",
-          "#EF4444",
-        ],
-        borderWidth: 0,
-      },
-    ],
-  };
 
   // Calculate totals for display
   const totalRevenue = transactions
@@ -366,144 +391,116 @@ export default function Dashboard() {
     (sum: number, p: any) => sum + parseFloat(p.totalAmount || "0"),
     0
   );
-  const activeSuppliers = suppliers.filter((s: any) => s.status === "Active").length;
+  const pendingInvoicesCount = invoices.filter(
+    (inv: any) => inv.status === "sent" || inv.status === "overdue" || inv.status === "draft"
+  ).length;
+  const inventoryValue = inventory.reduce(
+    (sum: number, item: any) =>
+      sum +
+      (parseFloat(item.quantity?.toString() || "0") || 0) *
+        (parseFloat(item.unitPrice?.toString() || "0") || 0),
+    0
+  );
+  const netProfit = totalRevenue - totalExpenses;
 
-  const getStatusBadge = (status: string) => {
-    const statusMap = {
-      Active: "bg-green-100 text-green-800",
-      Planning: "bg-yellow-100 text-yellow-800",
-      "On Hold": "bg-red-100 text-red-800",
-      Completed: "bg-gray-100 text-gray-800",
-    };
-    return (
-      statusMap[status as keyof typeof statusMap] || "bg-gray-100 text-gray-800"
-    );
+  const getStatusVariant = (
+    status: string
+  ): "success" | "warning" | "danger" | "info" | "neutral" => {
+    const normalized = status?.toLowerCase();
+    if (normalized === "active") return "success";
+    if (normalized === "planning") return "warning";
+    if (normalized === "cancelled" || normalized === "on hold") return "danger";
+    if (normalized === "completed") return "info";
+    return "neutral";
   };
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-          Dashboard
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
-          Overview of construction management system performance
-        </p>
+      <div className="page-header !border-0 !pb-0">
+        <div>
+          <h1 className="page-title">Dashboard</h1>
+          <p className="page-description mt-1">
+            Company-wide overview of projects, workforce, and financial
+            performance
+          </p>
+        </div>
+        <Button variant="primary" onClick={() => setLocation("/projects")}>
+          <Plus className="h-4 w-4" />
+          New Project
+        </Button>
       </div>
 
-      {/* Enhanced Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* KPI Grid */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatsCard
+          title="Total Projects"
+          value={(projects || []).length}
+          icon={FolderOpen}
+          iconColor="text-primary"
+          iconBgColor="bg-primary/10"
+          hint={`${(projects || []).filter((p: any) => p.status === "completed").length} completed`}
+        />
         <StatsCard
           title="Active Projects"
           value={(projects || []).filter((p: any) => p.status === "active").length}
-          icon={FolderOpen}
-          iconColor="text-gray-600"
-          iconBgColor="bg-gray-50"
+          icon={BarChart3}
+          iconColor="text-amber-600 dark:text-amber-400"
+          iconBgColor="bg-amber-500/10"
+          hint={`${(projects || []).filter((p: any) => p.status === "planning").length} in planning`}
         />
         <StatsCard
-          title="Total Employees"
+          title="Employees"
           value={employees.length}
           icon={Users}
-          iconColor="text-green-600"
-          iconBgColor="bg-green-50"
+          iconColor="text-blue-600 dark:text-blue-400"
+          iconBgColor="bg-blue-500/10"
+          hint={`${activeManpower} active manpower`}
         />
         <StatsCard
-          title="Total Revenue"
+          title="Revenue"
           value={formatCurrency(totalRevenue)}
           icon={DollarSign}
-          iconColor="text-emerald-600"
-          iconBgColor="bg-emerald-50"
+          iconColor="text-emerald-600 dark:text-emerald-400"
+          iconBgColor="bg-emerald-500/10"
+          hint="All recorded income"
         />
         <StatsCard
-          title="Active Manpower"
-          value={activeManpower}
-          icon={Users}
-          iconColor="text-blue-600"
-          iconBgColor="bg-blue-50"
+          title="Expenses"
+          value={formatCurrency(totalExpenses)}
+          icon={AlertTriangle}
+          iconColor="text-red-600 dark:text-red-400"
+          iconBgColor="bg-red-500/10"
+          hint="All recorded expenses"
         />
-      </div>
-
-      {/* Additional Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Net Profit</p>
-                <p
-                  className={`text-2xl font-bold ${totalRevenue - totalExpenses >= 0 ? "text-green-600" : "text-red-600"}`}
-                >
-                  {formatCurrency(totalRevenue - totalExpenses)}
-                </p>
-              </div>
-              <div
-                className={`p-3 rounded-full ${totalRevenue - totalExpenses >= 0 ? "bg-green-50" : "bg-red-50"}`}
-              >
-                <TrendingUp
-                  className={`h-6 w-6 ${totalRevenue - totalExpenses >= 0 ? "text-green-600" : "text-red-600"}`}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Manpower
-                </p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {totalManpower}
-                </p>
-              </div>
-              <div className="bg-blue-50 p-3 rounded-full">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Completed Projects
-                </p>
-                <p className="text-2xl font-bold text-emerald-600">
-                  {
-                    (projects || []).filter((p: any) => p.status === "completed")
-                      .length
-                  }
-                </p>
-              </div>
-              <div className="bg-emerald-50 p-3 rounded-full">
-                <CheckCircle className="h-6 w-6 text-emerald-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  Total Expenses
-                </p>
-                <p className="text-2xl font-bold text-red-600">
-                  {formatCurrency(totalExpenses)}
-                </p>
-              </div>
-              <div className="bg-red-50 p-3 rounded-full">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <StatsCard
+          title="Profit"
+          value={formatCurrency(netProfit)}
+          icon={TrendingUp}
+          iconColor={
+            netProfit >= 0
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-red-600 dark:text-red-400"
+          }
+          iconBgColor={netProfit >= 0 ? "bg-emerald-500/10" : "bg-red-500/10"}
+          hint="Revenue minus expenses"
+        />
+        <StatsCard
+          title="Pending Invoices"
+          value={pendingInvoicesCount}
+          icon={FileText}
+          iconColor="text-orange-600 dark:text-orange-400"
+          iconBgColor="bg-orange-500/10"
+          hint={`${invoices.length} invoices total`}
+        />
+        <StatsCard
+          title="Inventory Value"
+          value={formatCurrency(inventoryValue)}
+          icon={ShoppingCart}
+          iconColor="text-violet-600 dark:text-violet-400"
+          iconBgColor="bg-violet-500/10"
+          hint={`${inventory.length} stock items`}
+        />
       </div>
 
       {/* Charts Section */}
@@ -518,7 +515,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="h-64">
-              <Bar data={financialTrendData} options={chartOptions} />
+              <Bar data={financialTrendData} options={barChartOptions} />
             </div>
           </CardContent>
         </Card>
@@ -554,9 +551,9 @@ export default function Dashboard() {
               {Object.keys(departmentData).length > 0 ? (
                 <Pie data={employeeDeptData} options={chartOptions} />
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="flex h-full items-center justify-center text-muted-foreground">
                   <div className="text-center">
-                    <Users className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                    <Users className="mx-auto mb-2 h-12 w-12 text-muted-foreground/40" />
                     <p>No department data available</p>
                   </div>
                 </div>
@@ -578,9 +575,9 @@ export default function Dashboard() {
               {totalManpower > 0 ? (
                 <Doughnut data={manpowerStatusData} options={chartOptions} />
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="flex h-full items-center justify-center text-muted-foreground">
                   <div className="text-center">
-                    <Users className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                    <Users className="mx-auto mb-2 h-12 w-12 text-muted-foreground/40" />
                     <p>No manpower data available</p>
                   </div>
                 </div>
@@ -599,10 +596,11 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             <Button
+              className="w-full justify-start"
               variant="primary"
               onClick={() => setLocation("/projects")}
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="mr-2 h-4 w-4" />
               Add New Project
             </Button>
             <Button
@@ -650,19 +648,19 @@ export default function Dashboard() {
               {(projects || []).slice(0, 5).map(project => (
                 <div
                   key={project.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between rounded-lg border border-border bg-muted/50 p-3 transition-colors hover:bg-muted"
                 >
-                  <div>
-                    <h4 className="font-medium text-gray-900">
+                  <div className="min-w-0">
+                    <h4 className="truncate font-semibold text-foreground">
                       {project.name}
                     </h4>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm tabular-nums text-muted-foreground">
                       Budget:{" "}
                       {formatCurrency(project.budget || 0)}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge className={getStatusBadge(project.status)}>
+                    <Badge variant={getStatusVariant(project.status)} className="capitalize">
                       {project.status}
                     </Badge>
                     <Button
@@ -678,8 +676,8 @@ export default function Dashboard() {
               ))}
 
               {(!projects || projects.length === 0) && (
-                <div className="text-center py-8 text-gray-500">
-                  <FolderOpen className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                <div className="py-8 text-center text-muted-foreground">
+                  <FolderOpen className="mx-auto mb-2 h-12 w-12 text-muted-foreground/40" />
                   <p>No projects found</p>
                   <Button
                     className="mt-2"
@@ -704,14 +702,14 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold text-gray-600">
+            <div className="rounded-lg border border-border bg-muted/50 p-4 text-center">
+              <div className="text-2xl font-bold tabular-nums text-foreground">
                 {(projects || []).length}
               </div>
-              <div className="text-sm text-gray-600">Total Projects</div>
+              <div className="text-sm text-muted-foreground">Total Projects</div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-center dark:border-emerald-900 dark:bg-emerald-950">
+              <div className="text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
                 {(projects || []).length > 0
                   ? Math.round(
                       ((projects || []).filter(p => p.status === "completed")
@@ -722,19 +720,19 @@ export default function Dashboard() {
                   : 0}
                 %
               </div>
-              <div className="text-sm text-gray-600">Success Rate</div>
+              <div className="text-sm text-muted-foreground">Success Rate</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">
+            <div className="rounded-lg border border-violet-200 bg-violet-50 p-4 text-center dark:border-violet-900 dark:bg-violet-950">
+              <div className="text-2xl font-bold tabular-nums text-violet-600 dark:text-violet-400">
                 {formatCurrency(totalPurchases)}
               </div>
-              <div className="text-sm text-gray-600">Total Purchases</div>
+              <div className="text-sm text-muted-foreground">Total Purchases</div>
             </div>
-            <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-center dark:border-amber-900 dark:bg-amber-950">
+              <div className="text-2xl font-bold tabular-nums text-amber-600 dark:text-amber-400">
                 {suppliers.length}
               </div>
-              <div className="text-sm text-gray-600">Total Suppliers</div>
+              <div className="text-sm text-muted-foreground">Total Suppliers</div>
             </div>
           </div>
         </CardContent>

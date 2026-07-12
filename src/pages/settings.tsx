@@ -1076,7 +1076,7 @@ export default function Settings() {
   const renderProfileSection = () => (
     <div className="space-y-6">
       {/* Profile Information */}
-      <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">Profile Information</CardTitle>
         </CardHeader>
@@ -1167,7 +1167,7 @@ export default function Settings() {
       </Card>
 
       {/* Username Change */}
-      <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">Change Username</CardTitle>
         </CardHeader>
@@ -1208,7 +1208,7 @@ export default function Settings() {
       </Card>
 
       {/* Password Change */}
-      <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">Change Password</CardTitle>
         </CardHeader>
@@ -1285,7 +1285,7 @@ export default function Settings() {
   );
 
   const renderCompanySection = () => (
-    <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-semibold">Company Information</CardTitle>
       </CardHeader>
@@ -1526,7 +1526,7 @@ export default function Settings() {
 
   const renderAppearanceSection = () => (
     <div className="space-y-6">
-      <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">Theme & Appearance</CardTitle>
         </CardHeader>
@@ -1551,7 +1551,7 @@ export default function Settings() {
                     className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-colors ${
                       theme === value
                         ? "bg-blue-50 border-blue-200 text-blue-700"
-                        : "bg-white border-slate-200 hover:bg-slate-50"
+                        : "bg-card border-slate-200 hover:bg-slate-50"
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -1600,7 +1600,7 @@ export default function Settings() {
                     className={`px-4 py-2 rounded-full border transition-colors ${
                       preferences.sidebarDensity === value
                         ? "bg-blue-50 border-blue-200 text-blue-700"
-                        : "bg-white border-slate-200 hover:bg-slate-50"
+                        : "bg-card border-slate-200 hover:bg-slate-50"
                     }`}
                   >
                     {label}
@@ -1627,7 +1627,7 @@ export default function Settings() {
                     className={`px-4 py-2 rounded-full border transition-colors ${
                       preferences.cornerRadius === value
                         ? "bg-blue-50 border-blue-200 text-blue-700"
-                        : "bg-white border-slate-200 hover:bg-slate-50"
+                        : "bg-card border-slate-200 hover:bg-slate-50"
                     }`}
                   >
                     {label}
@@ -1640,7 +1640,7 @@ export default function Settings() {
       </Card>
 
       {/* Preview Area */}
-      <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">Preview</CardTitle>
         </CardHeader>
@@ -1659,19 +1659,19 @@ export default function Settings() {
               >
                 Primary Color Sample ({preferences.primaryColor})
               </div>
-              <div className={`p-2 bg-white dark:bg-slate-700 border dark:border-slate-600 text-sm transition-colors ${
+              <div className={`p-2 bg-card dark:bg-slate-700 border dark:border-slate-600 text-sm transition-colors ${
                 preferences.cornerRadius === 'md' ? 'rounded-md' :
                 preferences.cornerRadius === 'xl' ? 'rounded-xl' : 'rounded-2xl'
               }`}>
                 <span className="text-slate-900 dark:text-slate-100">Corner Radius: {preferences.cornerRadius}</span>
               </div>
-              <div className={`p-2 bg-white dark:bg-slate-700 border dark:border-slate-600 text-sm transition-colors ${
+              <div className={`p-2 bg-card dark:bg-slate-700 border dark:border-slate-600 text-sm transition-colors ${
                 preferences.cornerRadius === 'md' ? 'rounded-md' :
                 preferences.cornerRadius === 'xl' ? 'rounded-xl' : 'rounded-2xl'
               }`}>
                 <span className="text-slate-900 dark:text-slate-100">Sidebar Density: {preferences.sidebarDensity}</span>
               </div>
-              <div className={`p-2 bg-white dark:bg-slate-700 border dark:border-slate-600 text-sm transition-colors ${
+              <div className={`p-2 bg-card dark:bg-slate-700 border dark:border-slate-600 text-sm transition-colors ${
                 preferences.cornerRadius === 'md' ? 'rounded-md' :
                 preferences.cornerRadius === 'xl' ? 'rounded-xl' : 'rounded-2xl'
               }`}>
@@ -1686,7 +1686,7 @@ export default function Settings() {
 
   const renderSystemSection = () => (
     <div className="space-y-6">
-      <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">System Settings</CardTitle>
         </CardHeader>
@@ -1777,7 +1777,7 @@ export default function Settings() {
       </Card>
 
       {/* Notifications */}
-      <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">Notifications</CardTitle>
         </CardHeader>
@@ -1810,7 +1810,7 @@ export default function Settings() {
       </Card>
 
       {/* Data Management */}
-      <Card className="rounded-xl border border-slate-200 bg-white shadow-sm">
+      <Card className="rounded-xl border border-slate-200 bg-card shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg font-semibold">Data Management</CardTitle>
         </CardHeader>
@@ -1941,7 +1941,7 @@ export default function Settings() {
     <div className="min-h-screen bg-slate-50">
       <div className="flex h-screen">
         {/* Left Navigation */}
-        <div className="w-64 bg-white border-r border-slate-200 flex flex-col">
+        <div className="w-64 bg-card border-r border-slate-200 flex flex-col">
           <div className="p-6 border-b border-slate-200">
             <h1 className="text-xl font-semibold text-slate-900">Settings</h1>
           </div>
@@ -1976,7 +1976,7 @@ export default function Settings() {
           </div>
 
           {/* Sticky Action Bar */}
-          <div className="border-t border-slate-200 bg-white p-4">
+          <div className="border-t border-slate-200 bg-card p-4">
             <div className="flex justify-end gap-3">
               <Button
                 variant="ghost"
