@@ -11,6 +11,7 @@ import {
   testPDFGeneration,
 } from "@/utils/simple-pdf-generator";
 import QRCode from "qrcode";
+import { generateZatcaQRPayload } from "@/utils/zatca-qr";
 
 declare global {
   interface Window {
@@ -122,7 +123,9 @@ interface Invoice {
   clientPhone: string;
   clientAddress: string;
   subtotal: string;
+  taxRate?: number | string;
   taxAmount: string;
+  vatAmount?: number | string;
   totalAmount: string;
   dueDate: string;
   status: string;
@@ -189,14 +192,25 @@ export default function ModernInvoiceTemplate() {
       const actualSubtotal = invoiceItems.length > 0
         ? invoiceItems.reduce((sum, item) => sum + parseFloat(item.amount), 0)
         : parseFloat(invoice.subtotal || "0");
-      const actualTaxAmount = actualSubtotal * 0.15; // 15% VAT
+      const savedTaxRate =
+        invoice.taxRate !== undefined && invoice.taxRate !== null
+          ? parseFloat(String(invoice.taxRate))
+          : 15;
+      const actualTaxAmount = actualSubtotal * (savedTaxRate / 100); // VAT from saved rate
       const actualTotal = actualSubtotal + actualTaxAmount;
       
-      // Generate QR code with actual invoice data
-      const qrData = `Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${actualTotal.toFixed(2)} SAR\nVAT: ${actualTaxAmount.toFixed(2)} SAR\nDate: ${new Date(invoice.createdAt).toLocaleDateString()}\nCompany: DIOUF AL-SHARQ\nVAT No: 310205801200003`;
-      
+      // Generate ZATCA-compliant TLV Base64 QR payload
+      const invoiceTimestamp = new Date(invoice.createdAt).toISOString();
+      const tlvPayload = generateZatcaQRPayload({
+        sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
+        vatRegistrationNumber: "310205801200003",
+        invoiceTimestamp,
+        invoiceTotal: actualTotal.toFixed(2),
+        vatAmount: actualTaxAmount.toFixed(2),
+      });
+
       // Generate QR code as base64 data URL
-      const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+      const qrCodeDataUrl = await QRCode.toDataURL(tlvPayload, {
         width: 150,
         margin: 2,
         color: {
@@ -209,11 +223,11 @@ export default function ModernInvoiceTemplate() {
         qrCode: qrCodeDataUrl,
         invoiceUrl: window.location.href,
         zatcaCompliant: true,
-        tlvData: "zatca-compliant-data",
+        tlvData: tlvPayload,
         invoiceData: {
           sellerName: "DIOUF AL-SHARQ GENERAL CONTRACTING COMPANY",
           vatRegistrationNumber: "310205801200003",
-          invoiceDateTime: new Date(invoice.createdAt).toISOString(),
+          invoiceDateTime: invoiceTimestamp,
           invoiceTotal: actualTotal.toFixed(2),
           vatAmount: actualTaxAmount.toFixed(2)
         }
@@ -323,7 +337,11 @@ export default function ModernInvoiceTemplate() {
     invoiceItems.length > 0
       ? invoiceItems.reduce((sum, item) => sum + parseFloat(item.amount), 0)
       : parseFloat(invoice.subtotal || "0");
-  const taxRate = 0.15; // 15% VAT for Saudi Arabia
+  const taxRatePercent =
+    invoice.taxRate !== undefined && invoice.taxRate !== null
+      ? parseFloat(String(invoice.taxRate))
+      : 15; // fallback to 15% VAT for old invoices
+  const taxRate = taxRatePercent / 100;
   const taxAmount =
     invoiceItems.length > 0
       ? subtotal * taxRate
@@ -476,9 +494,11 @@ export default function ModernInvoiceTemplate() {
                       <div className="font-bold text-left">
                         {invoice.clientName}
                       </div>
-                      <div className="font-medium text-left">
-                        Client VAT: 302071980500003
-                      </div>
+                      {invoice.clientEmail && (
+                        <div className="font-medium text-left">
+                          Client VAT: {invoice.clientEmail}
+                        </div>
+                      )}
                       {invoice.clientPhone && (
                         <div className="font-medium text-left">
                           Phone: {invoice.clientPhone}
@@ -620,7 +640,7 @@ export default function ModernInvoiceTemplate() {
                       {invoiceItems.length > 0 ? (
                         invoiceItems.map((item, index) => {
                           const itemTotal = parseFloat(item.amount);
-                          const itemTax = itemTotal * 0.15; // 15% VAT
+                          const itemTax = itemTotal * taxRate; // VAT from saved rate
                           const itemNet = itemTotal + itemTax;
 
                           return (
@@ -661,7 +681,7 @@ export default function ModernInvoiceTemplate() {
                                   className="text-xs text-gray-500 font-medium"
                                   style={{ fontSize: "11px" }}
                                 >
-                                  (VAT 15%)
+                                  (VAT {taxRatePercent}%)
                                 </div>
                               </td>
                               <td
@@ -698,7 +718,7 @@ export default function ModernInvoiceTemplate() {
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium">VAT (15%)</span>
+                      <span className="font-medium">VAT ({taxRatePercent}%)</span>
                       <span className="ml-4 text-sm">
                         SAR {taxAmount.toFixed(2)}
                       </span>

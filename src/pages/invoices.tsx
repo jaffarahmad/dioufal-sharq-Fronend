@@ -187,6 +187,8 @@ export default function InvoicesPage() {
         clientAddress: data.clientAddress || undefined,
         description: data.description || undefined,
         subtotal: calculatedSubtotal,
+        taxRate: parseFloat(data.taxRate || "15"),
+        taxAmount: calculatedTaxAmount,
         vatAmount: calculatedTaxAmount,
         totalAmount: calculatedTotalAmount,
         status: data.status,
@@ -260,6 +262,8 @@ export default function InvoicesPage() {
         clientAddress: data.clientAddress || undefined,
         description: data.description || undefined,
         subtotal: calculatedSubtotal,
+        taxRate: parseFloat(data.taxRate || "15"),
+        taxAmount: calculatedTaxAmount,
         vatAmount: calculatedTaxAmount,
         totalAmount: calculatedTotalAmount,
         status: data.status,
@@ -364,7 +368,19 @@ export default function InvoicesPage() {
         paidDate: invoice.paidDate
           ? new Date(invoice.paidDate).toISOString().split("T")[0]
           : "",
-        taxRate: "15", // Default tax rate
+        taxRate:
+          (invoice as any).taxRate !== undefined &&
+          (invoice as any).taxRate !== null
+            ? String((invoice as any).taxRate)
+            : invoice.subtotal && parseFloat(String(invoice.subtotal)) > 0
+              ? (
+                  (parseFloat(
+                    String((invoice as any).taxAmount ?? (invoice as any).vatAmount ?? 0)
+                  ) /
+                    parseFloat(String(invoice.subtotal))) *
+                  100
+                ).toFixed(2).replace(/\.?0+$/, "")
+              : "15",
         items: formItems,
         notes: (invoice as any).notes || "",
       });

@@ -7,6 +7,7 @@ import { ArrowLeft, Download, Printer } from "lucide-react";
 import { Link } from "wouter";
 import logoPath from "@assets/logo.view-invoice.png";
 import QRCode from "qrcode";
+import { generateZatcaQRPayload } from "@/utils/zatca-qr";
 
 import {
   generateSimplePDF,
@@ -28,7 +29,9 @@ interface Invoice {
   clientAddress?: string;
   description?: string;
   subtotal: string;
+  taxRate?: number | string;
   taxAmount: string;
+  vatAmount?: number | string;
   totalAmount: string;
   status: string;
   dueDate?: string;
@@ -90,14 +93,25 @@ export default function ViewInvoicePage() {
       const actualSubtotal = invoiceItems.length > 0
         ? invoiceItems.reduce((sum, item) => sum + parseFloat(item.amount), 0)
         : parseFloat(invoice.subtotal || "0");
-      const actualTaxAmount = actualSubtotal * 0.15; // 15% VAT
+      const savedTaxRate =
+        invoice.taxRate !== undefined && invoice.taxRate !== null
+          ? parseFloat(String(invoice.taxRate))
+          : 15;
+      const actualTaxAmount = actualSubtotal * (savedTaxRate / 100); // VAT from saved rate
       const actualTotal = actualSubtotal + actualTaxAmount;
       
-      // Generate QR code with actual invoice data
-      const qrData = `Invoice: ${invoice.invoiceNumber}\nClient: ${invoice.clientName}\nAmount: ${actualTotal.toFixed(2)} SAR\nVAT: ${actualTaxAmount.toFixed(2)} SAR\nDate: ${new Date(invoice.createdAt).toLocaleDateString()}\nCompany: AMANI MUHAMMAD AL OTAIBI CONTRACTING COMPANY\nCR No: 7050857452\nVAT No: 312169201500003`;
-      
+      // Generate ZATCA-compliant TLV Base64 QR payload
+      const invoiceTimestamp = new Date(invoice.createdAt).toISOString();
+      const tlvPayload = generateZatcaQRPayload({
+        sellerName: "AMANI MUHAMMAD AL OTAIBI CONTRACTING COMPANY",
+        vatRegistrationNumber: "312169201500003",
+        invoiceTimestamp,
+        invoiceTotal: actualTotal.toFixed(2),
+        vatAmount: actualTaxAmount.toFixed(2),
+      });
+
       // Generate QR code as base64 data URL
-      const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+      const qrCodeDataUrl = await QRCode.toDataURL(tlvPayload, {
         width: 150,
         margin: 2,
         color: {
@@ -110,11 +124,11 @@ export default function ViewInvoicePage() {
         qrCode: qrCodeDataUrl,
         invoiceUrl: window.location.href,
         zatcaCompliant: true,
-        tlvData: "zatca-compliant-data",
+        tlvData: tlvPayload,
         invoiceData: {
           sellerName: "AMANI MUHAMMAD AL OTAIBI CONTRACTING COMPANY",
           vatRegistrationNumber: "312169201500003",
-          invoiceDateTime: new Date(invoice.createdAt).toISOString(),
+          invoiceDateTime: invoiceTimestamp,
           invoiceTotal: actualTotal.toFixed(2),
           vatAmount: actualTaxAmount.toFixed(2)
         }
@@ -296,7 +310,10 @@ export default function ViewInvoicePage() {
   );
   const displaySubtotal =
     lineItemSubtotal > 0 ? lineItemSubtotal : parseFloat(invoice.subtotal);
-  const taxRate = 15; // 15% VAT
+  const taxRate =
+    invoice.taxRate !== undefined && invoice.taxRate !== null
+      ? parseFloat(String(invoice.taxRate))
+      : 15; // fallback to 15% VAT for old invoices
   const taxAmount = displaySubtotal * (taxRate / 100);
   const netAmount = displaySubtotal + taxAmount;
 
@@ -431,9 +448,11 @@ export default function ViewInvoicePage() {
                   <div className="font-bold text-left">
                     {invoice.clientName}
                   </div>
-                  <div className="font-medium text-left">
-                    Client VAT: 302071980500003
-                  </div>
+                  {invoice.clientEmail && (
+                    <div className="font-medium text-left">
+                      Client VAT: {invoice.clientEmail}
+                    </div>
+                  )}
                   {invoice.clientPhone && (
                     <div className="font-medium text-left">
                       Phone: {invoice.clientPhone}
@@ -556,7 +575,7 @@ export default function ViewInvoicePage() {
                   {invoiceItems && invoiceItems.length > 0 ? (
                     invoiceItems.map((item, index) => {
                       const itemTaxableAmount = parseFloat(item.amount);
-                      const itemTax = itemTaxableAmount * 0.15;
+                      const itemTax = itemTaxableAmount * (taxRate / 100);
                       const itemNetAmount = itemTaxableAmount + itemTax;
 
                       return (
@@ -597,7 +616,7 @@ export default function ViewInvoicePage() {
                               className="text-xs text-gray-500 font-medium"
                               style={{ fontSize: "11px" }}
                             >
-                              (VAT 15%)
+                              (VAT {taxRate}%)
                             </div>
                           </td>
                           <td
@@ -644,7 +663,7 @@ export default function ViewInvoicePage() {
                           className="text-xs text-gray-500 font-medium"
                           style={{ fontSize: "11px" }}
                         >
-                          (VAT 15%)
+                          (VAT {taxRate}%)
                         </div>
                       </td>
                       <td
@@ -670,7 +689,7 @@ export default function ViewInvoicePage() {
                     </span>
                   </div>
                   <div className="flex justify-between py-0">
-                    <span className="font-semibold">VAT (15%):</span>
+                    <span className="font-semibold">VAT ({taxRate}%):</span>
                     <span className="text-sm font-medium">
                       {taxAmount.toFixed(2)} SAR
                     </span>
