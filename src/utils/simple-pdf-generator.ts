@@ -1,3 +1,4 @@
+import * as htmlToImage from "html-to-image";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -54,32 +55,79 @@ export async function generateSimplePDF(
 
     console.log("Generating canvas...");
 
-    // Generate canvas with simpler options
-    const canvas = await html2canvas(element, {
-      scale: scale,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: "#ffffff",
-      logging: true,
-      width: element.scrollWidth,
-      height: element.scrollHeight,
-      x: 0,
-      y: 0,
-      scrollX: 0,
-      scrollY: 0,
-    });
+    // Use html-to-image (renders via browser's own engine, so Arabic/RTL
+    // text keeps proper letter shaping and order). Falls back to
+    // html2canvas if it fails for any reason.
+    let imgData: string;
+    let imgWidth: number;
+    let imgHeight: number;
 
-    console.log("Canvas generated:", {
-      width: canvas.width,
-      height: canvas.height,
-    });
+    try {
+      const pixelRatio = scale;
+      const dataUrl = await htmlToImage.toJpeg(element as HTMLElement, {
+        quality,
+        pixelRatio,
+        backgroundColor: "#ffffff",
+        cacheBust: true,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        style: {
+          display: "block",
+          visibility: "visible",
+          opacity: "1",
+        },
+      });
 
-    if (canvas.width === 0 || canvas.height === 0) {
-      throw new Error("Canvas has zero dimensions");
+      if (!dataUrl || dataUrl === "data:,") {
+        throw new Error("html-to-image returned empty data");
+      }
+
+      // Load the image to get its real dimensions
+      const img = new Image();
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Failed to load generated image"));
+        img.src = dataUrl;
+      });
+
+      imgData = dataUrl;
+      imgWidth = img.naturalWidth;
+      imgHeight = img.naturalHeight;
+
+      console.log("html-to-image capture succeeded:", { imgWidth, imgHeight });
+    } catch (htmlToImageError) {
+      console.warn(
+        "html-to-image failed, falling back to html2canvas:",
+        htmlToImageError
+      );
+
+      const canvas = await html2canvas(element, {
+        scale: scale,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        logging: true,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0,
+      });
+
+      console.log("Canvas generated:", {
+        width: canvas.width,
+        height: canvas.height,
+      });
+
+      if (canvas.width === 0 || canvas.height === 0) {
+        throw new Error("Canvas has zero dimensions");
+      }
+
+      imgData = canvas.toDataURL("image/jpeg", quality);
+      imgWidth = canvas.width;
+      imgHeight = canvas.height;
     }
-
-    // Convert to image
-    const imgData = canvas.toDataURL("image/jpeg", quality);
 
     if (imgData === "data:,") {
       throw new Error("Canvas is empty");
@@ -98,8 +146,6 @@ export async function generateSimplePDF(
     const pageHeight = pdf.internal.pageSize.getHeight();
 
     // Calculate dimensions to fit page
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
     const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
 
     const finalWidth = imgWidth * ratio;
