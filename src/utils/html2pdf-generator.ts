@@ -1,4 +1,6 @@
 import html2pdf from 'html2pdf.js';
+import * as htmlToImage from 'html-to-image';
+import jsPDF from 'jspdf';
 
 // A4 dimensions in pixels at 96 DPI
 const A4_WIDTH = 794; // 210mm
@@ -376,6 +378,93 @@ class HTML2PDFGenerator {
    * Generate PDF with custom A4 optimization
    */
   async generateA4PDF(elementId: string, filename: string = 'document.pdf'): Promise<void> {
+    // First try an Arabic-safe path: html-to-image renders through the
+    // browser's own engine so RTL/Arabic text keeps proper letter shaping.
+    // The image is then sliced across A4 pages with jsPDF.
+    try {
+      const element = document.getElementById(elementId);
+      if (!element) {
+        throw new Error(`Element with ID '${elementId}' not found`);
+      }
+
+      await this.waitForFonts();
+      await this.waitForImages(element as HTMLElement);
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const dataUrl = await htmlToImage.toJpeg(element as HTMLElement, {
+        quality: 0.95,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+        cacheBust: true,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+      });
+
+      if (!dataUrl || dataUrl === 'data:,') {
+        throw new Error('html-to-image returned empty data');
+      }
+
+      const img = new Image();
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Failed to load generated image'));
+        img.src = dataUrl;
+      });
+
+      const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      // Scale image to page width, then slice vertically across pages
+      const imgWidthMm = pageWidth;
+      const imgHeightMm = (img.naturalHeight * imgWidthMm) / img.naturalWidth;
+
+      if (imgHeightMm <= pageHeight) {
+        pdf.addImage(dataUrl, 'JPEG', 0, 0, imgWidthMm, imgHeightMm);
+      } else {
+        // Multi-page: draw slices of the source image onto each page
+        const pxPerMm = img.naturalWidth / pageWidth;
+        const pageHeightPx = Math.floor(pageHeight * pxPerMm);
+        let renderedPx = 0;
+        let pageIndex = 0;
+
+        while (renderedPx < img.naturalHeight) {
+          const sliceHeightPx = Math.min(pageHeightPx, img.naturalHeight - renderedPx);
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width = img.naturalWidth;
+          sliceCanvas.height = sliceHeightPx;
+          const ctx = sliceCanvas.getContext('2d');
+          if (!ctx) throw new Error('Could not get canvas context');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+          ctx.drawImage(
+            img,
+            0, renderedPx, img.naturalWidth, sliceHeightPx,
+            0, 0, img.naturalWidth, sliceHeightPx
+          );
+
+          if (pageIndex > 0) pdf.addPage();
+          const sliceHeightMm = sliceHeightPx / pxPerMm;
+          pdf.addImage(
+            sliceCanvas.toDataURL('image/jpeg', 0.95),
+            'JPEG', 0, 0, imgWidthMm, sliceHeightMm
+          );
+
+          renderedPx += sliceHeightPx;
+          pageIndex += 1;
+        }
+      }
+
+      pdf.save(filename);
+      console.log('✅ A4 PDF generated via html-to-image (Arabic-safe):', filename);
+      return;
+    } catch (arabicSafeError) {
+      console.warn(
+        '⚠️ html-to-image A4 path failed, falling back to html2pdf.js:',
+        arabicSafeError
+      );
+    }
+
     const a4Options: Partial<PDFOptions> = {
       filename,
       margin: 0, // No margins - using CSS padding instead

@@ -113,7 +113,8 @@ export default function ProfessionalTemplate({
     (sum, item) => sum + (parseFloat(item.amount) || 0),
     0
   );
-  const vatRate = 0.15;
+  const [vatRatePercent, setVatRatePercent] = useState<string>("15");
+  const vatRate = (parseFloat(vatRatePercent) || 0) / 100;
   const vatAmount = subtotal * vatRate;
   const total = subtotal + vatAmount;
 
@@ -461,8 +462,20 @@ export default function ProfessionalTemplate({
                     {subtotal.toFixed(2)} SAR
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="font-medium">VAT (15%):</span>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium flex items-center gap-1">
+                    VAT (
+                    <Input
+                      type="number"
+                      value={vatRatePercent}
+                      onChange={e => setVatRatePercent(e.target.value)}
+                      className="w-14 h-6 px-1 py-0 text-center text-sm inline-block print:border-0"
+                      min="0"
+                      max="100"
+                      step="0.5"
+                    />
+                    %):
+                  </span>
                   <span className="font-semibold">
                     {vatAmount.toFixed(2)} SAR
                   </span>

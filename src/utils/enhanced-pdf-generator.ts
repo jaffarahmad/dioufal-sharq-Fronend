@@ -1,3 +1,4 @@
+import * as htmlToImage from "html-to-image";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -335,7 +336,29 @@ export class EnhancedPDFGenerator {
         // Generate high-quality canvas
         let canvas: HTMLCanvasElement;
         try {
-          canvas = await html2canvas(element as HTMLElement, {
+          // First try html-to-image: it renders via the browser's own
+          // engine, so Arabic/RTL text keeps correct shaping and order.
+          try {
+            canvas = await htmlToImage.toCanvas(element as HTMLElement, {
+              pixelRatio: scale,
+              backgroundColor: "#ffffff",
+              cacheBust: true,
+              width: element.scrollWidth || element.offsetWidth,
+              height: element.scrollHeight || element.offsetHeight,
+            });
+            if (canvas.width === 0 || canvas.height === 0) {
+              throw new Error("html-to-image produced empty canvas");
+            }
+            console.log("html-to-image canvas OK (Arabic-safe):", {
+              width: canvas.width,
+              height: canvas.height,
+            });
+          } catch (htmlToImageError) {
+            console.warn(
+              "html-to-image failed, falling back to html2canvas:",
+              htmlToImageError
+            );
+            canvas = await html2canvas(element as HTMLElement, {
             scale: scale,
             useCORS: true,
             allowTaint: true,
@@ -378,6 +401,7 @@ export class EnhancedPDFGenerator {
               }
             },
           });
+          }
 
           console.log('Canvas generated successfully:', {
             width: canvas.width,
