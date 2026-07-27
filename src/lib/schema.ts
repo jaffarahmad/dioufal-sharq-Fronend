@@ -254,6 +254,7 @@ export const insertInvoiceSchema = z.object({
   total: z.number().min(0),
   issueDate: z.string(),
   dueDate: z.string(),
+  invoiceDate: z.string().optional(),
   status: z.enum(["draft", "sent", "paid", "overdue"]).default("draft"),
   notes: z.string().optional(),
 });
@@ -272,6 +273,9 @@ export interface Invoice extends InsertInvoice {
   quotationId?: number;
   totalAmount?: number;
   taxAmount?: string;
+  invoiceDate?: string;
+  taxRate?: number | string;
+  vatAmount?: number | string;
 }
 
 // Quotation schemas

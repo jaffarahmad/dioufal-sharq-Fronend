@@ -202,7 +202,10 @@
       "Cairo", "Amiri", "Noto Naskh Arabic", "Inter", Arial, sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
-    unicode-bidi: bidi-override !important;
+    /* text-wrap: balance (set globally on h1-h6 below) makes html2canvas
+       mis-split Arabic headings into scrambled word fragments when
+       exporting invoices to PDF. Force normal wrapping for RTL text. */
+    text-wrap: wrap !important;
     font-variant-ligatures: common-ligatures !important;
     font-feature-settings:
       "liga" 1,
@@ -218,7 +221,7 @@
       "Cairo", "Amiri", "Noto Naskh Arabic", Arial, sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
-    unicode-bidi: bidi-override !important;
+    text-wrap: wrap !important;
     font-variant-ligatures: common-ligatures !important;
     font-feature-settings:
       "liga" 1,
@@ -418,197 +421,67 @@
    ============================================================ */
 
 @media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
   body {
-    font-size: 12px;
+    font-size: 10pt;
     color: black !important;
     background: white !important;
     margin: 0;
     padding: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   [dir="rtl"],
   .arabic-text {
-    font-family:
-      "Cairo", "Amiri", "Noto Naskh Arabic", Arial, sans-serif !important;
+    font-family: "Cairo", "Amiri", Arial, sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
-    unicode-bidi: bidi-override !important;
-    font-variant-ligatures: common-ligatures !important;
-    font-feature-settings:
-      "liga" 1,
-      "calt" 1,
-      "kern" 1 !important;
-    text-rendering: optimizeLegibility !important;
-    -webkit-print-color-adjust: exact !important;
-    color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
 
-  .print\\:hidden {
+  .print\:hidden {
     display: none !important;
   }
 
-  .print\\:block {
-    display: block !important;
-  }
-
-  .shadow-sm,
-  .shadow,
-  .shadow-md,
-  .shadow-lg,
-  .shadow-card,
-  .shadow-card-hover {
+  .shadow-sm, .shadow, .shadow-md, .shadow-lg {
     box-shadow: none !important;
-  }
-
-  .print\\:break-before {
-    page-break-before: always;
-  }
-
-  .print\\:break-after {
-    page-break-after: always;
-  }
-
-  .container {
-    max-width: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  .bg-gray-50,
-  .bg-gray-100,
-  .bg-gray-900 {
-    background: white !important;
   }
 
   #tax-invoice-content,
   #view-invoice-content,
   [id^="invoice-template-"] {
-    width: 210mm !important;
-    min-height: 297mm !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 5mm !important;
+    width: 190mm !important;
+    min-height: 277mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
     box-shadow: none !important;
     border: none !important;
     background: white !important;
-    page-break-after: auto !important;
     overflow: visible !important;
-    box-sizing: border-box !important;
-    position: relative !important;
-    page-break-inside: avoid !important;
     display: block !important;
-  }
-
-  .print\:preserve-layout,
-  #tax-invoice-content *,
-  #view-invoice-content *,
-  [id^="invoice-template-"] * {
-    position: relative !important;
-    box-sizing: border-box !important;
-  }
-
-  .p-2,
-  .p-3,
-  .p-4,
-  .py-2,
-  .py-3,
-  .py-4 {
-    padding: inherit !important;
-  }
-
-  .mb-2,
-  .mb-3,
-  .mb-4,
-  .mb-6 {
-    margin-bottom: inherit !important;
   }
 
   table {
     border-collapse: collapse !important;
     width: 100% !important;
-    font-size: 10px !important;
   }
 
-  td,
-  th {
-    border: 1px solid #666 !important;
-    padding: 3px !important;
-    line-height: 1.2 !important;
+  th, td {
+    border: 1px solid #e5e7eb !important;
   }
 
-  .text-xs {
-    font-size: 9px !important;
-  }
-  .text-sm {
-    font-size: 10px !important;
-  }
-  .text-base {
-    font-size: 11px !important;
-  }
-  .text-lg {
-    font-size: 12px !important;
-  }
-  .text-xl {
-    font-size: 14px !important;
-  }
-  .text-2xl {
-    font-size: 16px !important;
+  .bg-gray-50, .bg-gray-100 {
+    background-color: #f9fafb !important;
   }
 
-  @page {
-    size: A4;
-    margin: 0;
-  }
-
-  .pdf-generating {
-    transform: none !important;
-    transition: none !important;
-    animation: none !important;
-  }
-
-  .bg-gradient-to-r,
-  .bg-gradient-to-br,
-  .bg-gradient-to-l {
-    background: hsl(var(--primary)) !important;
-    color: white !important;
-  }
-
-  .border-blue-600,
-  .border-blue-200,
-  .border-green-200,
-  .border-purple-200,
-  .border-amber-200 {
-    border-color: #2563eb !important;
-  }
-
-  .text-blue-600,
-  .text-orange-600,
-  .text-green-600,
-  .text-purple-600 {
-    color: #1d4ed8 !important;
-  }
-
-  .no-print,
-  button,
-  .sidebar,
-  .navigation {
-    display: none !important;
-  }
-
-  #invoice-content {
-    width: 210mm;
-    min-height: 297mm;
-    margin: 0;
-    padding: 20px;
-    box-shadow: none;
-    border: none;
-    background: white;
-    page-break-inside: avoid;
-  }
-
-  #invoice-content * {
-    color: black !important;
-    background: white !important;
-  }
+  .text-xs { font-size: 8pt !important; }
+  .text-sm { font-size: 9pt !important; }
+  .text-base { font-size: 10pt !important; }
+  .text-lg { font-size: 11pt !important; }
+  .text-xl { font-size: 12pt !important; }
+  .text-2xl { font-size: 14pt !important; }
 }

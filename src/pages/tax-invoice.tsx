@@ -396,30 +396,36 @@ export default function TaxInvoicePage() {
                       {invoice.clientName}
                     </p>
                     <div className="text-xs text-gray-700 space-y-0.5">
-                      <p>
-                        <span className="font-medium text-gray-500">
-                          Email:
-                        </span>{" "}
-                        <span className="font-medium">
-                          {invoice.clientEmail}
-                        </span>
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-500">
-                          Phone:
-                        </span>{" "}
-                        <span className="font-mono font-medium">
-                          {invoice.clientPhone}
-                        </span>
-                      </p>
-                      <p>
-                        <span className="font-medium text-gray-500">
-                          Address:
-                        </span>{" "}
-                        <span className="font-medium">
-                          {invoice.clientAddress}
-                        </span>
-                      </p>
+                      {invoice.clientEmail && (
+                        <p>
+                          <span className="font-medium text-gray-500">
+                            VAT:
+                          </span>{" "}
+                          <span className="font-medium">
+                            {invoice.clientEmail}
+                          </span>
+                        </p>
+                      )}
+                      {invoice.clientPhone && (
+                        <p>
+                          <span className="font-medium text-gray-500">
+                            Phone:
+                          </span>{" "}
+                          <span className="font-mono font-medium">
+                            {invoice.clientPhone}
+                          </span>
+                        </p>
+                      )}
+                      {invoice.clientAddress && (
+                        <p>
+                          <span className="font-medium text-gray-500">
+                            Address:
+                          </span>{" "}
+                          <span className="font-medium">
+                            {invoice.clientAddress}
+                          </span>
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -443,9 +449,9 @@ export default function TaxInvoicePage() {
                         Date / التاريخ:
                       </span>
                       <span className="text-xs font-medium">
-                        {new Date(invoice.createdAt).toLocaleDateString(
-                          "en-GB"
-                        )}
+                        {new Date(
+                          (invoice as any).invoiceDate || invoice.createdAt
+                        ).toLocaleDateString("en-GB")}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">

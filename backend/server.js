@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -87,6 +87,56 @@ let employees = [
 
 let purchases = [];
 let transactions = [];
+let invoices = [
+  {
+    id: 1,
+    projectId: 1,
+    invoiceNumber: 'INV-2024-001',
+    clientName: 'John Doe',
+    clientAddress: '123 King Fahd Road, Riyadh',
+    items: [
+      {
+        description: 'Construction project mobilization',
+        quantity: 1,
+        unitPrice: 50000,
+        total: 50000
+      }
+    ],
+    subtotal: 50000,
+    tax: 7500,
+    total: 57500,
+    totalAmount: 57500,
+    issueDate: '2024-01-10',
+    dueDate: '2024-01-20',
+    status: 'paid',
+    createdAt: '2024-01-10T00:00:00.000Z',
+    updatedAt: '2024-01-10T00:00:00.000Z'
+  }
+];
+let employeePaymentStatuses = [];
+let generatedReports = [
+  {
+    id: 1,
+    name: 'Quarterly Financial Summary',
+    type: 'Financial',
+    description: 'Revenue, expenses, and profitability overview for the latest quarter.',
+    generatedAt: new Date().toISOString()
+  },
+  {
+    id: 2,
+    name: 'Project Performance Report',
+    type: 'Project',
+    description: 'Project completion, status breakdown, and budget utilization.',
+    generatedAt: new Date().toISOString()
+  },
+  {
+    id: 3,
+    name: 'Workforce Utilization Report',
+    type: 'Workforce',
+    description: 'Employee allocation, staffing levels, and payroll snapshot.',
+    generatedAt: new Date().toISOString()
+  }
+];
 
 // Settings mock data
 let users = [
@@ -94,11 +144,25 @@ let users = [
     id: 1,
     firstName: 'John',
     lastName: 'Doe',
-    username: 'johndoe',
-    email: 'john.doe@company.com',
+    username: 'admin',
+    email: 'admin@company.com',
     phone: '+966501234567',
     avatar: null,
-    password: 'hashedpassword123', // In real app, this would be properly hashed
+    role: 'administrator',
+    password: 'admin', // In real app, this would be properly hashed
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z'
+  },
+  {
+    id: 2,
+    firstName: 'Demo',
+    lastName: 'User',
+    username: 'demo',
+    email: 'demo@company.com',
+    phone: '+966500000000',
+    avatar: null,
+    role: 'user',
+    password: 'demo',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z'
   }
@@ -147,6 +211,72 @@ let systemSettings = {
   updatedAt: '2024-01-01T00:00:00.000Z'
 };
 
+const getNumericId = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const normalizeInvoiceStatus = (status) => {
+  const allowed = new Set(['draft', 'sent', 'paid', 'overdue']);
+  const normalized = String(status || 'draft').toLowerCase();
+  return allowed.has(normalized) ? normalized : 'draft';
+};
+
+const buildEmployeePaymentSummary = (month, year) => {
+  const now = new Date();
+  const selectedDate = new Date(year, month - 1, 1);
+  const defaultStatus = selectedDate < new Date(now.getFullYear(), now.getMonth(), 1)
+    ? 'overdue'
+    : 'pending';
+
+  return employees.map((employee) => {
+    const employeeId = String(employee.id);
+    const override = employeePaymentStatuses.find((entry) =>
+      entry.employeeId === employeeId &&
+      entry.month === month &&
+      entry.year === year
+    );
+    const amount = Number(override?.amount ?? employee.salary ?? 0);
+    const status = override?.status || defaultStatus;
+
+    return {
+      employeeId,
+      employeeName: employee.name,
+      totalPayments: 1,
+      paidPayments: status === 'paid' ? 1 : 0,
+      pendingPayments: status === 'pending' ? 1 : 0,
+      overduePayments: status === 'overdue' ? 1 : 0,
+      totalAmount: amount,
+      paidAmount: status === 'paid' ? amount : 0,
+      pendingAmount: status === 'pending' ? amount : 0,
+      overdueAmount: status === 'overdue' ? amount : 0
+    };
+  });
+};
+
+const buildMonthlyReport = (month, year) => {
+  const summary = buildEmployeePaymentSummary(month, year);
+
+  return {
+    id: `${year}-${String(month).padStart(2, '0')}`,
+    month,
+    year,
+    totalEmployees: summary.length,
+    totalPayments: summary.length,
+    totalAmount: summary.reduce((sum, item) => sum + item.totalAmount, 0),
+    paidAmount: summary.reduce((sum, item) => sum + item.paidAmount, 0),
+    pendingAmount: summary.reduce((sum, item) => sum + item.pendingAmount, 0),
+    overdueAmount: summary.reduce((sum, item) => sum + item.overdueAmount, 0),
+    createdAt: new Date().toISOString()
+  };
+};
+
+const buildDataUrlSvg = (label, fill) => {
+  const safeLabel = String(label || '').replace(/[&<>"]/g, '');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%" height="100%" fill="${fill}"/><text x="50%" y="50%" fill="#ffffff" font-family="Arial, sans-serif" font-size="72" font-weight="700" text-anchor="middle" dominant-baseline="middle">${safeLabel}</text></svg>`;
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+};
+
 // Helper functions for authentication and validation
 const validatePassword = (password) => {
   if (!password || password.length < 8) {
@@ -182,12 +312,44 @@ const validateEmail = (email) => {
 
 const authenticateUser = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  // Demo mode: allow requests without enforcing a real JWT exchange.
+  if (authHeader && !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
   }
-  // In a real app, verify JWT token here
-  req.userId = 1; // Mock user ID
+  
+  // In a real app, we would extract the userId from the token
+  // For this demo, we'll try to get it from a header or default to 1
+  const userId = parseInt(req.headers['x-user-id'] || '1');
+  const user = users.find(u => u.id === userId);
+  
+  if (!user) {
+    return res.status(401).json({ code: 'USER_NOT_FOUND', message: 'User not found' });
+  }
+  
+  req.user = user;
+  req.userId = user.id;
   next();
+};
+
+const checkPermission = (permissionKey) => {
+  return (req, res, next) => {
+    const userRole = req.user.role?.toLowerCase() || '';
+    const allowedRoles = {
+      canChangeInvoiceDate: ['administrator', 'super_admin'],
+      canEditInvoices: ['administrator', 'super_admin', 'user'],
+      canDeleteInvoices: ['administrator', 'super_admin'],
+      canEditSettings: ['administrator', 'super_admin'],
+    };
+
+    const rolesForPermission = allowedRoles[permissionKey];
+    if (!rolesForPermission || !rolesForPermission.includes(userRole)) {
+      return res.status(403).json({ 
+        code: 'FORBIDDEN', 
+        message: `You do not have permission to perform this action (${permissionKey})` 
+      });
+    }
+    next();
+  };
 };
 
 const requirePassword = (req, res, next) => {
@@ -366,6 +528,146 @@ app.post('/api/transactions', (req, res) => {
   res.status(201).json(newTransaction);
 });
 
+// Invoices
+app.get('/api/invoices', authenticateUser, (req, res) => {
+  res.json(invoices);
+});
+
+app.post('/api/invoices', authenticateUser, (req, res) => {
+  const timestamp = new Date().toISOString();
+  const payload = req.body || {};
+  
+  // Permission check for invoiceDate if it's different from current date
+  const isChangingDate = payload.invoiceDate && payload.invoiceDate !== timestamp.split('T')[0];
+  if (isChangingDate) {
+    const userRole = req.user.role?.toLowerCase() || '';
+    if (!['administrator', 'super_admin'].includes(userRole)) {
+      return res.status(403).json({ 
+        code: 'FORBIDDEN', 
+        message: 'You do not have permission to manually set the invoice date' 
+      });
+    }
+  }
+
+  const newInvoice = {
+    id: invoices.length + 1,
+    projectId: getNumericId(payload.projectId) ?? undefined,
+    invoiceNumber: payload.invoiceNumber || `INV-${Date.now()}`,
+    clientName: payload.clientName || 'Unnamed Client',
+    clientEmail: payload.clientEmail || '',
+    clientPhone: payload.clientPhone || '',
+    clientAddress: payload.clientAddress || '',
+    items: Array.isArray(payload.items) ? payload.items : [],
+    subtotal: Number(payload.subtotal || 0),
+    tax: Number(payload.tax || payload.vatAmount || 0),
+    taxRate: Number(payload.taxRate || 15),
+    total: Number(payload.total || payload.totalAmount || 0),
+    totalAmount: Number(payload.totalAmount || payload.total || 0),
+    issueDate: payload.issueDate || timestamp,
+    dueDate: payload.dueDate || timestamp,
+    invoiceDate: payload.invoiceDate || timestamp.split('T')[0],
+    status: normalizeInvoiceStatus(payload.status),
+    notes: payload.notes || '',
+    createdAt: timestamp,
+    updatedAt: timestamp
+  };
+  invoices.push(newInvoice);
+  res.status(201).json(newInvoice);
+});
+
+app.put('/api/invoices/:id', authenticateUser, (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = invoices.findIndex((invoice) => invoice.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Invoice not found' });
+  }
+
+  const payload = req.body || {};
+  
+  // Permission check for invoiceDate change
+  if (payload.invoiceDate && payload.invoiceDate !== invoices[index].invoiceDate) {
+    const userRole = req.user.role?.toLowerCase() || '';
+    if (!['administrator', 'super_admin'].includes(userRole)) {
+      return res.status(403).json({ 
+        code: 'FORBIDDEN', 
+        message: 'You do not have permission to manually change the invoice date' 
+      });
+    }
+  }
+
+  invoices[index] = {
+    ...invoices[index],
+    ...payload,
+    status: normalizeInvoiceStatus(payload.status || invoices[index].status),
+    updatedAt: new Date().toISOString()
+  };
+
+  res.json(invoices[index]);
+});
+
+app.delete('/api/invoices/:id', authenticateUser, checkPermission('canDeleteInvoices'), (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = invoices.findIndex((invoice) => invoice.id === id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Invoice not found' });
+  }
+
+  invoices.splice(index, 1);
+  res.status(204).send();
+});
+
+// Monthly payment analytics
+app.get('/api/monthly-reports/:month/:year', (req, res) => {
+  const month = parseInt(req.params.month, 10);
+  const year = parseInt(req.params.year, 10);
+  res.json(buildMonthlyReport(month, year));
+});
+
+app.get('/api/employee-payment-summary/:month/:year', (req, res) => {
+  const month = parseInt(req.params.month, 10);
+  const year = parseInt(req.params.year, 10);
+  res.json(buildEmployeePaymentSummary(month, year));
+});
+
+app.post('/api/employee-payment-status', (req, res) => {
+  const month = parseInt(req.body?.month, 10);
+  const year = parseInt(req.body?.year, 10);
+  const employeeId = String(req.body?.employeeId || '');
+  const amount = Number(req.body?.amount ?? 0);
+  const now = new Date();
+  const selectedDate = new Date(year, month - 1, 1);
+  const status = req.body?.isPaid
+    ? 'paid'
+    : (selectedDate < new Date(now.getFullYear(), now.getMonth(), 1) ? 'overdue' : 'pending');
+
+  const existingIndex = employeePaymentStatuses.findIndex((entry) =>
+    entry.employeeId === employeeId &&
+    entry.month === month &&
+    entry.year === year
+  );
+
+  const record = {
+    employeeId,
+    month,
+    year,
+    amount,
+    paidDate: req.body?.paidDate || null,
+    status,
+    updatedAt: new Date().toISOString()
+  };
+
+  if (existingIndex === -1) {
+    employeePaymentStatuses.push(record);
+  } else {
+    employeePaymentStatuses[existingIndex] = {
+      ...employeePaymentStatuses[existingIndex],
+      ...record
+    };
+  }
+
+  res.json({ success: true, record });
+});
+
 // Settings API Routes
 
 // User profile endpoints
@@ -471,6 +773,21 @@ app.patch('/api/users/me/password', authenticateUser, requirePassword, (req, res
   res.json({ message: 'Password updated successfully' });
 });
 
+app.post('/api/users/me/avatar', authenticateUser, (req, res) => {
+  const user = users.find((entry) => entry.id === req.userId);
+  if (!user) {
+    return res.status(404).json({ code: 'USER_NOT_FOUND', message: 'User not found' });
+  }
+
+  const avatarUrl = buildDataUrlSvg(
+    `${(user.firstName?.[0] || 'U')}${(user.lastName?.[0] || '')}`.toUpperCase(),
+    '#2563eb'
+  );
+  user.avatar = avatarUrl;
+  user.updatedAt = new Date().toISOString();
+  res.json({ avatarUrl });
+});
+
 // Company endpoints
 app.get('/api/company', authenticateUser, (req, res) => {
   res.json(company);
@@ -521,6 +838,21 @@ app.put('/api/company', authenticateUser, (req, res) => {
   });
   
   res.json(company);
+});
+
+app.post('/api/company/logo', authenticateUser, (req, res) => {
+  const logoUrl = buildDataUrlSvg(
+    (company.name || 'DS')
+      .split(/\s+/)
+      .map((part) => part[0] || '')
+      .join('')
+      .slice(0, 3)
+      .toUpperCase(),
+    '#16233f'
+  );
+  company.logo = logoUrl;
+  company.updatedAt = new Date().toISOString();
+  res.json({ logoUrl });
 });
 
 // User preferences endpoints
@@ -671,6 +1003,19 @@ app.post('/api/system/backup', authenticateUser, (req, res) => {
   });
 });
 
+app.post('/api/fix-fake-data', authenticateUser, (req, res) => {
+  res.json({
+    success: true,
+    deletedRecords: {
+      projects: 0,
+      employees: 0,
+      purchases: 0,
+      transactions: 0,
+      invoices: 0
+    }
+  });
+});
+
 // Dashboard stats
 app.get('/api/dashboard/stats', (req, res) => {
   res.json({
@@ -686,14 +1031,7 @@ app.get('/api/dashboard/stats', (req, res) => {
 
 // Reports
 app.get('/api/reports', (req, res) => {
-  res.json({
-    projects,
-    suppliers,
-    inventory,
-    employees,
-    purchases,
-    transactions
-  });
+  res.json(generatedReports);
 });
 
 // Health check endpoints
@@ -737,11 +1075,13 @@ app.use('*', (req, res) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Backend server running on http://localhost:${PORT}`);
-  console.log(`📊 API endpoints available at http://localhost:${PORT}/api/`);
-  console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
-});
+// Start server only when running directly. Vercel imports the app as a handler.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Backend server running on http://localhost:${PORT}`);
+    console.log(`API endpoints available at http://localhost:${PORT}/api/`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+  });
+}
 
 module.exports = app;

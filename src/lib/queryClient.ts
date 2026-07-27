@@ -62,9 +62,9 @@ export async function apiRequest(
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
-// Get API base URL from environment variables
+// Default to same-origin `/api` so Vite dev proxy and Vercel production use the same paths.
 const getApiBaseUrl = () => {
-  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+  return import.meta.env.VITE_API_BASE_URL || '/api';
 };
 
 export const getQueryFn: <T>(options: {

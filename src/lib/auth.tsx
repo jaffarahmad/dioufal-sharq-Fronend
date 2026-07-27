@@ -153,6 +153,28 @@ export function useAuth() {
   return context;
 }
 
+export type UserRole = "administrator" | "super_admin" | "user" | string;
+
+export const ROLE_PERMISSIONS = {
+  canChangeInvoiceDate: ["administrator", "super_admin"] as string[],
+  canEditInvoices: ["administrator", "super_admin", "user"] as string[],
+  canDeleteInvoices: ["administrator", "super_admin"] as string[],
+  canEditSettings: ["administrator", "super_admin"] as string[],
+};
+
+export function hasPermission(
+  user: User | null,
+  permissionKey: keyof typeof ROLE_PERMISSIONS
+): boolean {
+  if (!user) return false;
+  const allowedRoles = ROLE_PERMISSIONS[permissionKey];
+  if (!allowedRoles) return false;
+  const userRole = user.role?.toLowerCase() || "";
+  return allowedRoles.some(
+    (role) => role.toLowerCase() === userRole
+  );
+}
+
 // Higher-order component for protected routes
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();

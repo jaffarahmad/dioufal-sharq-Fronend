@@ -19,7 +19,6 @@ interface PDFOptions {
     allowTaint: boolean;
     backgroundColor: string;
     logging: boolean;
-    letterRendering: boolean;
     foreignObjectRendering: boolean;
   };
   jsPDF?: {
@@ -43,7 +42,9 @@ class HTML2PDFGenerator {
       allowTaint: false,
       backgroundColor: '#ffffff',
       logging: false,
-      letterRendering: true,
+      // letterRendering forces html2canvas to draw one character at a
+      // time, which breaks Arabic's contextual letter joining. Must stay
+      // false so Arabic words are shaped as connected runs.
       foreignObjectRendering: false
     },
     jsPDF: {
@@ -313,7 +314,6 @@ class HTML2PDFGenerator {
           allowTaint: false,
           backgroundColor: '#ffffff',
           logging: false,
-          letterRendering: true,
           foreignObjectRendering: false,
           windowWidth: 1024,
           scrollX: 0,
@@ -478,7 +478,6 @@ class HTML2PDFGenerator {
         allowTaint: false,
         backgroundColor: '#ffffff',
         logging: false,
-        letterRendering: true,
         foreignObjectRendering: false
       },
       jsPDF: {
@@ -487,7 +486,7 @@ class HTML2PDFGenerator {
         orientation: 'portrait'
       }
     };
-    
+
     return this.generatePDF(elementId, a4Options);
   }
 }

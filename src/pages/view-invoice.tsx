@@ -40,6 +40,22 @@ interface Invoice {
   notes?: string;
 }
 
+// Resolve the VAT % that was actually saved for this invoice, falling back
+// to deriving it from the stored vatAmount, and finally to 15%.
+function getTaxRatePercent(invoice?: Invoice): number {
+  if (!invoice) return 15;
+  if (invoice.taxRate) {
+    const parsed = parseFloat(invoice.taxRate);
+    if (!isNaN(parsed)) return parsed;
+  }
+  const subtotal = parseFloat(invoice.subtotal || "0");
+  if (invoice.vatAmount !== undefined && invoice.vatAmount !== null && subtotal > 0) {
+    const vat = parseFloat(String(invoice.vatAmount));
+    if (!isNaN(vat)) return (vat / subtotal) * 100;
+  }
+  return 15;
+}
+
 interface InvoiceItem {
   id: number;
   description: string;
@@ -474,7 +490,9 @@ export default function ViewInvoicePage() {
                   <div className="flex justify-between">
                     <span className="font-bold">Date / التاريخ:</span>
                     <span className="font-medium">
-                      {new Date(invoice.createdAt).toLocaleDateString("en-GB")}
+                      {new Date(
+                        (invoice as any).invoiceDate || invoice.createdAt
+                      ).toLocaleDateString("en-GB")}
                     </span>
                   </div>
                   {(invoice as any).poNumber && (
@@ -658,7 +676,7 @@ export default function ViewInvoicePage() {
                         className="text-center border-r border-gray-300 font-medium"
                         style={{ fontSize: "13px", padding: "6px 4px" }}
                       >
-                        <div>{parseFloat(invoice.taxAmount).toFixed(2)}</div>
+                        <div>{taxAmount.toFixed(2)}</div>
                         <div
                           className="text-xs text-gray-500 font-medium"
                           style={{ fontSize: "11px" }}
@@ -670,7 +688,7 @@ export default function ViewInvoicePage() {
                         className="text-center font-bold"
                         style={{ fontSize: "13px", padding: "6px 4px" }}
                       >
-                        {parseFloat(invoice.totalAmount).toFixed(2)}
+                        {netAmount.toFixed(2)}
                       </td>
                     </tr>
                   )}

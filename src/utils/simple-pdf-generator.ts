@@ -177,9 +177,22 @@ export async function generateSimplePDF(
 }
 
 async function waitForResources(): Promise<void> {
-  // Wait for fonts
-  if (document.fonts && document.fonts.ready) {
-    await document.fonts.ready;
+  // Wait for fonts, explicitly forcing the Arabic-capable Cairo weights
+  // used in the invoice templates so they are guaranteed to be loaded
+  // before html2canvas takes its snapshot.
+  if (document.fonts) {
+    try {
+      await Promise.all([
+        document.fonts.load('400 16px Cairo'),
+        document.fonts.load('600 16px Cairo'),
+        document.fonts.load('700 16px Cairo'),
+      ]);
+    } catch {
+      // Ignore font load failures; fall back to document.fonts.ready below
+    }
+    if (document.fonts.ready) {
+      await document.fonts.ready;
+    }
   }
 
   // Wait for images

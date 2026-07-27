@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -66,6 +66,8 @@ import {
   Trash2,
   Minus,
   Palette,
+  X,
+  Eraser,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import {
@@ -76,6 +78,7 @@ import {
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useNotifications } from "@/hooks/use-notifications";
+import { useAuth, hasPermission } from "@/lib/auth";
 import logoPath from "@assets/image_17540348329.png";
 
 const lineItemSchema = z.object({
@@ -90,13 +93,15 @@ const createInvoiceSchema = z.object({
   poNumber: z.string().optional(),
   clientName: z.string().min(1, "Client name is required"),
   clientEmail: z.string().optional(),
+  clientPhone: z.string().optional(),
   clientAddress: z.string().optional(),
   description: z.string().optional(),
   status: z.string().default("Draft"),
   projectId: z.string().optional(),
   dueDate: z.string().optional(),
-  quotationId: z.string().optional(),
   paidDate: z.string().optional(),
+  invoiceDate: z.string().optional(),
+  quotationId: z.string().optional(),
   items: z.array(lineItemSchema).min(1, "At least one item is required"),
   taxRate: z.string().optional(),
   notes: z.string().optional(),
@@ -104,9 +109,56 @@ const createInvoiceSchema = z.object({
 
 type CreateInvoiceForm = z.infer<typeof createInvoiceSchema>;
 
+const todayStr = () => new Date().toISOString().split("T")[0];
+
+function ClearableInput({
+  value,
+  onChange,
+  onClear,
+  placeholder,
+  type = "text",
+  className = "",
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  onClear: () => void;
+  placeholder?: string;
+  type?: string;
+  className?: string;
+}) {
+  return (
+    <div className="relative">
+      <Input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className={`${className} pr-9`}
+      />
+      {value && value.length > 0 && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={onClear}
+          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-muted"
+          title="Clear field"
+        >
+          <X className="h-3.5 w-3.5 text-muted-foreground" />
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export default function InvoicesPage() {
   const [open, setOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+
+  const { user } = useAuth();
+  const canChangeInvoiceDate = hasPermission(user, "canChangeInvoiceDate");
+  const canDeleteInvoices = hasPermission(user, "canDeleteInvoices");
 
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -135,6 +187,7 @@ export default function InvoicesPage() {
       poNumber: "",
       clientName: "",
       clientEmail: "",
+      clientPhone: "",
       clientAddress: "",
       description: "",
       status: "Draft",
@@ -142,6 +195,7 @@ export default function InvoicesPage() {
       quotationId: "",
       paidDate: "",
       dueDate: "",
+      invoiceDate: todayStr(),
       taxRate: "15",
       items: [{ description: "Service", quantity: "1", rate: "100" }],
       notes: "",
@@ -184,6 +238,7 @@ export default function InvoicesPage() {
         poNumber: data.poNumber || undefined,
         clientName: data.clientName,
         clientEmail: data.clientEmail || undefined,
+        clientPhone: data.clientPhone || undefined,
         clientAddress: data.clientAddress || undefined,
         description: data.description || undefined,
         subtotal: calculatedSubtotal,
@@ -200,6 +255,7 @@ export default function InvoicesPage() {
           data.quotationId && data.quotationId !== ""
             ? data.quotationId
             : undefined,
+        invoiceDate: data.invoiceDate || todayStr(),
         dueDate: data.dueDate || new Date().toISOString(),
         paidDate: data.paidDate || undefined,
         notes: data.notes || undefined,
@@ -259,6 +315,7 @@ export default function InvoicesPage() {
         poNumber: data.poNumber || undefined,
         clientName: data.clientName,
         clientEmail: data.clientEmail || undefined,
+        clientPhone: data.clientPhone || undefined,
         clientAddress: data.clientAddress || undefined,
         description: data.description || undefined,
         subtotal: calculatedSubtotal,
@@ -275,8 +332,9 @@ export default function InvoicesPage() {
           data.quotationId && data.quotationId !== ""
             ? data.quotationId
             : undefined,
-        dueDate: data.dueDate ? new Date(data.dueDate) : new Date(),
-        paidDate: data.paidDate ? new Date(data.paidDate) : undefined,
+        invoiceDate: data.invoiceDate || todayStr(),
+        dueDate: data.dueDate ? new Date(data.dueDate).toISOString().split("T")[0] : undefined,
+        paidDate: data.paidDate ? new Date(data.paidDate).toISOString().split("T")[0] : undefined,
         notes: data.notes || undefined,
         updatedAt: new Date().toISOString(),
         items: data.items.map(item => ({
@@ -357,11 +415,17 @@ export default function InvoicesPage() {
         poNumber: invoice.poNumber || "",
         clientName: invoice.clientName,
         clientEmail: invoice.clientEmail || "",
+        clientPhone: (invoice as any).clientPhone || "",
         clientAddress: invoice.clientAddress || "",
         description: invoice.description || "",
         status: invoice.status,
         projectId: invoice.projectId ? invoice.projectId.toString() : "none",
         quotationId: invoice.quotationId ? invoice.quotationId.toString() : "",
+        invoiceDate: (invoice as any).invoiceDate
+          ? new Date((invoice as any).invoiceDate).toISOString().split("T")[0]
+          : invoice.createdAt
+            ? new Date(invoice.createdAt).toISOString().split("T")[0]
+            : todayStr(),
         dueDate: invoice.dueDate
           ? new Date(invoice.dueDate).toISOString().split("T")[0]
           : "",
@@ -464,7 +528,11 @@ export default function InvoicesPage() {
                       <FormItem>
                         <FormLabel>Invoice Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="INV-2025-001" {...field} />
+                          <ClearableInput
+                            placeholder="INV-2025-001"
+                            {...field}
+                            onClear={() => field.onChange("")}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -477,10 +545,50 @@ export default function InvoicesPage() {
                       <FormItem>
                         <FormLabel>PO # (Optional)</FormLabel>
                         <FormControl>
-                          <Input
+                          <ClearableInput
                             placeholder="Purchase Order Number"
                             {...field}
+                            onClear={() => field.onChange("")}
                           />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="invoiceDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Invoice Date</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="date"
+                            {...field}
+                            disabled={!canChangeInvoiceDate}
+                            className={!canChangeInvoiceDate ? "bg-muted" : ""}
+                          />
+                        </FormControl>
+                        {!canChangeInvoiceDate && (
+                          <p className="text-[10px] text-muted-foreground mt-1">
+                            Only administrators can change the invoice date.
+                          </p>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="dueDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Due Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -534,9 +642,27 @@ export default function InvoicesPage() {
                           Client Name (Supports Arabic & English)
                         </FormLabel>
                         <FormControl>
-                          <Input
+                          <ClearableInput
                             placeholder="Client or Company Name (English/Arabic)"
                             {...field}
+                            onClear={() => field.onChange("")}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="clientPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Client Phone (Optional)</FormLabel>
+                        <FormControl>
+                          <ClearableInput
+                            placeholder="+966 5X XXX XXXX"
+                            {...field}
+                            onClear={() => field.onChange("")}
                           />
                         </FormControl>
                         <FormMessage />
@@ -553,31 +679,17 @@ export default function InvoicesPage() {
                       <FormItem>
                         <FormLabel>Client VAT</FormLabel>
                         <FormControl>
-                          <Input
+                          <ClearableInput
                             placeholder="VAT Registration Number"
                             {...field}
+                            onClear={() => field.onChange("")}
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="dueDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Due Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <FormField
                   control={form.control}
@@ -588,10 +700,25 @@ export default function InvoicesPage() {
                         Client Address (Supports Arabic & English)
                       </FormLabel>
                       <FormControl>
-                        <Textarea
-                          placeholder="Street address, city, postal code, Saudi Arabia (English/Arabic)"
-                          {...field}
-                        />
+                        <div className="relative">
+                          <Textarea
+                            placeholder="Street address, city, postal code, Saudi Arabia (English/Arabic)"
+                            {...field}
+                            className="pr-9"
+                          />
+                          {field.value && field.value.length > 0 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => field.onChange("")}
+                              className="absolute right-2 top-2 h-7 w-7 p-0 hover:bg-muted"
+                              title="Clear address"
+                            >
+                              <X className="h-3.5 w-3.5 text-muted-foreground" />
+                            </Button>
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -605,10 +732,25 @@ export default function InvoicesPage() {
                     <FormItem>
                       <FormLabel>General Description (Optional)</FormLabel>
                       <FormControl>
-                        <Textarea
-                          {...field}
-                          placeholder="Overall project or invoice description"
-                        />
+                        <div className="relative">
+                          <Textarea
+                            {...field}
+                            placeholder="Overall project or invoice description"
+                            className="pr-9"
+                          />
+                          {field.value && field.value.length > 0 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => field.onChange("")}
+                              className="absolute right-2 top-2 h-7 w-7 p-0 hover:bg-muted"
+                              title="Clear description"
+                            >
+                              <X className="h-3.5 w-3.5 text-muted-foreground" />
+                            </Button>
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -818,28 +960,74 @@ export default function InvoicesPage() {
                   )}
                 />
 
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={
-                      createMutation.isPending || updateMutation.isPending
-                    }
-                  >
-                    {editingInvoice
-                      ? updateMutation.isPending
-                        ? "Updating..."
-                        : "Update Invoice"
-                      : createMutation.isPending
-                        ? "Creating..."
-                        : "Create Invoice"}
-                  </Button>
+                <div className="flex justify-between items-center pt-4">
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button type="button" variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10">
+                        <Eraser className="h-4 w-4 mr-2" />
+                        Clear All Data
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Clear All Data?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will remove all information you've entered into this form. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            form.reset({
+                              invoiceNumber: `INV-${Date.now()}`,
+                              poNumber: "",
+                              clientName: "",
+                              clientEmail: "",
+                              clientPhone: "",
+                              clientAddress: "",
+                              description: "",
+                              status: "Draft",
+                              projectId: "none",
+                              quotationId: "",
+                              paidDate: "",
+                              dueDate: "",
+                              invoiceDate: todayStr(),
+                              taxRate: "15",
+                              items: [{ description: "Service", quantity: "1", rate: "100" }],
+                              notes: "",
+                            });
+                          }}
+                        >
+                          Clear Everything
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={
+                        createMutation.isPending || updateMutation.isPending
+                      }
+                    >
+                      {editingInvoice
+                        ? updateMutation.isPending
+                          ? "Updating..."
+                          : "Update Invoice"
+                        : createMutation.isPending
+                          ? "Creating..."
+                          : "Create Invoice"}
+                    </Button>
+                  </div>
                 </div>
               </form>
             </Form>

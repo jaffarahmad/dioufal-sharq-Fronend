@@ -370,7 +370,9 @@ export class EnhancedPDFGenerator {
             height: element.scrollHeight || element.offsetHeight,
             windowWidth: element.scrollWidth || element.offsetWidth,
             windowHeight: element.scrollHeight || element.offsetHeight,
-            foreignObjectRendering: true,
+            // foreignObjectRendering produces a blank canvas in this app
+            // (Tailwind's CSS custom properties aren't supported inside the
+            // SVG <foreignObject> snapshot) - use the default renderer.
             imageTimeout: 5000,
             removeContainer: true,
             ignoreElements: (element) => {

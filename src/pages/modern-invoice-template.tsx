@@ -534,9 +534,9 @@ export default function ModernInvoiceTemplate() {
                       <div className="flex justify-between">
                         <span className="font-bold">Date / التاريخ:</span>
                         <span className="font-medium">
-                          {new Date(invoice.createdAt).toLocaleDateString(
-                            "en-GB"
-                          )}
+                          {new Date(
+                            (invoice as any).invoiceDate || invoice.createdAt
+                          ).toLocaleDateString("en-GB")}
                         </span>
                       </div>
                       {(invoice as any).poNumber && (
