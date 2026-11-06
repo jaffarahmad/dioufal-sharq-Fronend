@@ -337,11 +337,11 @@ export default function AssetPathsInvoiceTemplate() {
               <div className="mb-4">
                 <div className="flex items-start justify-between mb-4">
                   {/* Left - English Company Info */}
-                  <div className="text-left flex-1">
-                    <h1 className="text-xl font-extrabold text-blue-800">
+                  <div className="text-left flex-1 min-w-0">
+                    <h1 className="text-xl font-extrabold text-blue-800 whitespace-nowrap">
                       ASSET PATHS GENERAL CO.
                     </h1>
-                    <p className="text-sm font-semibold text-gray-600">
+                    <p className="text-sm font-semibold text-gray-600 whitespace-nowrap">
                       GENERAL CONTRACTING & SERVICES
                     </p>
                     <div className="text-sm font-medium text-gray-600 mt-2 space-y-1">
@@ -351,18 +351,18 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Center - Logo and Invoice Title */}
-                  <div className="text-center flex-shrink-0 mx-4">
+                  <div className="text-center flex-shrink-0 mx-1">
                     <img
                       src={logoImage}
                       alt="Company Logo"
-                      className="h-24 w-auto object-contain mx-auto mb-2"
+                      className="h-28 w-auto object-contain mx-auto mb-1"
                     />
                     <div>
-                      <h2 className="text-xl font-bold text-black">
+                      <h2 className="text-xl font-bold text-black leading-tight">
                         TAX INVOICE
                       </h2>
                       <h3
-                        className="text-xl font-bold text-gray-900 mt-1"
+                        className="text-xl font-bold text-gray-900 mt-0 leading-tight"
                         dir="rtl"
                       >
                         فاتورة ضريبية
@@ -371,15 +371,15 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Right - Arabic Company Info */}
-                  <div className="text-right flex-1">
+                  <div className="text-right flex-1 min-w-0">
                     <h2
-                      className="text-xl font-extrabold text-blue-800"
+                      className="text-xl font-extrabold text-blue-800 whitespace-nowrap"
                       dir="rtl"
                     >
                       شركة أسيت باثز للمقاولات العامة
                     </h2>
                     <p
-                      className="text-sm font-semibold text-gray-600"
+                      className="text-sm font-semibold text-gray-600 whitespace-nowrap"
                       dir="rtl"
                     >
                       مقاولات عامة وخدمات
