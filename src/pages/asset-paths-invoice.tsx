@@ -337,11 +337,11 @@ export default function AssetPathsInvoiceTemplate() {
               <div className="mb-4 border-b-2 border-blue-800 pb-2">
                 <div className="flex items-start justify-center gap-x-8 px-2">
                   {/* Left - English Company Info */}
-                  <div className="text-right flex-1 min-w-0 max-w-[350px]">
+                  <div className="text-left flex-1 min-w-0 max-w-[350px]">
                     <h1 className="text-lg font-extrabold text-blue-800 leading-tight whitespace-nowrap">
                       ASSET PATHS GENERAL CO.
                     </h1>
-                    <p className="text-[11px] font-semibold text-gray-600 mt-1">
+                    <p className="text-[11px] font-semibold text-gray-600 mt-1 whitespace-nowrap">
                       GENERAL CONTRACTING & SERVICES
                     </p>
                     <div className="text-[11px] font-medium text-gray-600 mt-1 space-y-0.5">
@@ -371,7 +371,7 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Right - Arabic Company Info */}
-                  <div className="text-left flex-1 min-w-0 max-w-[350px]">
+                  <div className="text-right flex-1 min-w-0 max-w-[350px]">
                     <h2
                       className="text-lg font-extrabold text-blue-800 leading-tight whitespace-nowrap"
                       dir="rtl"
