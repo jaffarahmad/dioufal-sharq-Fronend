@@ -376,7 +376,7 @@ export default function AssetPathsInvoiceTemplate() {
                       className="text-xl font-extrabold text-blue-800"
                       dir="rtl"
                     >
-                      شركة مسارات الأصول العامة للمقاولات
+                      شركة أسيت باثز للمقاولات العامة
                     </h2>
                     <p
                       className="text-sm font-semibold text-gray-600"
