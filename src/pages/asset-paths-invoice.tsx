@@ -337,9 +337,9 @@ export default function AssetPathsInvoiceTemplate() {
               <div className="mb-4 border-b-2 border-blue-800 pb-2">
                 <div className="flex items-start justify-center gap-x-8 px-2">
                   {/* Left - English Company Info */}
-                  <div className="text-right flex-1 min-w-0 max-w-[300px]">
-                    <h1 className="text-xl font-extrabold text-blue-800 leading-tight">
-                      ASSET PATHS<br />GENERAL CO.
+                  <div className="text-right flex-1 min-w-0 max-w-[320px]">
+                    <h1 className="text-lg font-extrabold text-blue-800 leading-tight whitespace-nowrap">
+                      ASSET PATHS GENERAL CO.
                     </h1>
                     <p className="text-[11px] font-semibold text-gray-600 mt-1">
                       GENERAL CONTRACTING & SERVICES
@@ -371,12 +371,12 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Right - Arabic Company Info */}
-                  <div className="text-left flex-1 min-w-0 max-w-[300px]">
+                  <div className="text-left flex-1 min-w-0 max-w-[320px]">
                     <h2
-                      className="text-xl font-extrabold text-blue-800 leading-tight"
+                      className="text-lg font-extrabold text-blue-800 leading-tight whitespace-nowrap"
                       dir="rtl"
                     >
-                      شركة أسيت باثز<br />للمقاولات العامة
+                      شركة أسيت باثز للمقاولات العامة
                     </h2>
                     <p
                       className="text-[11px] font-semibold text-gray-600 mt-1"
