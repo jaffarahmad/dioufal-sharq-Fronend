@@ -335,12 +335,19 @@ export default function AssetPathsInvoiceTemplate() {
             <div className="bg-white">
               {/* Header */}
               <div className="mb-4 border-b-2 border-blue-800 pb-2">
-                <div className="flex items-center justify-between">
-                  {/* Left - English Company Info */}
+                {/* Company Name - Both Languages on One Line */}
+                <div className="flex justify-between items-center mb-2 px-2">
+                  <h1 className="text-xl font-extrabold text-blue-800">
+                    ASSET PATHS GENERAL CO.
+                  </h1>
+                  <h2 className="text-xl font-extrabold text-blue-800" dir="rtl">
+                    شركة أسيت باثز للمقاولات العامة
+                  </h2>
+                </div>
+
+                <div className="flex items-center justify-between px-2">
+                  {/* Left - English Info */}
                   <div className="text-left flex-1">
-                    <h1 className="text-lg font-extrabold text-blue-800 leading-tight">
-                      ASSET PATHS GENERAL CO.
-                    </h1>
                     <p className="text-[11px] font-semibold text-gray-600">
                       GENERAL CONTRACTING & SERVICES
                     </p>
@@ -355,9 +362,9 @@ export default function AssetPathsInvoiceTemplate() {
                     <img
                       src={logoImage}
                       alt="Company Logo"
-                      className="h-36 w-auto object-contain mx-auto"
+                      className="h-28 w-auto object-contain mx-auto"
                     />
-                    <div className="-mt-2">
+                    <div className="-mt-1">
                       <h2 className="text-xl font-bold text-black leading-none">
                         TAX INVOICE
                       </h2>
@@ -370,24 +377,12 @@ export default function AssetPathsInvoiceTemplate() {
                     </div>
                   </div>
 
-                  {/* Right - Arabic Company Info */}
+                  {/* Right - Arabic Info */}
                   <div className="text-right flex-1">
-                    <h2
-                      className="text-lg font-extrabold text-blue-800 leading-tight"
-                      dir="rtl"
-                    >
-                      شركة أسيت باثز للمقاولات العامة
-                    </h2>
-                    <p
-                      className="text-[11px] font-semibold text-gray-600"
-                      dir="rtl"
-                    >
+                    <p className="text-[11px] font-semibold text-gray-600" dir="rtl">
                       مقاولات عامة وخدمات
                     </p>
-                    <div
-                      className="text-[11px] font-medium text-gray-600 mt-1 space-y-0.5"
-                      dir="rtl"
-                    >
+                    <div className="text-[11px] font-medium text-gray-600 mt-1 space-y-0.5" dir="rtl">
                       <div>الرقم الموحد: ٧٠٥٤٨٣٨٠٦٠</div>
                       <div>الرقم الضريبي: ٣١٤٩١٥٧٢٩١٠٠٠٠٣</div>
                     </div>
