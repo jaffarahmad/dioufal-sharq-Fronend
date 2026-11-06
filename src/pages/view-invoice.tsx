@@ -652,7 +652,7 @@ export default function ViewInvoicePage() {
                         className="border-r border-gray-300 break-words font-semibold"
                         style={{ fontSize: "13px", padding: "6px 4px" }}
                       >
-                        {invoice.description || "General Services"}
+                        {"General Services"}
                       </td>
                       <td
                         className="text-center border-r border-gray-300 font-medium"
@@ -730,6 +730,19 @@ export default function ViewInvoicePage() {
                 </div>
               </div>
             </div>
+
+            {invoice.description && (
+              <div className="flex justify-end mb-3">
+                <div className="w-1/3">
+                  <div className="border border-yellow-300 bg-yellow-50 p-2 rounded-sm">
+                    <h4 className="font-bold mb-1 text-sm">Description</h4>
+                    <p className="text-xs text-gray-700 whitespace-pre-wrap">
+                      {invoice.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Footer */}
             <div className="mt-3">

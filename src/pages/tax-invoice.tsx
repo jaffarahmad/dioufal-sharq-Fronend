@@ -27,6 +27,7 @@ interface Invoice {
   status: string;
   createdAt: string;
   notes?: string;
+  description?: string;
 }
 
 interface InvoiceItem {
@@ -691,8 +692,20 @@ export default function TaxInvoicePage() {
                 </div>
               </div>
 
-              {/* Clean Bank Details, QR Code and Company Stamp */}
-              <div className="grid grid-cols-2 gap-3 mb-2.5">
+              {/* Clean Bank Details, QR Code, Company Stamp and Description */}
+              <div className="grid grid-cols-2 gap-3 mb-2.5" style={{ pageBreakInside: "avoid" }}>
+                {/* General Description */}
+                {invoice.description && (
+                  <div className="border border-gray-400 p-2.5">
+                    <h4 className="text-sm font-bold text-gray-900 mb-2 border-b border-gray-300 pb-1">
+                      DESCRIPTION
+                    </h4>
+                    <p className="text-[11px] text-gray-700 whitespace-pre-wrap leading-tight">
+                      {invoice.description}
+                    </p>
+                  </div>
+                )}
+
                 {/* Bank Details */}
                 <div className="border border-gray-400 p-2.5">
                   <h4 className="text-sm font-bold text-gray-900 mb-2 border-b border-gray-300 pb-1">

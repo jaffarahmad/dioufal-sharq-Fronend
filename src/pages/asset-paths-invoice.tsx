@@ -114,6 +114,7 @@ interface Invoice {
   status: string;
   createdAt: string;
   notes?: string;
+  description?: string;
   invoiceDate?: string;
   poNumber?: string;
 }
@@ -464,7 +465,7 @@ export default function AssetPathsInvoiceTemplate() {
                 </div>
 
                 {/* Totals Section */}
-                <div className="flex justify-end mb-6">
+                <div className="flex justify-end items-start mb-6">
                   <div className="w-64 space-y-1 border-t-2 border-blue-800 pt-2">
                     <div className="flex justify-between text-sm">
                       <span>Subtotal</span>
@@ -482,22 +483,32 @@ export default function AssetPathsInvoiceTemplate() {
                 </div>
 
                 {/* Footer */}
-                <div className="grid grid-cols-2 gap-8 items-end mt-8">
-                  <div>
+                <div className="grid grid-cols-3 gap-4 items-start mt-8 border-t border-gray-100 pt-4" style={{ pageBreakInside: "avoid" }}>
+                  <div className="col-span-1">
                     <div className="mb-4">
                       <h4 className="font-bold text-blue-800 text-sm mb-1 uppercase">Amount in Words</h4>
-                      <p className="text-sm italic">{numberToWords(Math.floor(total))} Saudi Riyals Only</p>
+                      <p className="text-[11px] italic leading-tight">{numberToWords(Math.floor(total))} Saudi Riyals Only</p>
                     </div>
                     <div>
                       <h4 className="font-bold text-blue-800 text-sm mb-1 uppercase">Bank Details</h4>
-                      <div className="text-xs space-y-0.5">
+                      <div className="text-[11px] space-y-0.5">
                         <p><span className="font-semibold">Bank:</span> Al Jazeera Bank</p>
                         <p><span className="font-semibold">IBAN:</span> SA1160100012882448735001</p>
                         <p><span className="font-semibold">A/C:</span> 0128-82448735001</p>
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-center">
+                  
+                  <div className="col-span-1 px-2">
+                    {invoice.description && (
+                      <div className="h-full">
+                        <h4 className="font-bold text-blue-800 text-sm mb-1 uppercase">Description</h4>
+                        <p className="text-[11px] text-gray-700 whitespace-pre-wrap leading-tight">{invoice.description}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="col-span-1 flex flex-col items-center">
                     {qrData?.qrCode && (
                       <img src={qrData.qrCode} alt="QR Code" className="w-24 h-24 mb-2" />
                     )}

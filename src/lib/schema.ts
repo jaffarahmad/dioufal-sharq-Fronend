@@ -257,6 +257,7 @@ export const insertInvoiceSchema = z.object({
   invoiceDate: z.string().optional(),
   status: z.enum(["draft", "sent", "paid", "overdue"]).default("draft"),
   notes: z.string().optional(),
+  description: z.string().optional(),
 });
 
 export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;

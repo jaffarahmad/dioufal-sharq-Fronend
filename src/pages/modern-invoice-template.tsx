@@ -131,6 +131,7 @@ interface Invoice {
   status: string;
   createdAt: string;
   notes?: string;
+  description?: string;
 }
 
 interface InvoiceItem {
@@ -731,9 +732,6 @@ export default function ModernInvoiceTemplate() {
                             SAR {total.toFixed(2)}
                           </span>
                         </div>
-                        <div className="text-sm font-bold text-gray-700 mt-1 text-left">
-                          صافي المبلغ
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -744,35 +742,35 @@ export default function ModernInvoiceTemplate() {
                   className="flex flex-col page-break-avoid"
                   style={{ pageBreakInside: "avoid", marginTop: "4px" }}
                 >
-                  {/* Amount in Words and Bank Details Section - Left Side Only */}
+                  {/* Amount in Words, Bank Details and Description Section */}
                   <div className="grid grid-cols-2 gap-4 mb-1">
                     {/* Amount in Words and Bank Details - Left Side */}
                     <div>
                       <div className="mb-2">
-                        <h4 className="font-bold text-gray-900 mb-1">
+                        <h4 className="font-bold text-gray-900 mb-1 text-xs">
                           Amount in Words
                         </h4>
-                        <p className="text-sm text-gray-700 break-words">
-                          {numberToWords(Math.floor(total))}
+                        <p className="text-[11px] text-gray-700 break-words italic">
+                          {numberToWords(Math.floor(total))} Saudi Riyals Only
                         </p>
                         <div className="border-b border-gray-400 mt-1"></div>
                       </div>
 
                       <div>
-                        <h4 className="font-bold text-gray-900 mb-1">
+                        <h4 className="font-bold text-gray-900 mb-1 text-xs">
                           Bank Details
                         </h4>
-                        <div className="text-sm text-gray-700 space-y-1">
+                        <div className="text-[11px] text-gray-700 space-y-0.5">
                           <p>
                             <span className="font-medium">Bank:</span> Riyad
                             bank
                           </p>
                           <p>
-                            <span className="font-medium">Account Name:</span>{" "}
+                            <span className="font-medium">Account:</span>{" "}
                             176331013994
                           </p>
                           <p className="break-all">
-                            <span className="font-medium">IBAN No:</span>{" "}
+                            <span className="font-medium">IBAN:</span>{" "}
                             SA5720000001763310139940
                           </p>
                         </div>
@@ -780,8 +778,19 @@ export default function ModernInvoiceTemplate() {
                       </div>
                     </div>
 
-                    {/* Empty right side */}
-                    <div></div>
+                    {/* Description - Right Side */}
+                    <div>
+                      {invoice.description && (
+                        <div className="h-full border-l border-gray-200 pl-4">
+                          <h4 className="font-bold text-gray-900 mb-1 text-xs">
+                            Description
+                          </h4>
+                          <p className="text-[11px] text-gray-700 whitespace-pre-wrap leading-tight">
+                            {invoice.description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Second Row: QR Code Center */}
