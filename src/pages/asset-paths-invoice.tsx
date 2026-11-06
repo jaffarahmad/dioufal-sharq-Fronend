@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Download, Printer } from "lucide-react";
 import { Link } from "wouter";
-import logoImage from "@assets/asset-paths-logo.png";
+import logoImage from "@assets/erp.logo.png";
 import {
   generateSimplePDF,
 } from "@/utils/simple-pdf-generator";
