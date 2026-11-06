@@ -186,7 +186,7 @@ export default function AssetPathsInvoiceTemplate() {
       const invoiceTimestamp = new Date(invoice.createdAt).toISOString();
       const tlvPayload = generateZatcaQRPayload({
         sellerName: "ASSET PATHS GENERAL CONTRACTING COMPANY",
-        vatRegistrationNumber: "310205801200003", // Using existing VAT for now
+        vatRegistrationNumber: "314915729100003",
         invoiceTimestamp,
         invoiceTotal: actualTotal.toFixed(2),
         vatAmount: actualTaxAmount.toFixed(2),
@@ -208,7 +208,7 @@ export default function AssetPathsInvoiceTemplate() {
         tlvData: tlvPayload,
         invoiceData: {
           sellerName: "ASSET PATHS GENERAL CONTRACTING COMPANY",
-          vatRegistrationNumber: "310205801200003",
+          vatRegistrationNumber: "314915729100003",
           invoiceDateTime: invoiceTimestamp,
           invoiceTotal: actualTotal.toFixed(2),
           vatAmount: actualTaxAmount.toFixed(2)
@@ -345,8 +345,8 @@ export default function AssetPathsInvoiceTemplate() {
                       GENERAL CONTRACTING & SERVICES
                     </p>
                     <div className="text-sm font-medium text-gray-600 mt-2 space-y-1">
-                      <div>C.R: 4030313386</div>
-                      <div>VAT: 310205801200003</div>
+                      <div>Unified No: 7054838060</div>
+                      <div>VAT: 314915729100003</div>
                     </div>
                   </div>
 
@@ -388,8 +388,8 @@ export default function AssetPathsInvoiceTemplate() {
                       className="text-sm font-medium text-gray-600 mt-2 space-y-1"
                       dir="rtl"
                     >
-                      <div>س.ت: ٤٠٣٠٣١٣٣٨٦</div>
-                      <div>الرقم الضريبي: ٣١٠٢٠٥٨٠١٢٠٠٠٠٣</div>
+                      <div>الرقم الموحد: ٧٠٥٤٨٣٨٠٦٠</div>
+                      <div>الرقم الضريبي: ٣١٤٩١٥٧٢٩١٠٠٠٠٣</div>
                     </div>
                   </div>
                 </div>
