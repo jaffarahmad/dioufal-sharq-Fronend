@@ -379,7 +379,7 @@ export default function AssetPathsInvoiceTemplate() {
                       شركة أسيت باثز للمقاولات العامة
                     </h2>
                     <p
-                      className="text-[11px] font-semibold text-gray-600 mt-1"
+                      className="text-[11px] font-semibold text-gray-600 mt-1 whitespace-nowrap"
                       dir="rtl"
                     >
                       مقاولات عامة وخدمات
