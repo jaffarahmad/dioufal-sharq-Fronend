@@ -371,7 +371,7 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Right - Arabic Company Info */}
-                  <div className="text-left flex-1 min-w-0 max-w-[320px]">
+                  <div className="text-right flex-1 min-w-0 max-w-[320px]">
                     <h2
                       className="text-lg font-extrabold text-blue-800 leading-tight whitespace-nowrap"
                       dir="rtl"
