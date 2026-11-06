@@ -45,7 +45,7 @@ interface Invoice {
 function getTaxRatePercent(invoice?: Invoice): number {
   if (!invoice) return 15;
   if (invoice.taxRate) {
-    const parsed = parseFloat(invoice.taxRate);
+    const parsed = parseFloat(String(invoice.taxRate));
     if (!isNaN(parsed)) return parsed;
   }
   const subtotal = parseFloat(invoice.subtotal || "0");

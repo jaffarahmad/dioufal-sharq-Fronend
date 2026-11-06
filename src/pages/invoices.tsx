@@ -113,14 +113,14 @@ type CreateInvoiceForm = z.infer<typeof createInvoiceSchema>;
 const todayStr = () => new Date().toISOString().split("T")[0];
 
 function ClearableInput({
-  value,
+  value = "",
   onChange,
   onClear,
   placeholder,
   type = "text",
   className = "",
 }: {
-  value: string;
+  value?: string;
   onChange: (val: string) => void;
   onClear: () => void;
   placeholder?: string;
