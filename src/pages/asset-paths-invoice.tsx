@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Download, Printer } from "lucide-react";
 import { Link } from "wouter";
-import logoImage from "@assets/image-logo.png";
+import logoImage from "@assets/asset-paths-logo.png";
 import {
   generateSimplePDF,
 } from "@/utils/simple-pdf-generator";
@@ -355,7 +355,7 @@ export default function AssetPathsInvoiceTemplate() {
                     <img
                       src={logoImage}
                       alt="Company Logo"
-                      className="h-16 w-auto object-contain mx-auto mb-2"
+                      className="h-24 w-auto object-contain mx-auto mb-2"
                     />
                     <div>
                       <h2 className="text-xl font-bold text-black">
