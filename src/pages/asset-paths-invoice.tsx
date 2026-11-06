@@ -491,8 +491,9 @@ export default function AssetPathsInvoiceTemplate() {
                     <div>
                       <h4 className="font-bold text-blue-800 text-sm mb-1 uppercase">Bank Details</h4>
                       <div className="text-xs space-y-0.5">
-                        <p><span className="font-semibold">Bank:</span> Riyad Bank</p>
-                        <p><span className="font-semibold">IBAN:</span> SA5720000001763310139940</p>
+                        <p><span className="font-semibold">Bank:</span> Al Jazeera Bank</p>
+                        <p><span className="font-semibold">IBAN:</span> SA1160100012882448735001</p>
+                        <p><span className="font-semibold">A/C:</span> 0128-82448735001</p>
                       </div>
                     </div>
                   </div>
