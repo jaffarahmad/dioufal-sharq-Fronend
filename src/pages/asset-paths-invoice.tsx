@@ -334,30 +334,30 @@ export default function AssetPathsInvoiceTemplate() {
           >
             <div className="bg-white">
               {/* Header */}
-              <div className="mb-6 border-b-2 border-blue-800 pb-4">
-                <div className="grid grid-cols-3 gap-2 items-start">
+              <div className="mb-4 border-b-2 border-blue-800 pb-2">
+                <div className="flex items-center justify-between">
                   {/* Left - English Company Info */}
-                  <div className="text-left">
+                  <div className="text-left flex-1">
                     <h1 className="text-lg font-extrabold text-blue-800 leading-tight">
                       ASSET PATHS GENERAL CO.
                     </h1>
                     <p className="text-[11px] font-semibold text-gray-600">
                       GENERAL CONTRACTING & SERVICES
                     </p>
-                    <div className="text-[11px] font-medium text-gray-600 mt-2 space-y-0.5">
+                    <div className="text-[11px] font-medium text-gray-600 mt-1 space-y-0.5">
                       <div>Unified No: 7054838060</div>
                       <div>VAT: 314915729100003</div>
                     </div>
                   </div>
 
                   {/* Center - Logo and Invoice Title */}
-                  <div className="text-center">
+                  <div className="text-center px-4">
                     <img
                       src={logoImage}
                       alt="Company Logo"
-                      className="h-24 w-auto object-contain mx-auto mb-2"
+                      className="h-36 w-auto object-contain mx-auto"
                     />
-                    <div className="mt-1">
+                    <div className="-mt-2">
                       <h2 className="text-xl font-bold text-black leading-none">
                         TAX INVOICE
                       </h2>
@@ -371,7 +371,7 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Right - Arabic Company Info */}
-                  <div className="text-right">
+                  <div className="text-right flex-1">
                     <h2
                       className="text-lg font-extrabold text-blue-800 leading-tight"
                       dir="rtl"
@@ -385,7 +385,7 @@ export default function AssetPathsInvoiceTemplate() {
                       مقاولات عامة وخدمات
                     </p>
                     <div
-                      className="text-[11px] font-medium text-gray-600 mt-2 space-y-0.5"
+                      className="text-[11px] font-medium text-gray-600 mt-1 space-y-0.5"
                       dir="rtl"
                     >
                       <div>الرقم الموحد: ٧٠٥٤٨٣٨٠٦٠</div>
