@@ -335,23 +335,23 @@ export default function AssetPathsInvoiceTemplate() {
             <div className="bg-white">
               {/* Header */}
               <div className="mb-4">
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start justify-center gap-x-4 mb-4">
                   {/* Left - English Company Info */}
-                  <div className="text-left flex-1 min-w-0">
-                    <h1 className="text-xl font-extrabold text-blue-800 whitespace-nowrap">
+                  <div className="text-left flex-1 min-w-0 max-w-[250px]">
+                    <h1 className="text-lg font-extrabold text-blue-800 whitespace-nowrap">
                       ASSET PATHS GENERAL CO.
                     </h1>
-                    <p className="text-sm font-semibold text-gray-600 whitespace-nowrap">
+                    <p className="text-[11px] font-semibold text-gray-600 whitespace-nowrap">
                       GENERAL CONTRACTING & SERVICES
                     </p>
-                    <div className="text-sm font-medium text-gray-600 mt-2 space-y-1">
+                    <div className="text-[11px] font-medium text-gray-600 mt-1 space-y-0.5">
                       <div>Unified No: 7054838060</div>
                       <div>VAT: 314915729100003</div>
                     </div>
                   </div>
 
                   {/* Center - Logo and Invoice Title */}
-                  <div className="text-center flex-shrink-0 mx-1">
+                  <div className="text-center flex-shrink-0">
                     <img
                       src={logoImage}
                       alt="Company Logo"
@@ -371,21 +371,21 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Right - Arabic Company Info */}
-                  <div className="text-right flex-1 min-w-0">
+                  <div className="text-right flex-1 min-w-0 max-w-[250px]">
                     <h2
-                      className="text-xl font-extrabold text-blue-800 whitespace-nowrap"
+                      className="text-lg font-extrabold text-blue-800 whitespace-nowrap"
                       dir="rtl"
                     >
                       شركة أسيت باثز للمقاولات العامة
                     </h2>
                     <p
-                      className="text-sm font-semibold text-gray-600 whitespace-nowrap"
+                      className="text-[11px] font-semibold text-gray-600 whitespace-nowrap"
                       dir="rtl"
                     >
                       مقاولات عامة وخدمات
                     </p>
                     <div
-                      className="text-sm font-medium text-gray-600 mt-2 space-y-1"
+                      className="text-[11px] font-medium text-gray-600 mt-1 space-y-0.5"
                       dir="rtl"
                     >
                       <div>الرقم الموحد: ٧٠٥٤٨٣٨٠٦٠</div>
