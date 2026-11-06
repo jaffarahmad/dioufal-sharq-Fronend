@@ -337,7 +337,7 @@ export default function AssetPathsInvoiceTemplate() {
               <div className="mb-4">
                 <div className="flex items-start justify-center gap-x-4 mb-4">
                   {/* Left - English Company Info */}
-                  <div className="text-left flex-1 min-w-0 max-w-[250px]">
+                  <div className="text-right flex-shrink-0">
                     <h1 className="text-lg font-extrabold text-blue-800 whitespace-nowrap">
                       ASSET PATHS GENERAL CO.
                     </h1>
@@ -371,7 +371,7 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Right - Arabic Company Info */}
-                  <div className="text-right flex-1 min-w-0 max-w-[250px]">
+                  <div className="text-left flex-shrink-0">
                     <h2
                       className="text-lg font-extrabold text-blue-800 whitespace-nowrap"
                       dir="rtl"
