@@ -68,6 +68,7 @@ import {
   Palette,
   X,
   Eraser,
+  Building,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import {
@@ -1115,6 +1116,16 @@ export default function InvoicesPage() {
                             >
                               <Palette className="h-4 w-4" />
                             </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                setLocation(`/asset-paths-invoice/${invoice.id}`)
+                              }
+                              title="Asset Paths Invoice Template"
+                            >
+                              <Building className="h-4 w-4" />
+                            </Button>
 
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -1222,6 +1233,16 @@ export default function InvoicesPage() {
                         title="Modern Template"
                       >
                         <Palette className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setLocation(`/asset-paths-invoice/${invoice.id}`)
+                        }
+                        title="Asset Paths Template"
+                      >
+                        <Building className="h-4 w-4" />
                       </Button>
 
                       <AlertDialog>

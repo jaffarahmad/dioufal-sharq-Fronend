@@ -32,6 +32,7 @@ import ViewInvoicePage from "@/pages/view-invoice";
 import TaxInvoicePage from "@/pages/tax-invoice";
 import InvoiceTemplateVariations from "@/pages/invoice-template-variations";
 import ModernInvoiceTemplate from "@/pages/modern-invoice-template";
+import AssetPathsInvoiceTemplate from "@/pages/asset-paths-invoice";
 import FixedAssets from "@/pages/fixed-assets";
 import Purchases from "@/pages/purchases";
 import Suppliers from "@/pages/suppliers";
@@ -129,6 +130,10 @@ function AuthenticatedApp() {
                 <Route
                   path="/modern-invoice/:id"
                   component={ModernInvoiceTemplate}
+                />
+                <Route
+                  path="/asset-paths-invoice/:id"
+                  component={AssetPathsInvoiceTemplate}
                 />
                 <Route path="/fixed-assets" component={FixedAssets} />
                 <Route path="/purchases" component={Purchases} />
