@@ -3,7 +3,7 @@ import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Download, Printer } from "lucide-react";
+import { ArrowLeft, Download, Globe, Mail, MapPin, Phone, Printer } from "lucide-react";
 import { Link } from "wouter";
 import logoImage from "@assets/Asset3.logo.png";
 import {
@@ -98,6 +98,31 @@ function numberToWords(num: number): string {
   return result.trim();
 }
 
+function generateBarcodeBars(value: string): number[] {
+  const normalized = value.trim() || "ASSET";
+  const bars: number[] = [2, 1, 2, 1];
+
+  for (const char of normalized) {
+    const code = char.charCodeAt(0);
+    for (let bit = 0; bit < 7; bit++) {
+      bars.push(((code >> bit) & 1) === 1 ? 2 : 1);
+    }
+    bars.push(1);
+  }
+
+  bars.push(3, 1, 2, 1);
+  return bars;
+}
+
+function getZatcaInvoiceTimestamp(invoiceDate?: string, createdAt?: string): string {
+  if (invoiceDate && /^\d{4}-\d{2}-\d{2}$/.test(invoiceDate)) {
+    // Use a fixed midday Saudi time so scanners always show the saved invoice date.
+    return `${invoiceDate}T12:00:00+03:00`;
+  }
+
+  return createdAt || new Date().toISOString();
+}
+
 interface Invoice {
   id: number;
   invoiceNumber: string;
@@ -170,7 +195,16 @@ export default function AssetPathsInvoiceTemplate() {
       vatAmount: string;
     };
   } | null>({
-    queryKey: ["invoices-records", invoiceId, "qr-asset-paths", invoice?.invoiceNumber, invoice?.totalAmount],
+    queryKey: [
+      "invoices-records",
+      invoiceId,
+      "qr-asset-paths",
+      invoice?.invoiceNumber,
+      invoice?.invoiceDate,
+      invoice?.createdAt,
+      invoice?.totalAmount,
+      invoice?.taxRate,
+    ],
     queryFn: async () => {
       if (!invoice) return null;
       
@@ -184,9 +218,12 @@ export default function AssetPathsInvoiceTemplate() {
       const actualTaxAmount = actualSubtotal * (savedTaxRate / 100);
       const actualTotal = actualSubtotal + actualTaxAmount;
       
-      const invoiceTimestamp = new Date(invoice.createdAt).toISOString();
+      const invoiceTimestamp = getZatcaInvoiceTimestamp(
+        invoice.invoiceDate,
+        invoice.createdAt
+      );
       const tlvPayload = generateZatcaQRPayload({
-        sellerName: "ASSET PATHS GENERAL CONTRACTING COMPANY",
+        sellerName: "ASSET PATHS GENERAL CO.",
         vatRegistrationNumber: "314915729100003",
         invoiceTimestamp,
         invoiceTotal: actualTotal.toFixed(2),
@@ -208,7 +245,7 @@ export default function AssetPathsInvoiceTemplate() {
         zatcaCompliant: true,
         tlvData: tlvPayload,
         invoiceData: {
-          sellerName: "ASSET PATHS GENERAL CONTRACTING COMPANY",
+          sellerName: "ASSET PATHS GENERAL CO.",
           vatRegistrationNumber: "314915729100003",
           invoiceDateTime: invoiceTimestamp,
           invoiceTotal: actualTotal.toFixed(2),
@@ -274,6 +311,8 @@ export default function AssetPathsInvoiceTemplate() {
   const taxRate = taxRatePercent / 100;
   const taxAmount = subtotal * taxRate;
   const total = subtotal + taxAmount;
+  const barcodeBars = generateBarcodeBars(invoice.invoiceNumber || "ASSET");
+  const barcodeWidth = barcodeBars.reduce((sum, width) => sum + width, 0);
 
   return (
     <div className="min-h-screen bg-gray-50 py-2 sm:py-3 lg:py-4">
@@ -336,7 +375,7 @@ export default function AssetPathsInvoiceTemplate() {
             <div className="bg-white">
               {/* Header */}
               <div className="mb-4 border-b-2 border-blue-800 pb-2">
-                <div className="flex items-start justify-center gap-x-8 px-2">
+                <div className="flex items-start justify-center gap-x-4 px-1">
                   {/* Left - English Company Info */}
                   <div className="text-left flex-1 min-w-0 max-w-[350px]">
                     <h1 className="text-lg font-extrabold text-blue-800 leading-tight whitespace-nowrap">
@@ -352,19 +391,19 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Center - Logo and Invoice Title */}
-                  <div className="text-center flex-shrink-0 mx-2">
+                  <div className="text-center flex-shrink-0 mx-1">
                     <img
                       src={logoImage}
                       alt="Company Logo"
-                      className="h-28 w-auto object-contain mx-auto"
+                      className="h-24 w-auto object-contain mx-auto"
                     />
-                    <div className="-mt-1">
+                    <div className="mt-6">
                       <h2 className="text-xl font-bold text-black leading-none">
                         TAX INVOICE
                       </h2>
                       <h3
                         className="text-lg font-bold text-gray-900 mt-1 leading-none"
-                        dir="rtl"
+                        dir="center"
                       >
                         فاتورة ضريبية
                       </h3>
@@ -372,12 +411,13 @@ export default function AssetPathsInvoiceTemplate() {
                   </div>
 
                   {/* Right - Arabic Company Info */}
-                  <div className="text-right flex-1 min-w-0 max-w-[350px]">
+                  <div className="text-center flex-1 min-w-0 max-w-[350px]">
                     <h2
-                      className="text-lg font-extrabold text-blue-800 leading-tight whitespace-nowrap"
+                      className="text-[13px] font-extrabold tracking-tight text-blue-800 leading-none whitespace-nowrap"
                       dir="rtl"
                     >
                       شركة أسيت باثز للمقاولات العامة
+
                     </h2>
                     <p
                       className="text-[11px] font-semibold text-gray-600 mt-1 whitespace-nowrap"
@@ -416,16 +456,16 @@ export default function AssetPathsInvoiceTemplate() {
                     </h3>
                     <div className="text-sm space-y-1">
                       <div className="flex justify-between">
-                        <span className="font-bold">Invoice #:</span>
+                        <span className="font-bold">Invoice # / رقم الفاتورة:</span>
                         <span>{invoice.invoiceNumber}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="font-bold">Date:</span>
+                        <span className="font-bold">Date / التاريخ:</span>
                         <span>{new Date(invoice.invoiceDate || invoice.createdAt).toLocaleDateString("en-GB")}</span>
                       </div>
                       {invoice.poNumber && (
                         <div className="flex justify-between">
-                          <span className="font-bold">PO #:</span>
+                          <span className="font-bold">PO # / رقم أمر الشراء:</span>
                           <span>{invoice.poNumber}</span>
                         </div>
                       )}
@@ -439,10 +479,10 @@ export default function AssetPathsInvoiceTemplate() {
                     <thead>
                       <tr className="bg-blue-800 text-white">
                         <th className="py-2 px-2 text-left border border-gray-300" style={{ width: "40%" }}>Description / الوصف</th>
-                        <th className="py-2 px-2 text-center border border-gray-300" style={{ width: "10%" }}>Qty</th>
-                        <th className="py-2 px-2 text-center border border-gray-300" style={{ width: "15%" }}>Rate</th>
-                        <th className="py-2 px-2 text-center border border-gray-300" style={{ width: "15%" }}>Taxable</th>
-                        <th className="py-2 px-2 text-center border border-gray-300" style={{ width: "20%" }}>Total (SAR)</th>
+                        <th className="py-2 px-2 text-center border border-gray-300" style={{ width: "10%" }}>Qty / الكمية</th>
+                        <th className="py-2 px-2 text-center border border-gray-300" style={{ width: "15%" }}>Rate / السعر</th>
+                        <th className="py-2 px-2 text-center border border-gray-300" style={{ width: "15%" }}>Taxable / المبلغ</th>
+                        <th className="py-2 px-2 text-center border border-gray-300" style={{ width: "20%" }}>Total (SAR) / المجموع</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -512,14 +552,61 @@ export default function AssetPathsInvoiceTemplate() {
                     {qrData?.qrCode && (
                       <img src={qrData.qrCode} alt="QR Code" className="w-24 h-24 mb-2" />
                     )}
-                    <p className="text-[10px] text-gray-500 text-center uppercase">ZATCA Compliant E-Invoice</p>
+                    <div className="mt-2 w-full max-w-[150px]">
+                      <svg
+                        viewBox={`0 0 ${barcodeWidth} 36`}
+                        className="h-9 w-full bg-white"
+                        role="img"
+                        aria-label={`Barcode for ${invoice.invoiceNumber}`}
+                        preserveAspectRatio="none"
+                      >
+                        {(() => {
+                          let x = 0;
+                          return barcodeBars.map((barWidth, index) => {
+                            const isDark = index % 2 === 0;
+                            const rect = (
+                              <rect
+                                key={`${index}-${x}`}
+                                x={x}
+                                y={0}
+                                width={barWidth}
+                                height={30}
+                                fill={isDark ? "#111827" : "#ffffff"}
+                              />
+                            );
+                            x += barWidth;
+                            return rect;
+                          });
+                        })()}
+                      </svg>
+                      <p className="mt-1 text-[9px] font-medium tracking-[0.18em] text-center text-gray-700">
+                        {invoice.invoiceNumber}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 <div className="mt-12 text-center border-t border-gray-200 pt-4">
-                  <p className="text-xs text-gray-600">
-                    Gharnath Street, Mushrifa, Jeddah, KSA | E-mail: info@assetpaths.com
-                  </p>
+                  <div className="flex items-center justify-center gap-1 text-xs text-gray-600">
+                    <MapPin className="h-3.5 w-3.5 text-blue-800" />
+                    <p>
+                      Jeddah -Al Bawadi Distt. Qurashi sT. -Quraish Center -Al Madina Road Junction
+                    </p>
+                  </div>
+                  <div className="mt-2 flex items-center justify-center gap-3 text-xs text-gray-600">
+                    <span className="flex items-center gap-1">
+                      <Mail className="h-3.5 w-3.5 text-blue-800" />
+                      <span>info@assetpaths.com</span>
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Globe className="h-3.5 w-3.5 text-blue-800" />
+                      <span>www.assetpaths.co</span>
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Phone className="h-3.5 w-3.5 text-blue-800" />
+                      <span>0554690329</span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

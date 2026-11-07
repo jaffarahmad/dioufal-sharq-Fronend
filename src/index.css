@@ -452,6 +452,7 @@
   }
 
   #tax-invoice-content,
+  #asset-paths-invoice-content,
   #view-invoice-content,
   [id^="invoice-template-"] {
     width: 190mm !important;
